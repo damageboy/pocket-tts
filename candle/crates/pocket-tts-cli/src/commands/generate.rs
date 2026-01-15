@@ -126,7 +126,7 @@ fn run_streaming(model: &TTSModel, text: &str, voice_state: &pocket_tts::ModelSt
     use std::io::Write;
     let mut stdout = std::io::stdout();
 
-    for chunk_res in model.generate_stream(text, voice_state) {
+    for chunk_res in model.generate_stream_long(text, voice_state) {
         let chunk = chunk_res?;
         // Convert tensor to 16-bit PCM
         let chunk = chunk.squeeze(0)?;
@@ -181,7 +181,7 @@ fn run_to_file(
     let mut audio_chunks = Vec::new();
     let mut total_samples = 0;
 
-    for chunk_res in model.generate_stream(&args.text, voice_state) {
+    for chunk_res in model.generate_stream_long(&args.text, voice_state) {
         let chunk = chunk_res?;
         let dims = chunk.dims();
         let samples = if dims.len() == 2 { dims[1] } else { dims[0] };

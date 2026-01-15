@@ -100,7 +100,16 @@ pub async fn generate(
         };
 
         // Generate audio
-        let audio = model.generate(&text, &voice_state)?;
+        tracing::info!("Starting generation for text length: {} chars", text.len());
+        let mut audio_chunks = Vec::new();
+        for chunk in model.generate_stream_long(&text, &voice_state) {
+            audio_chunks.push(chunk?);
+        }
+        if audio_chunks.is_empty() {
+            anyhow::bail!("No audio generated");
+        }
+        let audio = candle_core::Tensor::cat(&audio_chunks, 2)?;
+        let audio = audio.squeeze(0)?;
 
         // Encode as WAV
         let mut buffer = std::io::Cursor::new(Vec::new());
@@ -170,7 +179,14 @@ pub async fn generate_stream(
             };
 
             // Stream audio chunks
-            for chunk_res in model.generate_stream(&text, &voice_state) {
+            tracing::info!(
+                "Starting streaming generation for text length: {} chars",
+                text.len()
+            );
+            for (i, chunk_res) in model.generate_stream_long(&text, &voice_state).enumerate() {
+                if i > 0 && i % 20 == 0 {
+                    tracing::info!("Generated chunk {}", i);
+                }
                 match chunk_res {
                     Ok(chunk) => {
                         // Convert tensor to 16-bit PCM bytes
