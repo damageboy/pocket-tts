@@ -235,9 +235,33 @@
             <input type="text" id="voice-custom" placeholder="hf://kyutai/tts-voices/voice.wav">
         </div>
 
+        <div class="card" style="margin-top: 1rem;">
+            <label>Streaming Buffer Settings</label>
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <span style="font-size: 0.875rem; color: var(--text-dim); min-width: 60px;">Latency</span>
+                <input type="range" id="buffer-slider" min="0.5" max="5.0" step="0.5" value="3.0" style="flex: 1;">
+                <span style="font-size: 0.875rem; color: var(--text-dim); min-width: 60px;">Stability</span>
+            </div>
+            <div
+                style="display: flex; justify-content: space-between; margin-top: 0.25rem; font-size: 0.75rem; color: var(--text-dim);">
+                <span id="buffer-val">3.0s</span>
+            </div>
+        </div>
+
         <button class="generate-btn" id="generate-btn">
             Generate Audio
         </button>
+
+        <!-- Buffer Health Indicator -->
+        <div id="buffer-container"
+            style="display: none; margin-top: 1rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; height: 20px; overflow: hidden; position: relative;">
+            <div id="buffer-bar"
+                style="background: var(--primary); width: 0%; height: 100%; transition: width 0.1s linear;"></div>
+            <div
+                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 0.7srem; color: white; text-shadow: 0 1px 2px black;">
+                <span id="buffer-text">Buffer: 0s</span>
+            </div>
+        </div>
 
         <div class="status" id="status"></div>
 
@@ -252,6 +276,13 @@
 
     <script>
         let selectedVoice = 'alba';
+
+        // Buffer slider logic
+        const bufferSlider = document.getElementById('buffer-slider');
+        const bufferVal = document.getElementById('buffer-val');
+        bufferSlider.addEventListener('input', (e) => {
+            bufferVal.textContent = e.target.value + 's';
+        });
 
         // Voice button selection
         document.querySelectorAll('.voice-btn').forEach(btn => {
@@ -273,63 +304,100 @@
 
         // Audio Worklet Processor for buffering and playing PCM data
         const WORKLET_CODE = `
-            class PCMProcessor extends AudioWorkletProcessor {
-                constructor() {
-                    super();
-                    this.buffer = [];
-                    this.hasStarted = false;
-                    this.BUFFER_THRESHOLD = 24000 * 0.9; // 300ms buffer at 24kHz
-                    
-                    this.port.onmessage = (e) => {
-                        // Receive float32 samples
-                        const samples = e.data;
-                        for (let i = 0; i < samples.length; i++) {
-                            this.buffer.push(samples[i]);
+                class PCMProcessor extends AudioWorkletProcessor {
+                    constructor(options) {
+                        super();
+                        this.buffer = [];
+                        this.hasStarted = false;
+                        this.isBuffering = false;
+                        
+                        // Parse options or defaults
+                        const startSec = (options.processorOptions && options.processorOptions.startSec) || 3.0;
+                        
+                        // 24kHz sample rate
+                        this.START_THRESHOLD = 24000 * startSec; 
+                        
+                        // If we run dry, wait for 0.5s of data before resuming or 1/3 of start threshold
+                        this.RESUME_THRESHOLD = 24000 * 0.5;
+                        
+                        this.port.onmessage = (e) => {
+                            const samples = e.data;
+                            for (let i = 0; i < samples.length; i++) {
+                                this.buffer.push(samples[i]);
+                            }
+                        };
+                    }
+    
+                    process(inputs, outputs, parameters) {
+                        const output = outputs[0];
+                        const channel = output[0];
+                        
+                        // Report buffer size every ~100ms (approx every 4 calls at 128 frames/call? no 24000/128=187 calls/s)
+                        // Just report every 20 calls to avoid spam
+                        if (currentFrame % 2000 === 0) {
+                             this.port.postMessage({ type: 'buffer_pga', length: this.buffer.length });
                         }
-                    };
+                        
+                        // 1. Initial buffering state
+                        if (!this.hasStarted) {
+                            if (this.buffer.length < this.START_THRESHOLD) {
+                                return true; // Still buffering
+                            }
+                            this.hasStarted = true;
+                            this.isBuffering = false;
+                            this.port.postMessage({ type: 'state', state: 'playing' });
+                        }
+    
+                        // 2. Re-buffering state (underrun recovery)
+                        if (this.isBuffering) {
+                            if (this.buffer.length < this.RESUME_THRESHOLD) {
+                                // Output silence while re-buffering
+                                chainFillSilence(channel);
+                                return true;
+                            }
+                            // Resume playback
+                            this.isBuffering = false;
+                            this.port.postMessage({ type: 'state', state: 'playing' });
+                        }
+                        
+                        // 3. Playback state
+                        const samplesToCopy = Math.min(channel.length, this.buffer.length);
+                        
+                        // Copy available samples
+                        for (let i = 0; i < samplesToCopy; i++) {
+                            channel[i] = this.buffer[i];
+                        }
+                        
+                        // Remove consumed samples
+                        if (samplesToCopy > 0) {
+                            this.buffer = this.buffer.slice(samplesToCopy);
+                        }
+                        
+                        // Check for underrun
+                        if (samplesToCopy < channel.length) {
+                            // We ran out of data!
+                            // Fill the rest with silence
+                            for (let i = samplesToCopy; i < channel.length; i++) {
+                                channel[i] = 0;
+                            }
+                            
+                            // Enter re-buffering state
+                            this.isBuffering = true;
+                            this.port.postMessage({ type: 'state', state: 'buffering' });
+                        }
+                        
+                        return true;
+                    }
                 }
-
-                process(inputs, outputs, parameters) {
-                    const output = outputs[0];
-                    const channel = output[0];
-                    
-                    // Check for start condition
-                    if (!this.hasStarted) {
-                        if (this.buffer.length < this.BUFFER_THRESHOLD) {
-                            return true; // Wait for buffer to fill
-                        }
-                        this.hasStarted = true;
-                    }
-                    
-                    // If we run out after starting, we have to play silence (underrun)
-                    // We could reset hasStarted to re-buffer, but that might cause gaps.
-                    // For now, let's just drain what we have or silence.
-                    
-                    const samplesToCopy = Math.min(channel.length, this.buffer.length);
-                    
-                    // Copy available samples
-                    for (let i = 0; i < samplesToCopy; i++) {
-                        channel[i] = this.buffer[i];
-                    }
-                    
-                    // Fill rest with silence if underrun
-                    for (let i = samplesToCopy; i < channel.length; i++) {
+                
+                function chainFillSilence(channel) {
+                    for (let i = 0; i < channel.length; i++) {
                         channel[i] = 0;
                     }
-                    
-                    // Remove consumed samples
-                    if (samplesToCopy > 0) {
-                        this.buffer = this.buffer.slice(samplesToCopy);
-                    }
-                    
-                    // If we heavily underrun (buffer empty), maybe reset?
-                    // Let's stick to simple underrun for now.
-                    
-                    return true;
                 }
-            }
-            registerProcessor('pcm-processor', PCMProcessor);
-        `;
+    
+                registerProcessor('pcm-processor', PCMProcessor);
+            `;
 
         class StreamPlayer {
             constructor() {
@@ -362,7 +430,7 @@
                 return this.initPromise;
             }
 
-            async playStream(text, voice) {
+            async playStream(text, voice, startSec) {
                 await this.init();
 
                 if (this.audioCtx.state === 'suspended') {
@@ -376,7 +444,25 @@
                     this.workletNode.disconnect();
                 }
 
-                this.workletNode = new AudioWorkletNode(this.audioCtx, 'pcm-processor');
+                this.workletNode = new AudioWorkletNode(this.audioCtx, 'pcm-processor', {
+                    processorOptions: {
+                        startSec: parseFloat(startSec)
+                    }
+                });
+
+                // Handle messages from worklet (buffer updates)
+                this.workletNode.port.onmessage = (e) => {
+                    if (e.data.type === 'buffer_pga') {
+                        updateBufferVisual(e.data.length);
+                    } else if (e.data.type === 'state') {
+                        if (e.data.state === 'buffering') {
+                            showStatus('<span class="spinner"></span>Re-buffering...', false);
+                        } else if (e.data.state === 'playing') {
+                            showStatus('▶ Playing', true);
+                        }
+                    }
+                };
+
                 this.workletNode.connect(this.audioCtx.destination);
 
                 const response = await fetch('/stream', {
@@ -396,6 +482,9 @@
 
                 // Buffer for incoming bytes to handle partial samples
                 let leftover = new Uint8Array(0);
+
+                // Show buffer UI
+                document.getElementById('buffer-container').style.display = 'block';
 
                 while (true) {
                     const { done, value } = await reader.read();
@@ -430,8 +519,8 @@
                         this.workletNode.port.postMessage(floatSamples);
 
                         if (!started) {
-                            const elapsed = ((performance.now() - startTime) / 1000).toFixed(2);
-                            showStatus(`▶ Streaming started in ${elapsed}s...`, true);
+                            // Just visual update that we are receiving data
+                            showStatus('<span class="spinner"></span>Buffering...', false);
                             started = true;
                         }
                     }
@@ -484,6 +573,14 @@
             }
         }
 
+        function updateBufferVisual(samples) {
+            // assume max buffer of 5s for visualization scale
+            const maxSamples = 24000 * 5;
+            const pct = Math.min((samples / maxSamples) * 100, 100);
+            document.getElementById('buffer-bar').style.width = pct + '%';
+            document.getElementById('buffer-text').innerText = 'Buffer: ' + (samples / 24000).toFixed(1) + 's';
+        }
+
         const player = new StreamPlayer();
 
         // Generate button
@@ -491,6 +588,7 @@
             const text = document.getElementById('text-input').value.trim();
             const customVoice = document.getElementById('voice-custom').value.trim();
             const voice = customVoice || selectedVoice;
+            const bufferSec = document.getElementById('buffer-slider').value;
 
             if (!text) {
                 showStatus('Please enter some text', false);
@@ -501,7 +599,7 @@
             const audioSection = document.getElementById('audio-section');
 
             btn.disabled = true;
-            btn.innerHTML = '<span class="spinner"></span>Buffered...';
+            btn.innerHTML = '<span class="spinner"></span>Starting...';
             audioSection.classList.remove('visible');
 
             showStatus('<span class="spinner"></span>Connecting to stream...', false);
@@ -509,7 +607,7 @@
             const startTime = performance.now();
 
             try {
-                const wavBlob = await player.playStream(text, voice);
+                const wavBlob = await player.playStream(text, voice, bufferSec);
 
                 const elapsed = ((performance.now() - startTime) / 1000).toFixed(2);
 
@@ -519,6 +617,7 @@
 
                 document.getElementById('download-link').href = audioUrl;
                 audioSection.classList.add('visible');
+                document.getElementById('buffer-container').style.display = 'none';
 
                 showStatus(`✓ Generation finished in ${elapsed}s`, true);
 
