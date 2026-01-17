@@ -17,7 +17,7 @@ default = []
 quantized = []
 # WASM is handled by target, not feature flag - candle-core auto-detects wasm32 target
 wasm = []
-cuda = ["candle-core/cuda", "candle-nn/cuda", "candle-transformers/cuda"]
+
 
 
 [dependencies]
