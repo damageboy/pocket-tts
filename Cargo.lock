@@ -1487,7 +1487,6 @@ checksum = "629d8f3bbeda9d148036d6b0de0a3ab947abd08ce90626327fc3547a49d59d97"
 dependencies = [
  "dirs",
  "futures",
- "http",
  "indicatif",
  "libc",
  "log",
@@ -2563,7 +2562,7 @@ dependencies = [
 
 [[package]]
 name = "pocket-tts"
-version = "0.2.7"
+version = "0.2.8"
 dependencies = [
  "anyhow",
  "byteorder",
@@ -2591,6 +2590,7 @@ dependencies = [
  "serde_yaml",
  "thiserror 2.0.18",
  "tokenizers",
+ "tokio",
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "web-sys",
@@ -2598,7 +2598,7 @@ dependencies = [
 
 [[package]]
 name = "pocket-tts-bindings"
-version = "0.2.7"
+version = "0.2.8"
 dependencies = [
  "anyhow",
  "candle-core",
@@ -2608,7 +2608,7 @@ dependencies = [
 
 [[package]]
 name = "pocket-tts-cli"
-version = "0.2.7"
+version = "0.2.8"
 dependencies = [
  "anyhow",
  "assert_cmd",

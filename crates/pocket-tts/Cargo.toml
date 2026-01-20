@@ -40,19 +40,17 @@ hound.workspace = true
 rand.workspace = true
 rand_distr.workspace = true
 rayon = "1.11.0"
+tokio = { workspace = true, features = ["rt"] }
+
+# Dependencies for all non-WASM targets
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+hf-hub.workspace = true
+memmap2.workspace = true
+sentencepiece = "0.13"
 
 # Dependencies for non-WASM, non-macOS targets (Linux, Windows)
 [target.'cfg(all(not(target_arch = "wasm32"), not(target_os = "macos")))'.dependencies]
-hf-hub = { workspace = true, features = ["default-tls", "tokio"] }
 intel-mkl-src.workspace = true
-memmap2.workspace = true
-sentencepiece = "0.13"
-
-# Dependencies for macOS (non-WASM)
-[target.'cfg(all(not(target_arch = "wasm32"), target_os = "macos"))'.dependencies]
-hf-hub = { workspace = true, features = ["native-tls", "tokio"] }
-memmap2.workspace = true
-sentencepiece = "0.13"
 
 # WASM-specific dependencies
 [target.'cfg(target_arch = "wasm32")'.dependencies]
