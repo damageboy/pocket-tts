@@ -33,6 +33,13 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
         with:
           components: clippy
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+      - name: Build Web UI
+        run: |
+          cd crates/pocket-tts-cli/web
+          bun install
+          bun run build
       - name: Run clippy
         run: cargo clippy --all-targets --features quantized -- -D warnings
 
@@ -45,5 +52,12 @@ jobs:
       - uses: actions/checkout@v4
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+      - name: Build Web UI
+        run: |
+          cd crates/pocket-tts-cli/web
+          bun install
+          bun run build
       - name: Run tests (release)
         run: cargo test --release --all --features quantized
