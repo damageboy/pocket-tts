@@ -117,7 +117,7 @@ async fn test_web_interface() {
         .clone()
         .oneshot(
             Request::builder()
-                .uri("/static/index.html")
+                .uri("/index.html")
                 .body(Body::empty())
                 .unwrap(),
         )

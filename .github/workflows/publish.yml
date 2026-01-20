@@ -38,18 +38,17 @@ jobs:
             assets/*.wav
             assets/*.safetensors
           body: |
-            ## Pocket TTS v0.2.2 (Attention & Parity Fix)
+            ## Pocket TTS v0.2.3 (CI & Test Stability)
             
-            This release includes critical bug fixes for numerical parity and streaming stability.
+            This release includes critical fixes for CI tests and server reliability.
             
             ### Key Changes
+            - Fixed `server_tests.rs` static asset routing failure
             - Fixed `StreamingMultiheadAttention` to handle large prefill batches (voice cloning fix)
             - Restored numerical parity with reference Python implementation
             - Decoupled quantization from CLI voice cloning
-            - Improved CPU inference performance
             - Added web-based UI for live testing
             - Fixed CI/CD pipelines for cross-platform stability
-            - Updated embedded assets bundling
             
             > [!IMPORTANT]
             > Large model weights are downloaded automatically on first run via Hugging Face.
