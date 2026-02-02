@@ -3,15 +3,15 @@
 //! This is the high-level API for text-to-speech generation,
 //! matching Python's `pocket_tts/models/tts_model.py`.
 
-use crate::ModelState;
 use crate::conditioners::text::LUTConditioner;
-use crate::config::{Config, defaults, load_config};
+use crate::config::{defaults, load_config, Config};
 use crate::models::flow_lm::FlowLMModel;
 use crate::models::mimi::MimiModel;
 use crate::models::seanet::{SEANetDecoder, SEANetEncoder};
 use crate::models::transformer::{ProjectedTransformer, StreamingTransformer};
 use crate::modules::mlp::SimpleMLPAdaLN;
 use crate::voice_state::{increment_steps, init_states};
+use crate::ModelState;
 
 use anyhow::Result;
 use candle_core::{DType, Device, Tensor};
@@ -484,14 +484,28 @@ impl TTSModel {
 
     /// Create voice state from a pre-calculated latent prompt tensor
     pub fn get_voice_state_from_prompt_tensor(&self, prompt: &Tensor) -> Result<ModelState> {
+        // Ensure prompt tensor is on the same device as the model (fixes Metal device mismatch)
+        let prompt = if prompt.device().same_device(&self.device) {
+            prompt.clone()
+        } else {
+            prompt.to_device(&self.device)?
+        };
+
         let mut flow_state = init_states(1, 1000);
-        self.run_flow_lm_prompt(prompt, &mut flow_state)?;
+        self.run_flow_lm_prompt(&prompt, &mut flow_state)?;
         Ok(flow_state)
     }
 
     /// Create voice state from audio tensor
     pub fn get_voice_state_from_tensor(&self, audio: &Tensor) -> Result<ModelState> {
         let mut model_state = init_states(1, 1000);
+
+        // Ensure audio tensor is on the same device as the model (fixes Metal device mismatch)
+        let audio = if audio.device().same_device(&self.device) {
+            audio.clone()
+        } else {
+            audio.to_device(&self.device)?
+        };
 
         // Pad audio to a multiple of frame size for streaming conv stride alignment
         let frame_size = self.mimi.frame_size();
@@ -502,10 +516,11 @@ impl TTSModel {
             0
         };
         let audio = if pad_len > 0 {
-            let pad = Tensor::zeros((b, c, pad_len), audio.dtype(), audio.device())?;
-            Tensor::cat(&[audio, &pad], 2)?
+            // Create padding on the same device as audio (which is now on self.device)
+            let pad = Tensor::zeros((b, c, pad_len), audio.dtype(), &self.device)?;
+            Tensor::cat(&[&audio, &pad], 2)?
         } else {
-            audio.clone()
+            audio
         };
 
         // Encode audio through Mimi in chunks to avoid OOM in SEANet Conv1d layers
