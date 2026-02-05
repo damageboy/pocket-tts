@@ -37,8 +37,8 @@ pub async fn serve_static(uri: axum::http::Uri) -> impl IntoResponse {
 
     match StaticAssets::get(&path) {
         Some(content) => {
-            let mime = mime_guess::from_path(std::path::Path::new(path.as_ref()))
-                .first_or_octet_stream();
+            let mime =
+                mime_guess::from_path(std::path::Path::new(path.as_ref())).first_or_octet_stream();
             let mut headers = HeaderMap::new();
             headers.insert(header::CONTENT_TYPE, mime.as_ref().parse().unwrap());
             (headers, content.data.to_vec()).into_response()
