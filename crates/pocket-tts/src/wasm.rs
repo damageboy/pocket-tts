@@ -6,8 +6,11 @@
 #![cfg(target_arch = "wasm32")]
 
 use crate::tts_model::TTSModel;
-use js_sys::Float32Array;
+use candle_core::Tensor;
+use js_sys::{Date, Float32Array, Object, Reflect};
 use wasm_bindgen::prelude::*;
+
+type StreamIter = Box<dyn Iterator<Item = std::result::Result<Tensor, anyhow::Error>>>;
 
 /// Initialize console_error_panic_hook for better error messages in browser
 #[wasm_bindgen(start)]
@@ -22,6 +25,15 @@ pub struct WasmTTSModel {
     model: Option<TTSModel>,
     voice_state: Option<crate::ModelState>,
     sample_rate: u32,
+}
+
+/// WASM-compatible streaming audio iterator
+#[wasm_bindgen]
+pub struct WasmTTSStream {
+    iter: Option<StreamIter>,
+    last_samples: u32,
+    last_compute_ms: f64,
+    last_chunks_merged: u32,
 }
 
 #[wasm_bindgen]
@@ -148,6 +160,31 @@ impl WasmTTSModel {
         Ok(array)
     }
 
+    /// Start streaming audio generation from text
+    ///
+    /// Returns a stream object that yields Float32Array chunks.
+    #[wasm_bindgen]
+    pub fn start_stream(&self, text: &str) -> Result<WasmTTSStream, JsValue> {
+        let model = self
+            .model
+            .as_ref()
+            .ok_or_else(|| JsValue::from_str("Model not loaded. Call load_from_buffer first."))?;
+
+        let voice_state = self
+            .voice_state
+            .clone()
+            .unwrap_or_else(|| crate::voice_state::init_states(1, 0));
+
+        let iter = model.generate_stream_owned(text, &voice_state);
+
+        Ok(WasmTTSStream {
+            iter: Some(iter),
+            last_samples: 0,
+            last_compute_ms: 0.0,
+            last_chunks_merged: 0,
+        })
+    }
+
     /// Generate audio and return as base64-encoded WAV
     #[wasm_bindgen]
     pub fn generate_wav_base64(&self, text: &str) -> Result<String, JsValue> {
@@ -166,6 +203,96 @@ impl WasmTTSModel {
 
         let base64 = base64_encode(buffer.get_ref());
         Ok(format!("data:audio/wav;base64,{}", base64))
+    }
+}
+
+#[wasm_bindgen]
+impl WasmTTSStream {
+    /// Get the next chunk of audio samples.
+    ///
+    /// Returns None when the stream is complete.
+    #[wasm_bindgen]
+    pub fn next_chunk(&mut self) -> Result<Option<Float32Array>, JsValue> {
+        self.next_chunk_min_samples(1)
+    }
+
+    /// Get a chunk with at least `min_samples` samples when available.
+    ///
+    /// This amortizes JS/WASM boundary overhead by combining multiple internal
+    /// stream frames into a larger output chunk.
+    #[wasm_bindgen]
+    pub fn next_chunk_min_samples(&mut self, min_samples: u32) -> Result<Option<Float32Array>, JsValue> {
+        let start_ms = Date::now();
+        let iter = match self.iter.as_mut() {
+            Some(iter) => iter,
+            None => return Ok(None),
+        };
+
+        let target_samples = min_samples.max(1) as usize;
+        let mut merged = Vec::<f32>::new();
+        let mut merged_chunks = 0u32;
+
+        while merged.len() < target_samples {
+            match iter.next() {
+                Some(Ok(tensor)) => {
+                    let samples = tensor_to_mono_vec(&tensor)?;
+                    if !samples.is_empty() {
+                        merged.extend_from_slice(&samples);
+                    }
+                    merged_chunks += 1;
+                }
+                Some(Err(e)) => {
+                    self.last_samples = 0;
+                    self.last_chunks_merged = 0;
+                    self.last_compute_ms = Date::now() - start_ms;
+                    return Err(JsValue::from_str(&format!("Generation failed: {:?}", e)));
+                }
+                None => {
+                    self.iter = None;
+                    break;
+                }
+            }
+        }
+
+        self.last_compute_ms = Date::now() - start_ms;
+        self.last_chunks_merged = merged_chunks;
+
+        if merged.is_empty() {
+            self.last_samples = 0;
+            return Ok(None);
+        }
+
+        self.last_samples = merged.len() as u32;
+        let array = Float32Array::new_with_length(self.last_samples);
+        array.copy_from(&merged);
+        Ok(Some(array))
+    }
+
+    /// Get stats for the most recently produced chunk.
+    ///
+    /// Returns a JS object with keys:
+    /// - samples: number
+    /// - compute_ms: number
+    /// - chunks_merged: number
+    #[wasm_bindgen]
+    pub fn last_chunk_stats(&self) -> JsValue {
+        let stats = Object::new();
+        let _ = Reflect::set(
+            &stats,
+            &JsValue::from_str("samples"),
+            &JsValue::from_f64(self.last_samples as f64),
+        );
+        let _ = Reflect::set(
+            &stats,
+            &JsValue::from_str("compute_ms"),
+            &JsValue::from_f64(self.last_compute_ms),
+        );
+        let _ = Reflect::set(
+            &stats,
+            &JsValue::from_str("chunks_merged"),
+            &JsValue::from_f64(self.last_chunks_merged as f64),
+        );
+        JsValue::from(stats)
     }
 }
 
@@ -192,6 +319,28 @@ fn write_wav_header(
     w.write_all(b"data")?;
     w.write_all(&subchunk2_size.to_le_bytes())?;
     Ok(())
+}
+
+fn tensor_to_mono_vec(tensor: &Tensor) -> Result<Vec<f32>, JsValue> {
+    let dims = tensor.dims();
+    match dims.len() {
+        3 => {
+            let data = tensor
+                .to_vec3::<f32>()
+                .map_err(|e| JsValue::from_str(&format!("Failed to extract samples: {:?}", e)))?;
+            Ok(data[0][0].clone())
+        }
+        2 => {
+            let data = tensor
+                .to_vec2::<f32>()
+                .map_err(|e| JsValue::from_str(&format!("Failed to extract samples: {:?}", e)))?;
+            Ok(data[0].clone())
+        }
+        1 => tensor
+            .to_vec1::<f32>()
+            .map_err(|e| JsValue::from_str(&format!("Failed to extract samples: {:?}", e))),
+        _ => Err(JsValue::from_str("Unexpected audio tensor shape")),
+    }
 }
 
 /// Simple base64 encoder to avoid external dependencies in WASM build

@@ -34,11 +34,12 @@ pub async fn serve_static(uri: axum::http::Uri) -> impl IntoResponse {
     // If path is empty, serve index.html
     let path = if path.is_empty() { "index.html" } else { path };
     let path = percent_encoding::percent_decode_str(path).decode_utf8_lossy();
+    // Force a concrete string type to avoid brittle AsRef inference across dependency/toolchain changes.
+    let path: &str = path.as_ref();
 
-    match StaticAssets::get(&path) {
+    match StaticAssets::get(path) {
         Some(content) => {
-            let mime =
-                mime_guess::from_path(std::path::Path::new(path.as_ref())).first_or_octet_stream();
+            let mime = mime_guess::from_path(path).first_or_octet_stream();
             let mut headers = HeaderMap::new();
             headers.insert(header::CONTENT_TYPE, mime.as_ref().parse().unwrap());
             (headers, content.data.to_vec()).into_response()

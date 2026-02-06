@@ -127,3 +127,62 @@ async fn test_web_interface() {
 
     assert_eq!(response.status(), StatusCode::OK);
 }
+
+#[cfg(feature = "web-ui")]
+#[tokio::test]
+async fn test_static_index_content_type_html() {
+    use axum::{http::Uri, response::IntoResponse};
+
+    let response = pocket_tts_cli::server::handlers::serve_static(Uri::from_static("/index.html"))
+        .await
+        .into_response();
+
+    assert_eq!(response.status(), StatusCode::OK);
+
+    let content_type = response
+        .headers()
+        .get("content-type")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("");
+    assert!(
+        content_type.starts_with("text/html"),
+        "unexpected content-type: {content_type}"
+    );
+}
+
+#[cfg(feature = "web-ui")]
+#[tokio::test]
+async fn test_static_spa_fallback_for_route() {
+    use axum::{http::Uri, response::IntoResponse};
+
+    let response =
+        pocket_tts_cli::server::handlers::serve_static(Uri::from_static("/app/settings"))
+            .await
+            .into_response();
+
+    assert_eq!(response.status(), StatusCode::OK);
+
+    let content_type = response
+        .headers()
+        .get("content-type")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("");
+    assert!(
+        content_type.starts_with("text/html"),
+        "unexpected content-type: {content_type}"
+    );
+}
+
+#[cfg(feature = "web-ui")]
+#[tokio::test]
+async fn test_static_missing_file_404() {
+    use axum::{http::Uri, response::IntoResponse};
+
+    let response = pocket_tts_cli::server::handlers::serve_static(Uri::from_static(
+        "/definitely-missing-file.zzz",
+    ))
+    .await
+    .into_response();
+
+    assert_eq!(response.status(), StatusCode::NOT_FOUND);
+}

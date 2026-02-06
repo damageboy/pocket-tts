@@ -495,7 +495,7 @@
     </div>
 
     <script type="module">
-        import init, { WasmTTSModel } from '../../pkg/pocket_tts.js';
+        import init, { WasmTTSModel } from '../../pkg/pocket_tts.js?v=wasm-stream-v2';
 
         const textInput = document.getElementById('text-input');
         const generateBtn = document.getElementById('generate-btn');
@@ -561,6 +561,109 @@ mimi:
 
         let tts = null;
         let audioContext = null;
+        let workletNode = null;
+        let stopRequested = false;
+
+        const ENABLE_WAVEFORM = false;
+
+        const WORKLET_SOURCE = `
+class StreamPlayerProcessor extends AudioWorkletProcessor {
+  constructor() {
+    super();
+    this.queue = [];
+    this.queueOffset = 0;
+    this.ended = false;
+    this.started = false;
+    this.startThreshold = 0;
+    this.tick = 0;
+    this.port.onmessage = (event) => {
+      const msg = event.data || {};
+      if (msg.type === 'chunk') {
+        const data = msg.data;
+        if (data instanceof Float32Array) {
+          this.queue.push(data);
+        } else if (data instanceof ArrayBuffer) {
+          this.queue.push(new Float32Array(data));
+        } else if (data && data.buffer) {
+          this.queue.push(new Float32Array(data.buffer));
+        }
+      } else if (msg.type === 'end') {
+        this.ended = true;
+      } else if (msg.type === 'reset') {
+        this.queue = [];
+        this.queueOffset = 0;
+        this.ended = false;
+        this.started = false;
+      } else if (msg.type === 'config') {
+        this.startThreshold = msg.startThreshold || 0;
+      }
+    };
+  }
+
+  bufferedFrames() {
+    let total = -this.queueOffset;
+    for (const chunk of this.queue) {
+      total += chunk.length;
+    }
+    return Math.max(0, total);
+  }
+
+  process(inputs, outputs) {
+    const output = outputs[0];
+    if (!output || output.length === 0) return true;
+    const channel0 = output[0];
+    let idx = 0;
+
+    const buffered = this.bufferedFrames();
+    if (!this.started) {
+      if (buffered >= this.startThreshold) {
+        this.started = true;
+      } else {
+        channel0.fill(0);
+        for (let ch = 1; ch < output.length; ch++) {
+          output[ch].set(channel0);
+        }
+        if (this.ended && buffered === 0) {
+          return false;
+        }
+        return true;
+      }
+    }
+
+    while (idx < channel0.length) {
+      if (this.queue.length === 0) {
+        channel0.fill(0, idx);
+        break;
+      }
+      const current = this.queue[0];
+      const available = current.length - this.queueOffset;
+      const toCopy = Math.min(available, channel0.length - idx);
+      channel0.set(current.subarray(this.queueOffset, this.queueOffset + toCopy), idx);
+      idx += toCopy;
+      this.queueOffset += toCopy;
+      if (this.queueOffset >= current.length) {
+        this.queue.shift();
+        this.queueOffset = 0;
+      }
+    }
+
+    for (let ch = 1; ch < output.length; ch++) {
+      output[ch].set(channel0);
+    }
+
+    this.tick += 1;
+    if (this.tick % 30 === 0) {
+      this.port.postMessage({ type: 'buffered', frames: this.bufferedFrames() });
+    }
+
+    if (this.ended && this.queue.length === 0) {
+      return false;
+    }
+    return true;
+  }
+}
+registerProcessor('stream-player', StreamPlayerProcessor);
+`;
 
         function showStatus(message, type = 'loading') {
             statusDiv.style.display = 'flex';
@@ -571,6 +674,31 @@ mimi:
         }
 
         const hideStatus = () => statusDiv.style.display = 'none';
+
+        async function createStreamPlayer(sampleRate) {
+            if (audioContext) {
+                await audioContext.close();
+                audioContext = null;
+            }
+
+            audioContext = new AudioContext({ sampleRate });
+
+            const workletBlob = new Blob([WORKLET_SOURCE], { type: 'application/javascript' });
+            const workletUrl = URL.createObjectURL(workletBlob);
+            await audioContext.audioWorklet.addModule(workletUrl);
+            URL.revokeObjectURL(workletUrl);
+
+            workletNode = new AudioWorkletNode(audioContext, 'stream-player');
+            workletNode.connect(audioContext.destination);
+
+            if (audioContext.state === 'running') {
+                await audioContext.suspend();
+            }
+
+            return workletNode;
+        }
+
+        const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
         async function initializeModel() {
             try {
@@ -631,22 +759,132 @@ mimi:
             if (!tts?.is_ready()) { showStatus('Engine offline', 'error'); return; }
 
             try {
+                stopRequested = false;
                 generateBtn.disabled = true;
                 stopBtn.disabled = false;
+                showStatus('Preparing stream...', 'loading');
+
+                audioPlayer.style.display = 'none';
+                waveformCanvas.style.display = ENABLE_WAVEFORM ? 'block' : 'none';
+
+                const sampleRate = tts.sample_rate;
+                const node = await createStreamPlayer(sampleRate);
+                const stream = tts.start_stream(text);
+
+                const startupMinMs = 160;
+                const startupCapMs = 600;
+                const targetChunkMs = 180;
+                const minChunkSamples = Math.max(1024, Math.floor(sampleRate * targetChunkMs / 1000));
+                const maxQueueMs = 600;
+                const resumeQueueMs = 360;
+                const maxQueueSamples = Math.floor(sampleRate * maxQueueMs / 1000);
+                const resumeQueueSamples = Math.floor(sampleRate * resumeQueueMs / 1000);
+
+                let bufferedSamples = 0;
+                let workletBufferedSamples = 0;
+                let started = false;
+                let chunksReceived = 0;
+                let speedEma = 1.0;
+                const drawEveryChunks = 8;
+                const waveformPoints = ENABLE_WAVEFORM ? [] : null;
+                const waveformStride = 200;
+                let chunksSinceYield = 0;
+                const yieldEveryChunks = 8;
+
+                const estimateStartupMs = (speed) => {
+                    if (speed >= 1.35) return 160;
+                    if (speed >= 1.15) return 220;
+                    if (speed >= 1.0) return 300;
+                    if (speed >= 0.9) return 420;
+                    return 560;
+                };
+
+                node.port.onmessage = (event) => {
+                    const msg = event.data || {};
+                    if (msg.type === 'buffered') {
+                        workletBufferedSamples = msg.frames || 0;
+                    }
+                };
+
                 showStatus('Synthesizing...', 'loading');
 
-                const wavDataUrl = tts.generate_wav_base64(text);
-                audioPlayer.src = wavDataUrl;
-                audioPlayer.style.display = 'block';
-                audioPlayer.play();
+                let startupTargetMs = startupMinMs;
+                let startupThresholdSamples = Math.floor(sampleRate * startupTargetMs / 1000);
+                node.port.postMessage({ type: 'config', startThreshold: startupThresholdSamples });
 
-                const samples = tts.generate(text);
-                drawWaveform(samples);
+                while (!stopRequested) {
+                    if (started && workletBufferedSamples > maxQueueSamples) {
+                        while (!stopRequested && workletBufferedSamples > resumeQueueSamples) {
+                            await sleep(12);
+                        }
+                    }
 
-                showStatus('Done!', 'success');
-                setTimeout(hideStatus, 1500);
+                    const chunk = stream.next_chunk_min_samples(minChunkSamples);
+                    if (chunk === undefined || chunk === null) {
+                        break;
+                    }
+
+                    chunksReceived += 1;
+
+                    const stats = stream.last_chunk_stats();
+                    const chunkMs = (chunk.length / sampleRate) * 1000;
+                    const computeMsRaw = Number(stats?.compute_ms || 0);
+                    const computeMs = Number.isFinite(computeMsRaw) && computeMsRaw > 0 ? computeMsRaw : chunkMs;
+                    const instantaneousSpeed = chunkMs / Math.max(computeMs, 1);
+                    speedEma = speedEma * 0.8 + instantaneousSpeed * 0.2;
+
+                    startupTargetMs = Math.max(
+                        startupMinMs,
+                        Math.min(startupCapMs, estimateStartupMs(speedEma))
+                    );
+                    startupThresholdSamples = Math.floor(sampleRate * startupTargetMs / 1000);
+                    if (!started) {
+                        node.port.postMessage({ type: 'config', startThreshold: startupThresholdSamples });
+                    }
+
+                    if (ENABLE_WAVEFORM && waveformPoints) {
+                        for (let i = 0; i < chunk.length; i += waveformStride) {
+                            waveformPoints.push(chunk[i]);
+                        }
+                        if (waveformPoints.length > 6000) {
+                            waveformPoints.splice(0, waveformPoints.length - 6000);
+                        }
+                        if (chunksReceived % drawEveryChunks === 0) {
+                            drawWaveform(waveformPoints);
+                        }
+                    }
+
+                    node.port.postMessage({ type: 'chunk', data: chunk }, [chunk.buffer]);
+                    bufferedSamples += chunk.length;
+
+                    if (!started && Math.max(bufferedSamples, workletBufferedSamples) >= startupThresholdSamples) {
+                        await audioContext.resume();
+                        started = true;
+                        showStatus(`Playing... (${Math.round(startupTargetMs)}ms buffer)`, 'loading');
+                    }
+
+                    chunksSinceYield += 1;
+                    if (chunksSinceYield >= yieldEveryChunks) {
+                        chunksSinceYield = 0;
+                        await sleep(0);
+                    }
+                }
+
+                if (workletNode) {
+                    workletNode.port.postMessage({ type: 'end' });
+                }
+
+                if (!stopRequested && audioContext && !started) {
+                    await audioContext.resume();
+                }
+
+                if (!stopRequested) {
+                    showStatus('Done!', 'success');
+                    setTimeout(hideStatus, 1500);
+                }
             } catch (e) {
-                showStatus(`Failed: ${e.message}`, 'error');
+                console.error(e);
+                showStatus(`Failed: ${e.message || e}`, 'error');
             } finally {
                 generateBtn.disabled = false;
                 stopBtn.disabled = true;
@@ -752,6 +990,11 @@ mimi:
 
         generateBtn.addEventListener('click', generateSpeech);
         stopBtn.addEventListener('click', () => {
+            stopRequested = true;
+            if (workletNode) {
+                workletNode.port.postMessage({ type: 'reset' });
+                workletNode = null;
+            }
             if (audioContext) { audioContext.close(); audioContext = null; }
             stopBtn.disabled = true;
             generateBtn.disabled = false;

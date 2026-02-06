@@ -890,6 +890,25 @@ impl TTSModel {
         Box::new(iterator)
     }
 
+    /// Generate audio stream from text with voice state, returning an owned iterator.
+    ///
+    /// This is useful for WASM bindings where the iterator must be 'static.
+    pub fn generate_stream_owned(
+        &self,
+        text: &str,
+        voice_state: &ModelState,
+    ) -> Box<dyn Iterator<Item = Result<Tensor>> + 'static> {
+        let model = self.clone();
+        let voice_state_owned = voice_state.clone();
+        let chunks = model.split_into_best_sentences(text);
+
+        let iterator = chunks.into_iter().flat_map(move |chunk_text| {
+            model.generate_stream_segment(chunk_text, &voice_state_owned)
+        });
+
+        Box::new(iterator)
+    }
+
     /// Internal helper to generate a single segment (short text) matching Python's _generate
     fn generate_stream_segment(
         &self,

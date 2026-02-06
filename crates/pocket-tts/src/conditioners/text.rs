@@ -59,6 +59,7 @@ impl LUTConditioner {
             // In a real WASM app, you'd likely load from bytes.
             let tokenizer = Tokenizer::from_file(tokenizer_path)
                 .map_err(|e| anyhow::anyhow!("Failed to load tokenizer from file: {:?}", e))?;
+            let tokenizer = Arc::new(tokenizer);
 
             // n_bins + 1 for padding
             let embed = candle_nn::embedding(n_bins + 1, dim, vb.pp("embed"))?;
@@ -85,6 +86,7 @@ impl LUTConditioner {
         {
             let tokenizer = Tokenizer::from_bytes(tokenizer_bytes)
                 .map_err(|e| anyhow::anyhow!("Failed to load tokenizer from bytes: {:?}", e))?;
+            let tokenizer = Arc::new(tokenizer);
 
             // n_bins + 1 for padding
             let embed = candle_nn::embedding(n_bins + 1, dim, vb.pp("embed"))?;

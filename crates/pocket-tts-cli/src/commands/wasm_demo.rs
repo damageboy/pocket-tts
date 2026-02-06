@@ -75,7 +75,8 @@ pub async fn run(args: WasmDemoArgs) -> Result<()> {
     println!("\n🚀 WASM Demo started!");
     println!("👉 URL: http://{}\n", addr);
     println!("Note: Ensure you have built the wasm package first:");
-    println!("      wasm-pack build --target web --out-dir pkg . -- --features wasm\n");
+    println!("      Windows: .\\scripts\\build-wasm.ps1");
+    println!("      Unix:    ./scripts/build-wasm.sh\n");
 
     axum::serve(listener, app).await?;
 

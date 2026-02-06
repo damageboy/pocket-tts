@@ -63,15 +63,28 @@ cargo run --release --package pocket-tts-cli -- generate --voice alba
 ```bash
 cargo run --release -p pocket-tts-cli -- serve
 # Navigate to http://localhost:8000
+```
 
 ### WebAssembly Demo
 
 The browser demo features a "Zero-Setup" experience with an **embedded tokenizer and config**.
 
 #### 1. Build the WASM package
-From the `crates/pocket-tts` directory:
+From the repository root:
+```powershell
+# Windows
+.\scripts\build-wasm.ps1
+```
+
 ```bash
-wasm-pack build --target web --out-dir pkg . -- --features wasm
+# Unix
+./scripts/build-wasm.sh
+```
+
+Manual fallback:
+```bash
+cargo build -p pocket-tts --release --target wasm32-unknown-unknown --features wasm
+wasm-bindgen --target web --out-dir crates/pocket-tts/pkg target/wasm32-unknown-unknown/release/pocket_tts.wasm
 ```
 
 #### 2. Launch the demo server

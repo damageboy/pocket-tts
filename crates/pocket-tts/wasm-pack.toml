@@ -11,8 +11,8 @@
 name = "pocket-tts"
 
 [package.metadata.wasm-pack.profile.release]
-# Enable optimizations for smaller WASM binary
-wasm-opt = ["-Oz", "--enable-mutable-globals"]
+# Enable optimizations for faster WASM runtime
+wasm-opt = ["-O3", "--enable-mutable-globals"]
 
 [package.metadata.wasm-pack.profile.dev]
 # Faster builds during development
