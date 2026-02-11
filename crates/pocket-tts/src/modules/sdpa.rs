@@ -270,7 +270,7 @@ pub fn sdpa_chunked(
     let mut offset = 0;
     for v_chunk in v_chunks {
         let chunk_len = v_chunk.dims()[2];
-        let probs_chunk = probs.narrow(3, offset, chunk_len)?;
+        let probs_chunk = probs.narrow(3, offset, chunk_len)?.contiguous()?;
         let out_chunk = probs_chunk.matmul(&v_chunk)?;
         output = (output + out_chunk)?;
         offset += chunk_len;
