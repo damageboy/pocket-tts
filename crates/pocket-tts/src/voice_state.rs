@@ -25,7 +25,7 @@ pub struct AttentionCursor {
 ///
 /// Creates a nested HashMap structure that will be populated
 /// as modules run their forward passes.
-pub fn init_states(_batch_size: usize, _seq_len: usize) -> ModelState {
+pub fn init_states() -> ModelState {
     // Start with empty state - modules will populate as needed
     HashMap::new()
 }
@@ -137,13 +137,13 @@ mod tests {
 
     #[test]
     fn test_init_states() {
-        let state = init_states(1, 100);
+        let state = init_states();
         assert!(state.is_empty());
     }
 
     #[test]
     fn test_get_or_create_state() {
-        let mut state = init_states(1, 100);
+        let mut state = init_states();
         let module_state = get_or_create_state(&mut state, "test_module");
         assert!(module_state.is_empty());
         assert!(state.contains_key("test_module"));
@@ -151,7 +151,7 @@ mod tests {
 
     #[test]
     fn test_offset_operations() -> Result<()> {
-        let mut state = init_states(1, 100);
+        let mut state = init_states();
 
         // Initially offset is 0
         assert_eq!(get_offset(&state, "test"), 0);

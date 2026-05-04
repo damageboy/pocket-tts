@@ -41,6 +41,14 @@ enum Commands {
     ///
     /// Starts the server with the experimental WASM-backed web UI.
     WasmDemo(commands::wasm_demo::WasmDemoArgs),
+
+    /// List available languages
+    #[command(name = "language-list")]
+    LanguageList,
+
+    /// List available predefined voices
+    #[command(name = "voice-list")]
+    VoiceList,
 }
 
 #[tokio::main]
@@ -54,5 +62,13 @@ async fn main() -> Result<()> {
         }
         Commands::Serve(cmd_args) => commands::serve::run(cmd_args).await,
         Commands::WasmDemo(cmd_args) => commands::wasm_demo::run(cmd_args).await,
+        Commands::LanguageList => {
+            commands::list::list_languages();
+            Ok(())
+        }
+        Commands::VoiceList => {
+            commands::list::list_voices();
+            Ok(())
+        }
     }
 }

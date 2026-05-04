@@ -102,7 +102,7 @@ fn test_voice_conditioning_parity() {
         audio
     };
 
-    let mut state = init_states(1, 1000);
+    let mut state = init_states();
     let latents = model
         .mimi
         .encode_to_latent(&audio, &mut state, 0)
@@ -248,7 +248,7 @@ fn test_mimi_latents_parity() {
         audio
     };
 
-    let mut state = init_states(1, 1000);
+    let mut state = init_states();
     let latents = model
         .mimi
         .encode_to_latent(&audio, &mut state, 0)
@@ -260,7 +260,7 @@ fn test_mimi_latents_parity() {
     let ref_latents = tensors.get("mimi_latents").expect("mimi_latents not found");
 
     // Compare intermediates
-    let mut state = init_states(1, 1000);
+    let mut state = init_states();
 
     // Layer 0: Conv
     let layer0_out = if let Some(layer0_ref) = tensors.get("layer0_out") {
@@ -336,7 +336,7 @@ fn test_mimi_latents_parity() {
 
     if let Some(seanet_ref) = tensors.get("seanet_out") {
         // Run the full encoder to get seanet_out
-        let mut state = init_states(1, 1000);
+        let mut state = init_states();
         let seanet_out = model
             .mimi
             .encoder
@@ -351,13 +351,13 @@ fn test_mimi_latents_parity() {
     }
 
     if let Some(tr_ref) = tensors.get("transformer_out") {
-        let mut state = init_states(1, 1000);
+        let mut state = init_states();
         let seanet_out = model
             .mimi
             .encoder
             .forward(&audio, &mut state, 0)
             .expect("seanet failed");
-        let mut tr_state = init_states(1, 1000);
+        let mut tr_state = init_states();
         let mut embs = model
             .mimi
             .encoder_transformer
@@ -558,7 +558,7 @@ fn test_decoder_parity() {
     .expect("Failed to load model");
 
     // Use the same quantized input as Python (to isolate decoder issues)
-    let mut mimi_state = init_states(1, 1000);
+    let mut mimi_state = init_states();
 
     // Test upsample
     let after_upsample = if let Some(ref up) = model.mimi.upsample {

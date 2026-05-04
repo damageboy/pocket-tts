@@ -37,6 +37,8 @@ pub struct FlowLMConfig {
     pub transformer: FlowLMTransformerConfig,
     pub lookup_table: LookupTableConfig,
     #[serde(default)]
+    pub insert_bos_before_voice: bool,
+    #[serde(default)]
     pub weights_path: Option<String>,
 }
 
@@ -89,6 +91,10 @@ pub struct MimiConfig {
     pub sample_rate: usize,
     pub channels: usize,
     pub frame_rate: f64,
+    #[serde(default)]
+    pub inner_dim: Option<usize>,
+    #[serde(default)]
+    pub outer_dim: Option<usize>,
     pub seanet: SEANetConfig,
     pub transformer: MimiTransformerConfig,
     pub quantizer: QuantizerConfig,
@@ -101,6 +107,12 @@ pub struct MimiConfig {
 pub struct Config {
     pub flow_lm: FlowLMConfig,
     pub mimi: MimiConfig,
+    #[serde(default)]
+    pub pad_with_spaces_for_short_inputs: bool,
+    #[serde(default)]
+    pub remove_semicolons: bool,
+    #[serde(default)]
+    pub model_recommended_frames_after_eos: Option<usize>,
     #[serde(default)]
     pub weights_path: Option<String>,
     #[serde(default)]
@@ -120,7 +132,41 @@ pub mod defaults {
     pub const LSD_DECODE_STEPS: usize = 1;
     pub const NOISE_CLAMP: Option<f32> = None;
     pub const EOS_THRESHOLD: f32 = -4.0;
+    /// Deprecated: use DEFAULT_LANGUAGE instead
     pub const DEFAULT_VARIANT: &str = "b6369a24";
+    pub const DEFAULT_LANGUAGE: &str = "english";
+
+    pub fn default_text_for_language(language: &str) -> &'static str {
+        if language.contains("french") {
+            "C'est assez petit pour tenir dans votre poche."
+        } else if language.contains("german") {
+            "Es ist klein genug, um in Ihre Tasche zu passen."
+        } else if language.contains("portuguese") {
+            "É pequeno o suficiente para caber no seu bolso."
+        } else if language.contains("italian") {
+            "È abbastanza piccolo da stare in tasca."
+        } else if language.contains("spanish") {
+            "Es lo suficientemente pequeño como para caber en tu bolsillo."
+        } else {
+            "It's small enough to fit in your pocket."
+        }
+    }
+
+    pub fn default_voice_for_language(language: &str) -> &'static str {
+        if language.contains("italian") {
+            "giovanni"
+        } else if language.contains("spanish") {
+            "lola"
+        } else if language.contains("german") {
+            "juergen"
+        } else if language.contains("portuguese") {
+            "rafael"
+        } else if language.contains("french") {
+            "estelle"
+        } else {
+            "alba"
+        }
+    }
 }
 
 #[cfg(test)]

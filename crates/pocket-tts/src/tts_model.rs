@@ -46,13 +46,38 @@ pub struct TTSModel {
     pub ldim: usize,
     /// Device
     pub device: Device,
+    /// Whether to pad short inputs with spaces (v1 always true, v2 configurable)
+    pub pad_with_spaces_for_short_inputs: bool,
+    /// Whether to replace semicolons with commas (needed for some languages)
+    pub remove_semicolons: bool,
+    /// Model-recommended frames after EOS (from config)
+    pub model_recommended_frames_after_eos: Option<usize>,
+    /// Origin config path (used to determine language for voice resolution)
+    pub origin: Option<std::path::PathBuf>,
 }
 
 impl TTSModel {
-    /// Load a pre-trained TTS model from HuggingFace
+    /// Get the language name derived from the origin config path.
+    ///
+    /// Returns the config file stem (e.g., "english", "french_24l") or None
+    /// if the model was loaded without a config path.
+    pub fn language(&self) -> Option<&str> {
+        self.origin
+            .as_ref()
+            .and_then(|p| p.file_stem())
+            .and_then(|s| s.to_str())
+    }
+
+    /// Load the default English TTS model
+    pub fn load_default() -> Result<Self> {
+        Self::load(defaults::DEFAULT_LANGUAGE)
+    }
+
+    /// Load a TTS model by language name, variant name, or config path.
     ///
     /// # Arguments
-    /// * `variant` - Model variant (e.g., "b6369a24")
+    /// * `variant` - Language (e.g., "english", "french_24l"), legacy variant (e.g., "b6369a24"),
+    ///   or path to a YAML config file
     ///
     /// # Returns
     /// Fully initialized TTSModel ready for generation
@@ -95,14 +120,16 @@ impl TTSModel {
         let config_path = find_config_path(variant)?;
         let config = load_config(&config_path)?;
 
-        Self::from_config(
+        let mut model = Self::from_config(
             config,
             temp,
             lsd_decode_steps,
             eos_threshold,
             noise_clamp,
             device,
-        )
+        )?;
+        model.origin = Some(config_path);
+        Ok(model)
     }
 
     /// Load model with quantized weights for reduced memory footprint
@@ -318,7 +345,14 @@ impl TTSModel {
             vb.pp("flow_lm.transformer"),
         )?;
 
-        let mut flow_lm = FlowLMModel::new(flow_net, transformer, ldim, dim, vb.pp("flow_lm"))?;
+        let mut flow_lm = FlowLMModel::new(
+            flow_net,
+            transformer,
+            ldim,
+            dim,
+            config.flow_lm.insert_bos_before_voice,
+            vb.pp("flow_lm"),
+        )?;
         flow_lm.noise_clamp = noise_clamp;
 
         // Build Mimi components
@@ -400,13 +434,20 @@ impl TTSModel {
             config.mimi.channels,
             config.mimi.quantizer.dimension,
             config.mimi.quantizer.output_dimension,
+            config.mimi.inner_dim,
+            config.mimi.outer_dim,
             "mimi",
             vb.pp("mimi"),
         )?;
 
-        // Load speaker projection weight - uses mimi output dimension, not internal ldim
-        let mimi_out_dim = config.mimi.quantizer.output_dimension;
-        let speaker_proj_weight = vb.get((dim, mimi_out_dim), "flow_lm.speaker_proj_weight")?;
+        // Load speaker projection weight
+        // v2: uses inner_dim (or seanet.dimension) for the input dimension
+        let speaker_proj_in_dim = config
+            .mimi
+            .inner_dim
+            .unwrap_or(config.mimi.seanet.dimension);
+        let speaker_proj_weight =
+            vb.get((dim, speaker_proj_in_dim), "flow_lm.speaker_proj_weight")?;
 
         Ok(Self {
             flow_lm,
@@ -422,6 +463,10 @@ impl TTSModel {
             dim,
             ldim,
             device,
+            pad_with_spaces_for_short_inputs: config.pad_with_spaces_for_short_inputs,
+            remove_semicolons: config.remove_semicolons,
+            model_recommended_frames_after_eos: config.model_recommended_frames_after_eos,
+            origin: None, // Set by the caller after construction
         })
     }
 
@@ -469,21 +514,27 @@ impl TTSModel {
         path: P,
     ) -> Result<ModelState> {
         let tensors = candle_core::safetensors::load(path, &self.device)?;
-        let prompt = tensors
-            .get("audio_prompt")
-            .ok_or_else(|| anyhow::anyhow!("'audio_prompt' not found in safetensors file"))?;
 
-        self.get_voice_state_from_prompt_tensor(prompt)
+        // v1 format: single "audio_prompt" tensor
+        if let Some(prompt) = tensors.get("audio_prompt") {
+            return self.get_voice_state_from_prompt_tensor(prompt);
+        }
+
+        // v2 format: pre-computed model state with "module/key" naming
+        import_model_state(&tensors, &self.device)
     }
 
     /// Create voice state from pre-calculated latent prompt bytes (.safetensors)
     pub fn get_voice_state_from_prompt_bytes(&self, bytes: &[u8]) -> Result<ModelState> {
         let tensors = candle_core::safetensors::load_buffer(bytes, &self.device)?;
-        let prompt = tensors
-            .get("audio_prompt")
-            .ok_or_else(|| anyhow::anyhow!("'audio_prompt' not found in safetensors bytes"))?;
 
-        self.get_voice_state_from_prompt_tensor(prompt)
+        // v1 format: single "audio_prompt" tensor
+        if let Some(prompt) = tensors.get("audio_prompt") {
+            return self.get_voice_state_from_prompt_tensor(prompt);
+        }
+
+        // v2 format: pre-computed model state with "module/key" naming
+        import_model_state(&tensors, &self.device)
     }
 
     /// Create voice state from a pre-calculated latent prompt tensor
@@ -495,14 +546,21 @@ impl TTSModel {
             prompt.to_device(&self.device)?
         };
 
-        let mut flow_state = init_states(1, 1000);
+        // Inject BOS-before-voice token if enabled (v2 models)
+        let prompt = if let Some(bos) = &self.flow_lm.bos_before_voice {
+            Tensor::cat(&[bos, &prompt], 1)?
+        } else {
+            prompt
+        };
+
+        let mut flow_state = init_states();
         self.run_flow_lm_prompt(&prompt, &mut flow_state)?;
         Ok(flow_state)
     }
 
     /// Create voice state from audio tensor
     pub fn get_voice_state_from_tensor(&self, audio: &Tensor) -> Result<ModelState> {
-        let mut model_state = init_states(1, 1000);
+        let mut model_state = init_states();
 
         // Ensure audio tensor is on the same device as the model (fixes Metal device mismatch)
         let audio = if audio.device().same_device(&self.device) {
@@ -552,8 +610,15 @@ impl TTSModel {
         let conditioning_2d = latents_2d.matmul(&self.speaker_proj_weight.t()?)?;
         let conditioning = conditioning_2d.reshape((b, t, self.dim))?;
 
+        // Inject BOS-before-voice token if enabled (v2 models)
+        let conditioning = if let Some(bos) = &self.flow_lm.bos_before_voice {
+            Tensor::cat(&[bos, &conditioning], 1)?
+        } else {
+            conditioning
+        };
+
         // Run flow_lm with audio conditioning to update state
-        let mut flow_state = init_states(1, 1000);
+        let mut flow_state = init_states();
         self.run_flow_lm_prompt(&conditioning, &mut flow_state)?;
 
         Ok(flow_state)
@@ -601,14 +666,22 @@ impl TTSModel {
     /// Split text into optimal chunks for generation, matching Python's logic exactly.
     /// Uses actual tokenization to ensure chunks never exceed MAX_TOKENS_PER_CHUNK (50).
     /// This prevents O(N²) attention complexity for long texts.
+    ///
+    /// When a single sentence exceeds `max_tokens` and has no sentence-ending punctuation
+    /// (`.`, `!`, `?`), falls back to splitting on commas, semicolons, and colons to
+    /// prevent the model from silently skipping parts of long sentences.
     pub fn split_into_best_sentences(&self, text: &str) -> Vec<String> {
         const MAX_TOKENS_PER_CHUNK: usize = 50;
 
-        let prepared_text = prepare_text_prompt(text);
+        let prepared_text = prepare_text_prompt(
+            text,
+            self.pad_with_spaces_for_short_inputs,
+            self.remove_semicolons,
+        );
 
-        // 1. Initial split by punctuation to respect sentence boundaries
+        // 1. Initial split by sentence-ending punctuation only
         let raw_sentences: Vec<&str> = prepared_text
-            .split_inclusive(&['.', '!', '?', ';', ':'])
+            .split_inclusive(&['.', '!', '?'])
             .map(|s| s.trim())
             .filter(|s| !s.is_empty())
             .collect();
@@ -617,67 +690,74 @@ impl TTSModel {
             return vec![prepared_text];
         }
 
-        let mut chunks = Vec::new();
-        let mut current_chunk = String::new();
-        let mut current_token_count = 0;
-
-        for sentence in raw_sentences {
-            let sentence_tokens = self
+        // 2. Sub-split oversized sentences on commas, semicolons, and colons
+        //    to prevent skipped words (port of upstream Python commit ef69ab8)
+        let mut refined_segments: Vec<(usize, String)> = Vec::new();
+        for sentence in &raw_sentences {
+            let token_count = self
                 .conditioner
                 .count_tokens(sentence)
                 .unwrap_or(MAX_TOKENS_PER_CHUNK);
 
-            // If a single sentence exceeds max tokens, split it by words
-            if sentence_tokens > MAX_TOKENS_PER_CHUNK {
-                // Flush pending chunk first
-                if !current_chunk.is_empty() {
-                    chunks.push(current_chunk);
-                    current_chunk = String::new();
-                    current_token_count = 0;
-                }
+            if token_count <= MAX_TOKENS_PER_CHUNK {
+                refined_segments.push((token_count, sentence.to_string()));
+            } else {
+                let sub_parts: Vec<&str> = sentence
+                    .split_inclusive(&[',', ';', ':'])
+                    .map(|s| s.trim())
+                    .filter(|s| !s.is_empty())
+                    .collect();
 
-                // Split long sentence using word-batch estimation (~1.3 tokens per word average)
-                // This avoids calling count_tokens for every word (expensive!)
-                let words: Vec<&str> = sentence.split_whitespace().collect();
-                const WORDS_PER_BATCH: usize = 35; // ~45 tokens, safe margin under 50
-
-                for word_batch in words.chunks(WORDS_PER_BATCH) {
-                    let chunk_str = word_batch.join(" ");
-                    // Verify this batch is actually under limit (should almost always pass)
-                    let actual_tokens = self
-                        .conditioner
-                        .count_tokens(&chunk_str)
-                        .unwrap_or(MAX_TOKENS_PER_CHUNK);
-
-                    if actual_tokens <= MAX_TOKENS_PER_CHUNK {
-                        chunks.push(chunk_str);
-                    } else {
-                        // Rare case: batch still too big, split in half recursively
-                        let mid = word_batch.len() / 2;
-                        chunks.push(word_batch[..mid].join(" "));
-                        chunks.push(word_batch[mid..].join(" "));
+                if sub_parts.len() > 1 {
+                    for part in sub_parts {
+                        let part_tokens = self
+                            .conditioner
+                            .count_tokens(part)
+                            .unwrap_or(MAX_TOKENS_PER_CHUNK);
+                        refined_segments.push((part_tokens, part.to_string()));
                     }
+                } else {
+                    // No fallback split points found, keep as-is
+                    refined_segments.push((token_count, sentence.to_string()));
                 }
-                continue;
             }
+        }
 
-            // Normal accumulation logic
+        // 3. Accumulate segments into chunks respecting max_tokens
+        let mut chunks = Vec::new();
+        let mut current_chunk = String::new();
+        let mut current_token_count = 0;
+
+        for (nb_tokens, sentence) in refined_segments {
             if current_chunk.is_empty() {
-                current_chunk = sentence.to_string();
-                current_token_count = sentence_tokens;
-            } else if current_token_count + sentence_tokens > MAX_TOKENS_PER_CHUNK {
+                current_chunk = sentence;
+                current_token_count = nb_tokens;
+            } else if current_token_count + nb_tokens > MAX_TOKENS_PER_CHUNK {
                 chunks.push(current_chunk);
-                current_chunk = sentence.to_string();
-                current_token_count = sentence_tokens;
+                current_chunk = sentence;
+                current_token_count = nb_tokens;
             } else {
                 current_chunk.push(' ');
-                current_chunk.push_str(sentence);
-                current_token_count += sentence_tokens;
+                current_chunk.push_str(&sentence);
+                current_token_count += nb_tokens;
             }
         }
 
         if !current_chunk.is_empty() {
             chunks.push(current_chunk);
+        }
+
+        // 4. Warn about chunks that still exceed max_tokens
+        for chunk in &chunks {
+            if let Ok(token_count) = self.conditioner.count_tokens(chunk.trim())
+                && token_count > MAX_TOKENS_PER_CHUNK {
+                    tracing::warn!(
+                        "Chunk has {} tokens (max {}), generation may skip words: '{:.50}...'",
+                        token_count,
+                        MAX_TOKENS_PER_CHUNK,
+                        chunk,
+                    );
+                }
         }
 
         chunks
@@ -743,7 +823,7 @@ impl TTSModel {
 
         // Spawn Mimi decoder thread
         let decoder_handle = thread::spawn(move || {
-            let mut mimi_state = init_states(1, 1000);
+            let mut mimi_state = init_states();
 
             while let Ok(Some((next_latent, step))) = latent_rx.recv() {
                 let result = (|| -> Result<Tensor> {
@@ -772,7 +852,11 @@ impl TTSModel {
 
         for chunk_text in chunks {
             let mut state = voice_state.clone();
-            let prepared_text = prepare_text_prompt(&chunk_text);
+            let prepared_text = prepare_text_prompt(
+                &chunk_text,
+                self.pad_with_spaces_for_short_inputs,
+                self.remove_semicolons,
+            );
 
             let tokens = self.conditioner.prepare(&prepared_text, &self.device)?;
             let text_embeddings = self.conditioner.forward(&tokens)?;
@@ -938,10 +1022,14 @@ impl TTSModel {
         voice_state: &ModelState,
     ) -> Box<dyn Iterator<Item = Result<Tensor>>> {
         let mut state = voice_state.clone();
-        let mut mimi_state = init_states(1, 1000);
+        let mut mimi_state = init_states();
 
         // Prepare text
-        let prepared_text = prepare_text_prompt(&text);
+        let prepared_text = prepare_text_prompt(
+            &text,
+            self.pad_with_spaces_for_short_inputs,
+            self.remove_semicolons,
+        );
 
         // Error handling for preparation failures inside the iterator
         let tokens = match self.conditioner.prepare(&prepared_text, &self.device) {
@@ -1126,7 +1214,11 @@ impl TTSModel {
         })
     }
     pub fn estimate_generation_steps(&self, text: &str) -> usize {
-        let prepared = prepare_text_prompt(text);
+        let prepared = prepare_text_prompt(
+            text,
+            self.pad_with_spaces_for_short_inputs,
+            self.remove_semicolons,
+        );
         (prepared.split_whitespace().count() + 2) * 13
     }
 }
@@ -1138,7 +1230,122 @@ enum Segment {
 }
 
 /// Find the config file path for a variant
-fn find_config_path(variant: &str) -> Result<std::path::PathBuf> {
+/// Import a pre-computed model state from a safetensors tensor map.
+///
+/// v2 voice embeddings use "module_name/state_key" naming convention:
+///   - `transformer.layers.N.self_attn/cache`: [2, batch, seq_len, heads, dim_per_head]
+///     where dim 0 = [K, V] stacked
+///   - `transformer.layers.N.self_attn/offset`: [1] scalar = number of valid positions
+///
+/// The Rust attention module uses a different cache format:
+///   - `k_buf`: [batch, heads, cap, dim_per_head]
+///   - `v_buf`: [batch, heads, cap, dim_per_head]
+///   - `pos`, `l`, `head`: cursor scalars
+///
+/// This function converts between the two formats.
+fn import_model_state(
+    tensors: &std::collections::HashMap<String, Tensor>,
+    device: &Device,
+) -> Result<ModelState> {
+    use crate::voice_state::{
+        ATTN_K_BUF_KEY, ATTN_LEN_KEY, ATTN_POS_KEY, ATTN_V_BUF_KEY,
+    };
+
+    // First pass: collect raw Python state grouped by module
+    let mut raw: std::collections::HashMap<String, std::collections::HashMap<String, Tensor>> =
+        std::collections::HashMap::new();
+
+    for (key, tensor) in tensors {
+        let (module_name, tensor_key) = key.split_once('/').ok_or_else(|| {
+            anyhow::anyhow!(
+                "Invalid model state key '{}': expected 'module/key' format",
+                key
+            )
+        })?;
+
+        let module_state = raw.entry(module_name.to_string()).or_default();
+        let tensor = if tensor.device().same_device(device) {
+            tensor.clone()
+        } else {
+            tensor.to_device(device)?
+        };
+        module_state.insert(tensor_key.to_string(), tensor);
+    }
+
+    // Second pass: convert Python format → Rust attention state
+    let mut result: ModelState = std::collections::HashMap::new();
+
+    for (module_name, raw_state) in &raw {
+        let mut module_state = std::collections::HashMap::new();
+
+        if let Some(cache) = raw_state.get("cache") {
+            // Python cache shape: [2, batch, seq_len, heads, dim_per_head]
+            // cache[0] = K, cache[1] = V
+            // Rust wants: k_buf/v_buf each [batch, heads, cap, dim_per_head]
+
+            let k_cache = cache.get(0)?; // [batch, seq_len, heads, dim]
+            let v_cache = cache.get(1)?; // [batch, seq_len, heads, dim]
+
+            // Transpose (batch, seq, heads, dim) → (batch, heads, seq, dim)
+            let k_buf = k_cache.transpose(1, 2)?.contiguous()?;
+            let v_buf = v_cache.transpose(1, 2)?.contiguous()?;
+
+            module_state.insert(ATTN_K_BUF_KEY.to_string(), k_buf);
+            module_state.insert(ATTN_V_BUF_KEY.to_string(), v_buf);
+        }
+
+        if let Some(offset) = raw_state.get("offset") {
+            // offset may be shape [1] or scalar, dtype i64
+            let offset_val = if offset.dims().is_empty() {
+                offset.to_scalar::<i64>()? as usize
+            } else {
+                let v = offset.to_vec1::<i64>()?;
+                v[0] as usize
+            };
+
+            // pos = offset (next write position = total valid entries for linear cache)
+            module_state.insert(
+                ATTN_POS_KEY.to_string(),
+                Tensor::new(offset_val as u32, device)?,
+            );
+            // len = offset (all entries up to offset are valid)
+            module_state.insert(
+                ATTN_LEN_KEY.to_string(),
+                Tensor::new(offset_val as i64, device)?,
+            );
+            // head = 0 (linear cache, no ring buffer wrap)
+            module_state.insert(
+                "head".to_string(),
+                Tensor::new(0i64, device)?,
+            );
+        }
+
+        // Map to the Rust module naming convention:
+        // Python: "transformer.layers.N.self_attn"
+        // Rust FlowLM: "flow_lm.transformer.layers.N.self_attn"
+        let rust_module_name = format!("flow_lm.{}", module_name);
+        result.insert(rust_module_name, module_state);
+    }
+
+    Ok(result)
+}
+
+/// Find a config file by language name, variant name, or direct path.
+///
+/// Accepts:
+/// - A language name (e.g., "english", "french_24l") → looks up `{name}.yaml` in config dirs
+/// - A legacy variant name (e.g., "b6369a24") → same lookup
+/// - A direct path ending in `.yaml`/`.yml` → used as-is
+pub fn find_config_path(variant: &str) -> Result<std::path::PathBuf> {
+    // If it looks like a direct path to a YAML file, use it directly
+    if variant.ends_with(".yaml") || variant.ends_with(".yml") {
+        let path = std::path::PathBuf::from(variant);
+        if path.exists() {
+            return Ok(path);
+        }
+        anyhow::bail!("Config file not found: {}", variant);
+    }
+
     let filename = format!("{}.yaml", variant);
 
     // 1. Try relative to Rust crate (crates/pocket-tts/config)
@@ -1149,7 +1356,6 @@ fn find_config_path(variant: &str) -> Result<std::path::PathBuf> {
     }
 
     // 2. Try relative to workspace root (for tests/cli)
-    // Go up 2 levels if in crates/pocket-tts or crates/pocket-tts-cli
     let mut current = crate_path.as_path();
     for _ in 0..3 {
         let python_config = current
@@ -1161,7 +1367,6 @@ fn find_config_path(variant: &str) -> Result<std::path::PathBuf> {
             return Ok(python_config);
         }
 
-        // Also try new crates structure if running from cli
         let crates_config = current
             .join("crates")
             .join("pocket-tts")
@@ -1184,14 +1389,33 @@ fn find_config_path(variant: &str) -> Result<std::path::PathBuf> {
         return Ok(local_path);
     }
 
+    // List available configs for helpful error message
+    let available: Vec<String> = std::fs::read_dir(crate_path.join("config"))
+        .ok()
+        .map(|entries| {
+            entries
+                .filter_map(|e| e.ok())
+                .filter_map(|e| {
+                    let name = e.file_name().to_string_lossy().to_string();
+                    name.strip_suffix(".yaml").map(|s| s.to_string())
+                })
+                .collect()
+        })
+        .unwrap_or_default();
+
     anyhow::bail!(
-        "Config file {} not found. Checked crate-relative, workspace, and current directory.",
-        filename
+        "Config '{}' not found. Available: {:?}",
+        variant,
+        available
     )
 }
 
 /// Prepare text for generation, stripping pause markers for TTS processing
-fn prepare_text_prompt(text: &str) -> String {
+fn prepare_text_prompt(
+    text: &str,
+    pad_with_spaces: bool,
+    remove_semicolons: bool,
+) -> String {
     // First strip any explicit pause markers
     let text = crate::pause::strip_pause_markers(text);
 
@@ -1201,6 +1425,10 @@ fn prepare_text_prompt(text: &str) -> String {
     }
 
     text = text.replace(['\n', '\r'], " ").replace("  ", " ");
+
+    if remove_semicolons {
+        text = text.replace(';', ",");
+    }
 
     let word_count = text.split_whitespace().count();
 
@@ -1218,8 +1446,8 @@ fn prepare_text_prompt(text: &str) -> String {
         text.push('.');
     }
 
-    // Python logic: prepend spaces if too short
-    if word_count < 5 {
+    // Pad short inputs with spaces (only if flag is set)
+    if pad_with_spaces && word_count < 5 {
         text = format!("{}{}", " ".repeat(8), text);
     }
 
@@ -1241,15 +1469,50 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_prepare_text_prompt() {
-        // Short texts (<5 words) get 8 spaces prepended
-        assert_eq!(prepare_text_prompt("hello world"), "        Hello world.");
-        assert_eq!(prepare_text_prompt("Hello world."), "        Hello world.");
-        assert_eq!(prepare_text_prompt("  hello  "), "        Hello.");
-        // Long texts don't get spaces
+    fn test_prepare_text_prompt_with_padding() {
+        // v1 behavior: pad_with_spaces=true, remove_semicolons=false
         assert_eq!(
-            prepare_text_prompt("one two three four five"),
+            prepare_text_prompt("hello world", true, false),
+            "        Hello world."
+        );
+        assert_eq!(
+            prepare_text_prompt("Hello world.", true, false),
+            "        Hello world."
+        );
+        assert_eq!(
+            prepare_text_prompt("  hello  ", true, false),
+            "        Hello."
+        );
+        // Long texts don't get spaces even with padding enabled
+        assert_eq!(
+            prepare_text_prompt("one two three four five", true, false),
             "One two three four five."
+        );
+    }
+
+    #[test]
+    fn test_prepare_text_prompt_without_padding() {
+        // v2 behavior: pad_with_spaces=false
+        assert_eq!(
+            prepare_text_prompt("hello world", false, false),
+            "Hello world."
+        );
+        assert_eq!(
+            prepare_text_prompt("Hello world.", false, false),
+            "Hello world."
+        );
+    }
+
+    #[test]
+    fn test_prepare_text_prompt_remove_semicolons() {
+        assert_eq!(
+            prepare_text_prompt("hello; world", false, true),
+            "Hello, world."
+        );
+        // Semicolons kept when flag is false
+        assert_eq!(
+            prepare_text_prompt("hello; world", false, false),
+            "Hello; world."
         );
     }
 
@@ -1264,9 +1527,7 @@ mod tests {
 
     #[test]
     fn test_prepare_text_prompt_strips_pause_markers() {
-        // Pause markers should be stripped from text
-        let result = prepare_text_prompt("Hello [pause:500ms] world");
-        // The pause marker should be gone, replaced with space
+        let result = prepare_text_prompt("Hello [pause:500ms] world", true, false);
         assert!(!result.contains("[pause:"));
         assert!(result.contains("Hello"));
         assert!(result.contains("world"));
@@ -1274,7 +1535,7 @@ mod tests {
 
     #[test]
     fn test_prepare_text_prompt_handles_multiple_pauses() {
-        let result = prepare_text_prompt("One [pause:100ms] two [pause:1s] three");
+        let result = prepare_text_prompt("One [pause:100ms] two [pause:1s] three", true, false);
         assert!(!result.contains("[pause:"));
         assert!(result.contains("One"));
         assert!(result.contains("two"));

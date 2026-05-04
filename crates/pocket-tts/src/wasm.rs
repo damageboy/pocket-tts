@@ -142,7 +142,7 @@ impl WasmTTSModel {
         let voice_state = self
             .voice_state
             .clone()
-            .unwrap_or_else(|| crate::voice_state::init_states(1, 0));
+            .unwrap_or_else(crate::voice_state::init_states);
 
         let audio_tensor = model
             .generate(text, &voice_state)
@@ -173,7 +173,7 @@ impl WasmTTSModel {
         let voice_state = self
             .voice_state
             .clone()
-            .unwrap_or_else(|| crate::voice_state::init_states(1, 0));
+            .unwrap_or_else(crate::voice_state::init_states);
 
         let iter = model.generate_stream_owned(text, &voice_state);
 

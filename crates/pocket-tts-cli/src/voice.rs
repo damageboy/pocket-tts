@@ -7,18 +7,46 @@
 //! - Base64-encoded audio data
 
 use anyhow::{Context, Result};
-use pocket_tts::TTSModel;
 use pocket_tts::weights::download_if_necessary;
+use pocket_tts::TTSModel;
 use std::hash::{Hash, Hasher};
 use std::path::PathBuf;
 
 /// Predefined stock voices from kyutai/pocket-tts-without-voice-cloning
 pub const PREDEFINED_VOICES: &[&str] = &[
-    "alba", "marius", "javert", "jean", "fantine", "cosette", "eponine", "azelma",
+    "alba",
+    "anna",
+    "azelma",
+    "bill_boerst",
+    "caro_davy",
+    "charles",
+    "cosette",
+    "eponine",
+    "estelle",
+    "eve",
+    "fantine",
+    "george",
+    "giovanni",
+    "jane",
+    "javert",
+    "jean",
+    "juergen",
+    "lola",
+    "marius",
+    "mary",
+    "michael",
+    "paul",
+    "peter_yearsley",
+    "rafael",
+    "stuart_bell",
+    "vera",
 ];
 
 /// HuggingFace repo for stock voice embeddings
 const STOCK_VOICE_REPO: &str = "kyutai/pocket-tts-without-voice-cloning";
+
+/// Voice embeddings revision for per-language voices
+const STOCK_VOICE_REVISION: &str = "e041936c75475d350b405bc870bcf7c22da4e9e6";
 
 /// Build a stable cache key for a voice specification.
 ///
@@ -75,8 +103,10 @@ pub fn resolve_voice(model: &TTSModel, voice_spec: Option<&str>) -> Result<pocke
     match voice_spec {
         Some(spec) => resolve_voice_spec(model, spec),
         None => {
-            // Default to "alba" stock voice
-            resolve_predefined_voice(model, "alba")
+            // Use language-specific default voice
+            let language = model.language().unwrap_or("english");
+            let default_voice = pocket_tts::config::defaults::default_voice_for_language(language);
+            resolve_predefined_voice(model, default_voice)
         }
     }
 }
@@ -119,8 +149,22 @@ fn resolve_voice_spec(model: &TTSModel, spec: &str) -> Result<pocket_tts::ModelS
 }
 
 /// Resolve a predefined voice name to embeddings via HF Hub
+///
+/// For v2+ models with a language origin, uses per-language voice paths:
+///   `hf://repo/languages/{language}/embeddings/{name}.safetensors@{revision}`
+/// Falls back to legacy path for v1 models:
+///   `hf://repo/embeddings/{name}.safetensors`
 fn resolve_predefined_voice(model: &TTSModel, name: &str) -> Result<pocket_tts::ModelState> {
-    let hf_path = format!("hf://{}/embeddings/{}.safetensors", STOCK_VOICE_REPO, name);
+    let hf_path = if let Some(language) = model.language() {
+        // v2: per-language voice embeddings
+        format!(
+            "hf://{}/languages/{}/embeddings/{}.safetensors@{}",
+            STOCK_VOICE_REPO, language, name, STOCK_VOICE_REVISION
+        )
+    } else {
+        // v1 fallback: global embeddings
+        format!("hf://{}/embeddings/{}.safetensors", STOCK_VOICE_REPO, name)
+    };
 
     let local_path = download_if_necessary(&hf_path)
         .with_context(|| format!("Failed to download stock voice '{}'", name))?;
@@ -197,7 +241,7 @@ fn resolve_base64_voice(model: &TTSModel, spec: &str) -> Result<pocket_tts::Mode
         spec
     };
 
-    use base64::{Engine as _, engine::general_purpose};
+    use base64::{engine::general_purpose, Engine as _};
     let bytes = general_purpose::STANDARD
         .decode(b64_str)
         .context("Failed to decode base64 audio")?;

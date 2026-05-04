@@ -227,7 +227,7 @@ fn test_mimi_encode_decode_roundtrip() {
     };
 
     // Encode
-    let mut encode_state = init_states(1, 1000);
+    let mut encode_state = init_states();
     let latent = model
         .mimi
         .encode_to_latent(&audio, &mut encode_state, 0)
@@ -236,7 +236,7 @@ fn test_mimi_encode_decode_roundtrip() {
     println!("Encoded latent shape: {:?}", latent.dims());
 
     // Decode
-    let mut decode_state = init_states(1, 1000);
+    let mut decode_state = init_states();
     let decoded = model
         .mimi
         .decode_from_latent(&latent, &mut decode_state, 0)

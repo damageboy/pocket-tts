@@ -12,7 +12,7 @@ pub mod handlers;
 pub mod routes;
 pub mod state;
 
-pub async fn start_server(args: ServeArgs) -> Result<()> {
+pub async fn start_server(args: ServeArgs, model_id: &str) -> Result<()> {
     // Initialize tracing
     let _ = tracing_subscriber::fmt::try_init();
 
@@ -53,7 +53,7 @@ pub async fn start_server(args: ServeArgs) -> Result<()> {
         #[cfg(feature = "quantized")]
         {
             TTSModel::load_quantized_with_params(
-                &args.variant,
+                model_id,
                 args.temperature,
                 args.lsd_decode_steps,
                 args.eos_threshold,
@@ -65,7 +65,7 @@ pub async fn start_server(args: ServeArgs) -> Result<()> {
         }
     } else {
         TTSModel::load_with_params(
-            &args.variant,
+            model_id,
             args.temperature,
             args.lsd_decode_steps,
             args.eos_threshold,
@@ -74,9 +74,13 @@ pub async fn start_server(args: ServeArgs) -> Result<()> {
 
     println!("  ✓ Model loaded (sample rate: {}Hz)", model.sample_rate);
 
-    // Pre-load default voice
-    println!("  Loading default voice: {}...", args.voice);
-    let default_voice_state = resolve_voice(&model, Some(&args.voice))?;
+    // Pre-load default voice (use language-specific default if not specified)
+    let default_voice = args.voice.as_deref().unwrap_or_else(|| {
+        let lang = model.language().unwrap_or("english");
+        pocket_tts::config::defaults::default_voice_for_language(lang)
+    });
+    println!("  Loading default voice: {}...", default_voice);
+    let default_voice_state = resolve_voice(&model, Some(default_voice))?;
     println!("  ✓ Default voice ready");
 
     let state = state::AppState::new(
@@ -92,7 +96,7 @@ pub async fn start_server(args: ServeArgs) -> Result<()> {
             .lock()
             .map_err(|_| anyhow::anyhow!("voice cache lock poisoned"))?;
         cache.put(
-            voice_cache_key(&args.voice),
+            voice_cache_key(default_voice),
             state.default_voice_state.clone(),
         );
     }

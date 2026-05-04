@@ -3,8 +3,8 @@
 use crate::server::handlers;
 use crate::server::state::AppState;
 use axum::{
-    Router,
     routing::{get, post},
+    Router,
 };
 use tower_http::cors::{Any, CorsLayer};
 use tower_http::trace::TraceLayer;
@@ -25,7 +25,10 @@ pub fn create_router(state: AppState) -> Router {
         // Python API compatibility (multipart form)
         .route("/tts", post(handlers::tts_form))
         // OpenAI compatibility
-        .route("/v1/audio/speech", post(handlers::openai_speech));
+        .route("/v1/audio/speech", post(handlers::openai_speech))
+        // Catalog endpoints
+        .route("/api/voices", get(handlers::list_voices))
+        .route("/api/languages", get(handlers::list_languages));
 
     #[cfg(feature = "web-ui")]
     let router = router.route("/wasm/pkg/*path", get(handlers::serve_wasm_pkg));

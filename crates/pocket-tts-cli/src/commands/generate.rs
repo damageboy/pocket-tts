@@ -9,20 +9,18 @@ use owo_colors::OwoColorize;
 use pocket_tts::TTSModel;
 use std::path::PathBuf;
 
-use crate::voice::{PREDEFINED_VOICES, resolve_voice};
-
-/// Default text shown when user runs without --text
-pub const DEFAULT_TEXT: &str =
-    "Hello world! I am Pocket TTS, running blazingly fast in Rust. I hope you'll like me.";
+use crate::voice::{resolve_voice, PREDEFINED_VOICES};
+use pocket_tts::config::defaults;
 
 #[derive(Parser, Debug)]
 pub struct GenerateArgs {
-    /// Text to synthesize (defaults to a greeting if not specified)
-    #[arg(short, long, default_value = DEFAULT_TEXT)]
-    pub text: String,
+    /// Text to synthesize (auto-selected per language if not specified)
+    #[arg(short, long)]
+    pub text: Option<String>,
 
     /// Voice for synthesis. Can be:
-    /// - Predefined name: alba, marius, javert, jean, fantine, cosette, eponine, azelma
+    /// - Predefined name: alba, marius, javert, jean, fantine, cosette, eponine, azelma,
+    ///   giovanni, lola, juergen, rafael, estelle
     /// - Path to .wav file for voice cloning
     /// - Path to .safetensors embeddings file
     /// - HuggingFace URL: hf://owner/repo/file.wav
@@ -33,9 +31,19 @@ pub struct GenerateArgs {
     #[arg(short, long, default_value = "output.wav")]
     pub output: PathBuf,
 
-    /// Model variant (default: b6369a24)
-    #[arg(long, default_value = "b6369a24")]
-    pub variant: String,
+    /// Language for the TTS model (e.g., "english", "french_24l", "german").
+    /// Incompatible with --config. Default is "english".
+    #[arg(long)]
+    pub language: Option<String>,
+
+    /// Path to a custom YAML config file, or legacy variant name (e.g., "b6369a24").
+    /// Incompatible with --language.
+    #[arg(long)]
+    pub config: Option<String>,
+
+    /// Model variant (deprecated, use --language or --config instead)
+    #[arg(long, hide = true)]
+    pub variant: Option<String>,
 
     /// Sampling temperature (higher = more variation)
     #[arg(long, default_value = "0.7")]
@@ -109,8 +117,15 @@ pub fn run(args: GenerateArgs) -> Result<()> {
         println!("  {} Using device: {:?}", "▶".cyan(), device);
     }
 
+    // Resolve model identifier: --language, --config, or --variant (deprecated)
+    let model_id = resolve_model_id(
+        args.language.as_deref(),
+        args.config.as_deref(),
+        args.variant.as_deref(),
+    )?;
+
     // Load model
-    info!(quiet, "{} Loading model...", "▶".cyan());
+    info!(quiet, "{} Loading model ({})...", "▶".cyan(), model_id);
 
     let quantized = args.quantized;
 
@@ -118,7 +133,7 @@ pub fn run(args: GenerateArgs) -> Result<()> {
         #[cfg(feature = "quantized")]
         {
             TTSModel::load_quantized_with_params_device(
-                &args.variant,
+                &model_id,
                 args.temperature,
                 args.lsd_decode_steps,
                 args.eos_threshold,
@@ -132,7 +147,7 @@ pub fn run(args: GenerateArgs) -> Result<()> {
         }
     } else {
         TTSModel::load_with_params_device(
-            &args.variant,
+            &model_id,
             args.temperature,
             args.lsd_decode_steps,
             args.eos_threshold,
@@ -148,8 +163,17 @@ pub fn run(args: GenerateArgs) -> Result<()> {
         model.sample_rate
     );
 
-    // Resolve voice
-    let voice_display = args.voice.as_deref().unwrap_or("alba (default)");
+    // Resolve text and voice (use language-appropriate defaults if not specified)
+    let language = model.language().unwrap_or("english");
+    let text = args
+        .text
+        .clone()
+        .unwrap_or_else(|| defaults::default_text_for_language(language).to_string());
+
+    let voice_display = args
+        .voice
+        .as_deref()
+        .unwrap_or_else(|| defaults::default_voice_for_language(language));
     info!(
         quiet,
         "{} Using voice: {}",
@@ -163,9 +187,9 @@ pub fn run(args: GenerateArgs) -> Result<()> {
 
     // Generate
     if args.stream {
-        run_streaming(&model, &args.text, &voice_state)
+        run_streaming(&model, &text, &voice_state)
     } else {
-        run_to_file(&model, &args, &voice_state, quiet)
+        run_to_file(&model, &args, &text, &voice_state, quiet)
     }
 }
 
@@ -190,6 +214,7 @@ fn run_streaming(model: &TTSModel, text: &str, voice_state: &pocket_tts::ModelSt
 fn run_to_file(
     model: &TTSModel,
     args: &GenerateArgs,
+    text: &str,
     voice_state: &pocket_tts::ModelState,
     quiet: bool,
 ) -> Result<()> {
@@ -199,10 +224,10 @@ fn run_to_file(
         quiet,
         "{} Generating: \"{}\"",
         "▶".cyan(),
-        truncate_text(&args.text, 60).italic()
+        truncate_text(text, 60).italic()
     );
 
-    let total_steps = model.estimate_generation_steps(&args.text) as u64;
+    let total_steps = model.estimate_generation_steps(text) as u64;
 
     let pb = if quiet {
         ProgressBar::hidden()
@@ -223,7 +248,7 @@ fn run_to_file(
     let mut audio_chunks = Vec::new();
     let mut total_samples = 0;
 
-    for chunk_res in model.generate_stream_long(&args.text, voice_state) {
+    for chunk_res in model.generate_stream_long(text, voice_state) {
         let chunk = chunk_res?;
         let dims = chunk.dims();
         let samples = if dims.len() == 2 { dims[1] } else { dims[0] };
@@ -307,4 +332,43 @@ fn truncate_text(text: &str, max_len: usize) -> String {
 /// Print available voices (for help text)
 pub fn available_voices_help() -> String {
     format!("Predefined voices: {}", PREDEFINED_VOICES.join(", "))
+}
+
+/// Resolve the model identifier from --language, --config, or --variant (deprecated)
+pub fn resolve_model_id(
+    language: Option<&str>,
+    config: Option<&str>,
+    variant: Option<&str>,
+) -> Result<String> {
+    // Check for conflicting options
+    let specified_count = [language.is_some(), config.is_some(), variant.is_some()]
+        .iter()
+        .filter(|&&x| x)
+        .count();
+    if specified_count > 1 {
+        anyhow::bail!(
+            "Cannot specify multiple of --language, --config, and --variant. Choose one."
+        );
+    }
+
+    if let Some(lang) = language {
+        if lang == "french" {
+            anyhow::bail!(
+                "For technical reasons, only a larger 24-layer model is available for French. \
+                 Please use --language french_24l instead."
+            );
+        }
+        return Ok(lang.to_string());
+    }
+
+    if let Some(cfg) = config {
+        return Ok(cfg.to_string());
+    }
+
+    if let Some(var) = variant {
+        return Ok(var.to_string());
+    }
+
+    // Default to the configured default language
+    Ok(defaults::DEFAULT_LANGUAGE.to_string())
 }

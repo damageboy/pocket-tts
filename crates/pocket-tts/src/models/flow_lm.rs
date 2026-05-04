@@ -1,6 +1,6 @@
-use crate::ModelState;
 use crate::models::transformer::StreamingTransformer;
 use crate::modules::mlp::{LayerNorm, ModulationParams, SimpleMLPAdaLN};
+use crate::ModelState;
 use candle_core::{Result, Tensor};
 use candle_nn::{Linear, Module, VarBuilder};
 
@@ -34,6 +34,8 @@ pub struct FlowLMModel {
     pub ldim: usize,
     pub dim: usize,
     pub noise_clamp: Option<f32>,
+    pub insert_bos_before_voice: bool,
+    pub bos_before_voice: Option<Tensor>,
 }
 
 fn sample_noise(
@@ -70,6 +72,7 @@ impl FlowLMModel {
         transformer: StreamingTransformer,
         ldim: usize,
         dim: usize,
+        insert_bos_before_voice: bool,
         vb: VarBuilder,
     ) -> Result<Self> {
         let input_linear = candle_nn::linear_no_bias(ldim, dim, vb.pp("input_linear"))?;
@@ -78,6 +81,13 @@ impl FlowLMModel {
         let bos_emb = vb.get(ldim, "bos_emb")?;
         let emb_mean = vb.get(ldim, "emb_mean")?;
         let emb_std = vb.get(ldim, "emb_std")?;
+
+        // BOS-before-voice: a learned token prepended to voice conditioning (v2 models)
+        let bos_before_voice = if insert_bos_before_voice {
+            Some(vb.get((1, 1, dim), "bos_before_voice")?)
+        } else {
+            None
+        };
 
         Ok(Self {
             flow_net,
@@ -90,7 +100,9 @@ impl FlowLMModel {
             emb_std,
             ldim,
             dim,
-            noise_clamp: None, // Default to no clamp
+            noise_clamp: None,
+            insert_bos_before_voice,
+            bos_before_voice,
         })
     }
 

@@ -463,3 +463,55 @@ pub async fn openai_speech(state: State<AppState>, Json(payload): Json<OpenAIReq
     };
     generate(state, Json(req)).await
 }
+
+// ============================================================================
+// Voice and language listing
+// ============================================================================
+
+#[derive(Serialize)]
+pub struct VoiceInfoResponse {
+    name: &'static str,
+    gender: &'static str,
+    style: &'static str,
+    language: &'static str,
+}
+
+#[derive(Serialize)]
+pub struct LanguageInfoResponse {
+    name: &'static str,
+    description: &'static str,
+    default_voice: &'static str,
+    layers: usize,
+    status: &'static str,
+}
+
+pub async fn list_voices() -> Json<Vec<VoiceInfoResponse>> {
+    use crate::commands::list::voice_catalog;
+    Json(
+        voice_catalog()
+            .iter()
+            .map(|v| VoiceInfoResponse {
+                name: v.name,
+                gender: v.gender,
+                style: v.style,
+                language: v.language,
+            })
+            .collect(),
+    )
+}
+
+pub async fn list_languages() -> Json<Vec<LanguageInfoResponse>> {
+    use crate::commands::list::language_catalog;
+    Json(
+        language_catalog()
+            .iter()
+            .map(|l| LanguageInfoResponse {
+                name: l.name,
+                description: l.description,
+                default_voice: l.default_voice,
+                layers: l.layers,
+                status: l.status,
+            })
+            .collect(),
+    )
+}

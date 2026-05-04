@@ -36,13 +36,24 @@ pub struct ServeArgs {
     #[arg(short, long, default_value_t = 8000)]
     pub port: u16,
 
-    /// Default voice for API requests (can be overridden per-request)
-    #[arg(long, default_value = "alba")]
-    pub voice: String,
+    /// Default voice for API requests (can be overridden per-request).
+    /// Auto-selected per language if not specified.
+    #[arg(long)]
+    pub voice: Option<String>,
 
-    /// Model variant
-    #[arg(long, default_value = "b6369a24")]
-    pub variant: String,
+    /// Language for the TTS model (e.g., "english", "french_24l", "german").
+    /// Incompatible with --config. Default is "english".
+    #[arg(long)]
+    pub language: Option<String>,
+
+    /// Path to a custom YAML config file, or legacy variant name.
+    /// Incompatible with --language.
+    #[arg(long)]
+    pub config: Option<String>,
+
+    /// Model variant (deprecated, use --language or --config instead)
+    #[arg(long, hide = true)]
+    pub variant: Option<String>,
 
     /// Sampling temperature
     #[arg(long, default_value = "0.7")]
@@ -86,18 +97,26 @@ pub struct ServeArgs {
 }
 
 pub async fn run(args: ServeArgs) -> Result<()> {
+    use crate::commands::generate::resolve_model_id;
+
     print_banner();
 
+    let model_id = resolve_model_id(
+        args.language.as_deref(),
+        args.config.as_deref(),
+        args.variant.as_deref(),
+    )?;
+
     println!(
-        "{} Loading model variant: {}",
+        "{} Loading model: {}",
         "->".cyan(),
-        args.variant.yellow()
+        model_id.yellow()
     );
 
     println!("{} UI mode: {}", "->".cyan(), args.ui.as_str().yellow());
 
     let server_args = args.clone();
-    crate::server::start_server(server_args).await
+    crate::server::start_server(server_args, &model_id).await
 }
 
 fn print_banner() {

@@ -1,7 +1,7 @@
-use crate::ModelState;
 use crate::models::seanet::{SEANetDecoder, SEANetEncoder};
 use crate::models::transformer::ProjectedTransformer;
 use crate::modules::conv::{ConvDownsample1d, ConvTrUpsample1d};
+use crate::ModelState;
 use candle_core::{Result, Tensor};
 use candle_nn::{Conv1d, Conv1dConfig, Module, VarBuilder};
 
@@ -63,8 +63,10 @@ impl MimiModel {
         encoder_frame_rate: f64,
         sample_rate: usize,
         channels: usize,
-        dimension: usize,        // The quantizer input dimension (32)
-        output_dimension: usize, // The decoder input dimension (512)
+        dimension: usize,         // The quantizer input dimension (32)
+        output_dimension: usize,  // The decoder input dimension (512)
+        inner_dim: Option<usize>, // v2: downsample output dimension
+        outer_dim: Option<usize>, // v2: upsample input dimension
         name: &str,
         vb: VarBuilder,
     ) -> Result<Self> {
@@ -76,12 +78,14 @@ impl MimiModel {
                 Some(ConvDownsample1d::new(
                     stride,
                     output_dimension,
+                    inner_dim,
                     &format!("{}.downsample", name),
                     vb.pp("downsample"),
                 )?),
                 Some(ConvTrUpsample1d::new(
                     stride,
                     output_dimension,
+                    outer_dim,
                     &format!("{}.upsample", name),
                     vb.pp("upsample"),
                 )?),
@@ -241,6 +245,8 @@ mod tests {
             1,
             128,
             512,
+            None, // inner_dim
+            None, // outer_dim
             "mimi",
             vb.pp("mimi"),
         )?;
