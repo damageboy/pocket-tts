@@ -225,8 +225,15 @@ fn test_v2_german_parity() -> Result<()> {
 
     let model = TTSModel::load("german")?;
     writeln!(f, "remove_semicolons={}", model.remove_semicolons)?;
-    writeln!(f, "pad_with_spaces={}", model.pad_with_spaces_for_short_inputs)?;
-    assert!(model.remove_semicolons, "German should have remove_semicolons=true");
+    writeln!(
+        f,
+        "pad_with_spaces={}",
+        model.pad_with_spaces_for_short_inputs
+    )?;
+    assert!(
+        model.remove_semicolons,
+        "German should have remove_semicolons=true"
+    );
     assert!(!model.pad_with_spaces_for_short_inputs);
 
     // Load voice state
@@ -248,7 +255,11 @@ fn test_v2_german_parity() -> Result<()> {
     let k_buf = &voice_state["flow_lm.transformer.layers.0.self_attn"]["k_buf"];
     let k_mean = k_buf.mean_all()?.to_scalar::<f32>()?;
     writeln!(f, "Layer 0 k_buf mean: {} (Python: 0.00168773)", k_mean)?;
-    assert!((k_mean - 0.001688).abs() < 0.001, "k_buf mean mismatch: {}", k_mean);
+    assert!(
+        (k_mean - 0.001688).abs() < 0.001,
+        "k_buf mean mismatch: {}",
+        k_mean
+    );
 
     // Prepare text (remove_semicolons should NOT change this text since no semicolons)
     let text = "Es ist klein genug, um in Ihre Tasche zu passen.";
@@ -257,42 +268,76 @@ fn test_v2_german_parity() -> Result<()> {
     let token_vec: Vec<Vec<i64>> = tokens_i64.to_vec2()?;
     writeln!(f, "Token IDs: {:?}", &token_vec[0])?;
     // Python: [392, 270, 621, 1384, 261, 357, 277, 1103, 264, 1452, 435, 264, 281, 545, 263, 262]
-    assert_eq!(token_vec[0].len(), 16, "Expected 16 tokens, got {}", token_vec[0].len());
-    assert_eq!(token_vec[0], vec![392, 270, 621, 1384, 261, 357, 277, 1103, 264, 1452, 435, 264, 281, 545, 263, 262]);
+    assert_eq!(
+        token_vec[0].len(),
+        16,
+        "Expected 16 tokens, got {}",
+        token_vec[0].len()
+    );
+    assert_eq!(
+        token_vec[0],
+        vec![392, 270, 621, 1384, 261, 357, 277, 1103, 264, 1452, 435, 264, 281, 545, 263, 262]
+    );
 
     // Text embeddings
     let text_emb = model.conditioner.forward(&tokens)?;
     let emb_mean = text_emb.mean_all()?.to_scalar::<f32>()?;
     writeln!(f, "Text emb mean: {} (Python: -0.00004402)", emb_mean)?;
-    assert!((emb_mean - (-0.00004402)).abs() < 0.001, "Text emb mean mismatch: {}", emb_mean);
+    assert!(
+        (emb_mean - (-0.00004402)).abs() < 0.001,
+        "Text emb mean mismatch: {}",
+        emb_mean
+    );
 
     // Process text through transformer
     let mut state = voice_state.clone();
-    model.flow_lm.transformer.forward(&text_emb, &mut state, 0)?;
+    model
+        .flow_lm
+        .transformer
+        .forward(&text_emb, &mut state, 0)?;
 
     let cursor_after = pocket_tts::voice_state::get_attention_cursor(
         &state,
         "flow_lm.transformer.layers.0.self_attn",
     );
-    writeln!(f, "After text: pos={}, len={}", cursor_after.pos, cursor_after.len)?;
+    writeln!(
+        f,
+        "After text: pos={}, len={}",
+        cursor_after.pos, cursor_after.len
+    )?;
     // 127 + 16 = 143
-    assert_eq!(cursor_after.pos, 143, "After text pos should be 143, got {}", cursor_after.pos);
+    assert_eq!(
+        cursor_after.pos, 143,
+        "After text pos should be 143, got {}",
+        cursor_after.pos
+    );
 
     // First FlowLM step (BOS)
     let bos = model.flow_lm.bos_emb.clone().reshape((1, 1, model.ldim))?;
     let empty_text = Tensor::zeros((1, 0, model.dim), DType::F32, &model.device)?;
     let time_embeddings = model.flow_lm.flow_net.compute_time_embeddings(
-        model.lsd_decode_steps, &model.device, DType::F32,
+        model.lsd_decode_steps,
+        &model.device,
+        DType::F32,
     )?;
 
     let (latent, _is_eos) = model.flow_lm.forward(
-        &bos, &empty_text, &mut state, &time_embeddings,
-        model.temp, model.eos_threshold, 0,
+        &bos,
+        &empty_text,
+        &mut state,
+        &time_embeddings,
+        model.temp,
+        model.eos_threshold,
+        0,
     )?;
 
     let latent_flat = latent.flatten_all()?;
     let latent_mean = latent_flat.mean_all()?.to_scalar::<f32>()?;
-    writeln!(f, "Step 1 latent mean: {} (Python: 0.39381978)", latent_mean)?;
+    writeln!(
+        f,
+        "Step 1 latent mean: {} (Python: 0.39381978)",
+        latent_mean
+    )?;
     // Due to random noise, means won't match exactly, but should be in same ballpark
     // The key check is that the structure is correct (offset, token count, etc.)
 

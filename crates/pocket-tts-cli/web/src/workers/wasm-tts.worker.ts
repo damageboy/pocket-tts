@@ -198,17 +198,33 @@ const ensureReadyModel = (): WasmModelLike => {
 	return model;
 };
 
+const CACHE_NAME = "pocket-tts-models-v2";
+
 const fetchHF = async (
 	path: string,
 	revision: string,
 	hfToken: string,
 	label: string,
 ): Promise<Uint8Array> => {
+	const url = `https://huggingface.co/${V2_REPO}/resolve/${revision}/${path}`;
+
+	// Check browser Cache API first
+	try {
+		const cache = await caches.open(CACHE_NAME);
+		const cached = await cache.match(url);
+		if (cached) {
+			console.log(`[wasm-worker] Cache hit for ${label}: ${url}`);
+			return new Uint8Array(await cached.arrayBuffer());
+		}
+	} catch {
+		// Cache API unavailable (e.g. opaque origin), fall through to fetch
+	}
+
+	console.log(`[wasm-worker] Downloading ${label}: ${url}`);
 	const headers: Record<string, string> = {};
 	if (hfToken.trim()) {
 		headers.Authorization = `Bearer ${hfToken.trim()}`;
 	}
-	const url = `https://huggingface.co/${V2_REPO}/resolve/${revision}/${path}`;
 	const res = await fetch(url, { headers });
 	if (!res.ok) {
 		if (res.status === 401) {
@@ -216,6 +232,15 @@ const fetchHF = async (
 		}
 		throw new Error(`Failed to fetch ${label} (${res.status})`);
 	}
+
+	// Store in cache for next time (clone response since body can only be read once)
+	try {
+		const cache = await caches.open(CACHE_NAME);
+		await cache.put(url, res.clone());
+	} catch {
+		// Cache write failed (quota, etc.) — not fatal
+	}
+
 	return new Uint8Array(await res.arrayBuffer());
 };
 
@@ -370,9 +395,13 @@ const handleInit = async (
 		error: null,
 	});
 
+	console.log(
+		`[wasm-worker] Loading model: language=${currentLanguage}, config=${configBytes.byteLength}b, weights=${weightsBytes.byteLength}b, tokenizer=${tokenizerBytes.byteLength}b`,
+	);
 	model = new bindings.WasmTTSModel();
 	model.load_from_buffer(configBytes, weightsBytes, tokenizerBytes);
 	sampleRate = model.sample_rate;
+	console.log(`[wasm-worker] Model ready: sampleRate=${sampleRate}`);
 
 	postStatus({
 		phase: "ready",
