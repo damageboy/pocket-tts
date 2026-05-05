@@ -71,6 +71,7 @@ const isLatencyPass = (latency: LatencyMetrics | null) => {
 export default function App() {
 	const [text, setText] = useState("It's small enough to fit in your pocket.");
 	const [selectedLanguage, setSelectedLanguage] = useState("english");
+	const [isReinitializing, setIsReinitializing] = useState(false);
 	const [selectedVoice, setSelectedVoice] = useState<string | null>("alba");
 	const [customVoice, setCustomVoice] = useState("");
 	const [cloneWavFile, setCloneWavFile] = useState<File | null>(null);
@@ -311,10 +312,13 @@ export default function App() {
 										setSelectedVoice(defaultVoice);
 										setText(defaultText);
 										// Auto-reinitialize WASM model for new language
+										setIsReinitializing(true);
 										try {
 											await initWasm({ hfRepo, hfToken, language: lang });
 										} catch {
 											// Hook handles error display
+										} finally {
+											setIsReinitializing(false);
 										}
 									}}
 									disabled={!isIdle}
@@ -575,7 +579,7 @@ export default function App() {
 									<Button
 										className="flex-1 h-12 text-base font-semibold transition-all duration-300 shadow-lg shadow-primary/25 hover:shadow-primary/40 group active:scale-[0.98]"
 										onClick={handleGenerate}
-										disabled={isWasmMode && !wasmReady}
+										disabled={isWasmMode && (!wasmReady || isReinitializing)}
 									>
 										<PlayIcon
 											className="w-4 h-4 transition-transform group-hover:scale-110"
@@ -633,7 +637,7 @@ export default function App() {
 								<Button
 									variant="outline"
 									onClick={handleProbe}
-									disabled={isWasmMode && !wasmReady}
+									disabled={isWasmMode && (!wasmReady || isReinitializing)}
 								>
 									Run TTFA Probe
 								</Button>
