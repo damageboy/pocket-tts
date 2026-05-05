@@ -64,16 +64,26 @@ impl WasmTTSModel {
         web_sys::console::log_1(
             &format!(
                 "[wasm-rust] load_from_buffer: config={}b, weights={}b, tokenizer={}b",
-                config_yaml.len(), weights_data.len(), tokenizer_bytes.len()
-            ).into(),
+                config_yaml.len(),
+                weights_data.len(),
+                tokenizer_bytes.len()
+            )
+            .into(),
         );
 
         let tok_bytes = if tokenizer_bytes.is_empty() {
-            web_sys::console::warn_1(&"[wasm-rust] tokenizer_bytes is EMPTY, using embedded v1 English tokenizer!".into());
+            web_sys::console::warn_1(
+                &"[wasm-rust] tokenizer_bytes is EMPTY, using embedded v1 English tokenizer!"
+                    .into(),
+            );
             include_bytes!("../assets/tokenizer.json")
         } else {
             web_sys::console::log_1(
-                &format!("[wasm-rust] Using provided tokenizer ({}b)", tokenizer_bytes.len()).into(),
+                &format!(
+                    "[wasm-rust] Using provided tokenizer ({}b)",
+                    tokenizer_bytes.len()
+                )
+                .into(),
             );
             tokenizer_bytes
         };
@@ -83,8 +93,11 @@ impl WasmTTSModel {
 
         self.sample_rate = model.sample_rate as u32;
         web_sys::console::log_1(
-            &format!("[wasm-rust] Model loaded: sample_rate={}, dim={}, ldim={}",
-                model.sample_rate, model.dim, model.ldim).into(),
+            &format!(
+                "[wasm-rust] Model loaded: sample_rate={}, dim={}, ldim={}",
+                model.sample_rate, model.dim, model.ldim
+            )
+            .into(),
         );
         self.model = Some(model);
         Ok(())

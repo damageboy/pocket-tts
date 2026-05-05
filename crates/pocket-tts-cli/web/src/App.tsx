@@ -306,10 +306,16 @@ export default function App() {
 							{isWasmMode && (
 								<LanguageSelector
 									selectedLanguage={selectedLanguage}
-									onLanguageChange={(lang, defaultVoice, defaultText) => {
+									onLanguageChange={async (lang, defaultVoice, defaultText) => {
 										setSelectedLanguage(lang);
 										setSelectedVoice(defaultVoice);
 										setText(defaultText);
+										// Auto-reinitialize WASM model for new language
+										try {
+											await initWasm({ hfRepo, hfToken, language: lang });
+										} catch {
+											// Hook handles error display
+										}
 									}}
 									disabled={!isIdle}
 								/>

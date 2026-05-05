@@ -21,10 +21,22 @@ fn test_german_wasm_vs_cli_path() -> Result<()> {
     writeln!(f, "=== CLI path: TTSModel::load(\"german\") ===")?;
     let cli_model = TTSModel::load("german")?;
     writeln!(f, "  remove_semicolons={}", cli_model.remove_semicolons)?;
-    writeln!(f, "  pad_with_spaces={}", cli_model.pad_with_spaces_for_short_inputs)?;
+    writeln!(
+        f,
+        "  pad_with_spaces={}",
+        cli_model.pad_with_spaces_for_short_inputs
+    )?;
     writeln!(f, "  dim={}, ldim={}", cli_model.dim, cli_model.ldim)?;
-    writeln!(f, "  insert_bos={}", cli_model.flow_lm.insert_bos_before_voice)?;
-    writeln!(f, "  bos_before_voice={}", cli_model.flow_lm.bos_before_voice.is_some())?;
+    writeln!(
+        f,
+        "  insert_bos={}",
+        cli_model.flow_lm.insert_bos_before_voice
+    )?;
+    writeln!(
+        f,
+        "  bos_before_voice={}",
+        cli_model.flow_lm.bos_before_voice.is_some()
+    )?;
 
     // === Path 2: WASM-style load_from_bytes ===
     writeln!(f, "\n=== WASM path: TTSModel::load_from_bytes ===")?;
@@ -97,16 +109,32 @@ mimi:
     let wasm_model =
         TTSModel::load_from_bytes(config_yaml.as_bytes(), &weights_bytes, &tokenizer_bytes)?;
     writeln!(f, "  remove_semicolons={}", wasm_model.remove_semicolons)?;
-    writeln!(f, "  pad_with_spaces={}", wasm_model.pad_with_spaces_for_short_inputs)?;
+    writeln!(
+        f,
+        "  pad_with_spaces={}",
+        wasm_model.pad_with_spaces_for_short_inputs
+    )?;
     writeln!(f, "  dim={}, ldim={}", wasm_model.dim, wasm_model.ldim)?;
-    writeln!(f, "  insert_bos={}", wasm_model.flow_lm.insert_bos_before_voice)?;
-    writeln!(f, "  bos_before_voice={}", wasm_model.flow_lm.bos_before_voice.is_some())?;
+    writeln!(
+        f,
+        "  insert_bos={}",
+        wasm_model.flow_lm.insert_bos_before_voice
+    )?;
+    writeln!(
+        f,
+        "  bos_before_voice={}",
+        wasm_model.flow_lm.bos_before_voice.is_some()
+    )?;
 
     // === Compare tokenization ===
     let text = "Es ist klein genug, um in Ihre Tasche zu passen.";
 
-    let cli_tokens = cli_model.conditioner.prepare(text, &candle_core::Device::Cpu)?;
-    let wasm_tokens = wasm_model.conditioner.prepare(text, &candle_core::Device::Cpu)?;
+    let cli_tokens = cli_model
+        .conditioner
+        .prepare(text, &candle_core::Device::Cpu)?;
+    let wasm_tokens = wasm_model
+        .conditioner
+        .prepare(text, &candle_core::Device::Cpu)?;
 
     let cli_ids: Vec<Vec<i64>> = cli_tokens.to_dtype(DType::I64)?.to_vec2()?;
     let wasm_ids: Vec<Vec<i64>> = wasm_tokens.to_dtype(DType::I64)?.to_vec2()?;
@@ -116,7 +144,11 @@ mimi:
     writeln!(f, "  WASM tokens: {:?}", wasm_ids[0])?;
     let tokens_match = cli_ids[0] == wasm_ids[0];
     writeln!(f, "  Match: {}", tokens_match)?;
-    assert!(tokens_match, "TOKEN MISMATCH!\n  CLI:  {:?}\n  WASM: {:?}", cli_ids[0], wasm_ids[0]);
+    assert!(
+        tokens_match,
+        "TOKEN MISMATCH!\n  CLI:  {:?}\n  WASM: {:?}",
+        cli_ids[0], wasm_ids[0]
+    );
 
     // === Compare text embeddings ===
     let cli_emb = cli_model.conditioner.forward(&cli_tokens)?;
@@ -130,7 +162,11 @@ mimi:
     writeln!(f, "  WASM mean: {}", wasm_emb_mean)?;
     let emb_match = (cli_emb_mean - wasm_emb_mean).abs() < 1e-6;
     writeln!(f, "  Match: {}", emb_match)?;
-    assert!(emb_match, "EMBEDDING MISMATCH: CLI={} WASM={}", cli_emb_mean, wasm_emb_mean);
+    assert!(
+        emb_match,
+        "EMBEDDING MISMATCH: CLI={} WASM={}",
+        cli_emb_mean, wasm_emb_mean
+    );
 
     // === Load voice and compare ===
     let voice_path = pocket_tts::weights::download_if_necessary(
