@@ -198,7 +198,8 @@ const ensureReadyModel = (): WasmModelLike => {
 	return model;
 };
 
-const CACHE_NAME = "pocket-tts-models-v2";
+// Bump version to invalidate any stale cache from pre-fix builds
+const CACHE_NAME = "pocket-tts-models-v3";
 
 const fetchHF = async (
 	path: string,

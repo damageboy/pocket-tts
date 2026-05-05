@@ -372,6 +372,9 @@ function __wbg_get_imports() {
             const ret = arg0.versions;
             return ret;
         },
+        __wbg_warn_f7ae1b2e66ccb930: function(arg0) {
+            console.warn(arg0);
+        },
         __wbindgen_cast_0000000000000001: function(arg0) {
             // Cast intrinsic for `F64 -> Externref`.
             const ret = arg0;
