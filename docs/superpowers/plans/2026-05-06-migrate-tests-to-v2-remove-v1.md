@@ -13,6 +13,7 @@
 ### Task 1: Update Integration Tests to v2
 
 **Files:**
+
 - Modify: `crates/pocket-tts/tests/integration_tests.rs`
 
 - [ ] Change `get_model()` and `get_model_with_params()` from `"b6369a24"` to `"english"`
@@ -25,6 +26,7 @@
 ### Task 2: Remove v1 Config and Assets
 
 **Files:**
+
 - Delete: `crates/pocket-tts/config/b6369a24.yaml`
 - Delete: `crates/pocket-tts/assets/tokenizer.json` (v1 English tokenizer, 240KB embedded in WASM)
 - Modify: `crates/pocket-tts/src/wasm.rs` — remove `include_bytes!("../assets/tokenizer.json")` fallback
@@ -40,6 +42,7 @@
 ### Task 3: Clean Up v1 Voice Loading Path
 
 **Files:**
+
 - Modify: `crates/pocket-tts-cli/src/voice.rs`
 
 - [ ] Remove the legacy v1 fallback path in `resolve_predefined_voice` (the `else` branch that uses `embeddings/{name}.safetensors` without language prefix)
@@ -49,6 +52,7 @@
 ### Task 4: Update Documentation
 
 **Files:**
+
 - Modify: `AGENTS.md`
 - Modify: `crates/pocket-tts-cli/src/commands/generate.rs` — remove `--variant` hidden flag
 - Modify: `crates/pocket-tts-cli/src/commands/serve.rs` — remove `--variant` hidden flag

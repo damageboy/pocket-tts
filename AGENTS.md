@@ -7,6 +7,7 @@ This file provides guidance to AI agents when working with code in this reposito
 pocket-tts-candle is a Rust/Candle port of the pocket-tts CPU-based text-to-speech (TTS) model. It aims for high performance and low latency on CPU.
 
 **Key Architecture Components:**
+
 - **FlowLM**: Transformer-based flow language model that generates latent representations from text using Lagrangian Self Distillation (LSD).
 - **Mimi (SEANet)**: Neural audio codec that compresses/decompresses audio to/from latent representations (v0.1.0).
 - **Conditioners**: Text processing via SentencePiece tokenizer.
@@ -26,6 +27,7 @@ The repository is organized as a Rust workspace at the root level:
 ## Common Commands
 
 ### Setup and Development
+
 ```powershell
 # Build the project
 cargo build --release
@@ -41,6 +43,7 @@ cargo run --release -p pocket-tts-cli -- serve
 ```
 
 ### Benchmarking
+
 ```powershell
 # Run benchmarks
 cargo bench --release
@@ -66,6 +69,7 @@ cargo bench --release
 ## Numerical Parity
 
 We maintain strict numerical parity with the Python implementation where possible.
+
 - Parity tests are located in `crates/pocket-tts/tests/parity_tests.rs`.
 - Reference tensors are in `assets/*.safetensors`.
 - The Rust resampler is now robust and theoretically superior to the Python reference, so `ref.wav` (regardless of rate) should be used.
@@ -79,9 +83,13 @@ We maintain strict numerical parity with the Python implementation where possibl
 
 ## Model Weights
 
-Weights are downloaded from HuggingFace Hub:
-- Model weights: `hf://kyutai/pocket-tts/tts_b6369a24.safetensors`
-- Tokenizer: `hf://kyutai/pocket-tts/tokenizer.model`
+Weights are downloaded from HuggingFace Hub per language (v2.1.0):
+
+- Model weights: `hf://kyutai/pocket-tts/languages/{language}/model.safetensors`
+- Tokenizer: `hf://kyutai/pocket-tts-without-voice-cloning/languages/{language}/tokenizer.model`
+- Voice embeddings: `hf://kyutai/pocket-tts-without-voice-cloning/languages/{language}/embeddings/{voice}.safetensors`
+
+Available languages: english, german, italian, spanish, portuguese, french_24l, and \_24l variants.
 
 ## Common Gotchas
 

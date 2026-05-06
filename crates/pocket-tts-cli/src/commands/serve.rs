@@ -51,10 +51,6 @@ pub struct ServeArgs {
     #[arg(long)]
     pub config: Option<String>,
 
-    /// Model variant (deprecated, use --language or --config instead)
-    #[arg(long, hide = true)]
-    pub variant: Option<String>,
-
     /// Sampling temperature
     #[arg(long, default_value = "0.7")]
     pub temperature: f32,
@@ -101,11 +97,7 @@ pub async fn run(args: ServeArgs) -> Result<()> {
 
     print_banner();
 
-    let model_id = resolve_model_id(
-        args.language.as_deref(),
-        args.config.as_deref(),
-        args.variant.as_deref(),
-    )?;
+    let model_id = resolve_model_id(args.language.as_deref(), args.config.as_deref())?;
 
     println!("{} Loading model: {}", "->".cyan(), model_id.yellow());
 

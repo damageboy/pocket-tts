@@ -53,7 +53,7 @@ impl WasmTTSModel {
     /// # Arguments
     /// * `config_yaml` - ArrayBuffer containing config.yaml
     /// * `weights_data` - ArrayBuffer containing safetensors model weights
-    /// * `tokenizer_bytes` - Optional ArrayBuffer containing tokenizer.json (falls back to embedded)
+    /// * `tokenizer_bytes` - ArrayBuffer containing the sentencepiece tokenizer.model
     #[wasm_bindgen]
     pub fn load_from_buffer(
         &mut self,
@@ -71,24 +71,13 @@ impl WasmTTSModel {
             .into(),
         );
 
-        let tok_bytes = if tokenizer_bytes.is_empty() {
-            web_sys::console::warn_1(
-                &"[wasm-rust] tokenizer_bytes is EMPTY, using embedded v1 English tokenizer!"
-                    .into(),
-            );
-            include_bytes!("../assets/tokenizer.json")
-        } else {
-            web_sys::console::log_1(
-                &format!(
-                    "[wasm-rust] Using provided tokenizer ({}b)",
-                    tokenizer_bytes.len()
-                )
-                .into(),
-            );
-            tokenizer_bytes
-        };
+        if tokenizer_bytes.is_empty() {
+            return Err(JsValue::from_str(
+                "tokenizer_bytes is empty. Provide the sentencepiece tokenizer.model for the selected language.",
+            ));
+        }
 
-        let model = TTSModel::load_from_bytes(config_yaml, weights_data, tok_bytes)
+        let model = TTSModel::load_from_bytes(config_yaml, weights_data, tokenizer_bytes)
             .map_err(|e| JsValue::from_str(&format!("Model loading failed: {:?}", e)))?;
 
         self.sample_rate = model.sample_rate as u32;

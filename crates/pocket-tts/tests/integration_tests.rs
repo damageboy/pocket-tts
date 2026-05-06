@@ -3,10 +3,10 @@
 //! These tests require the HF_TOKEN environment variable to be set
 //! for downloading model weights from HuggingFace.
 
+use pocket_tts::TTSModel;
 use pocket_tts::audio::{read_wav, write_wav};
 use pocket_tts::voice_state::init_states;
 use pocket_tts::weights::download_if_necessary;
-use pocket_tts::TTSModel;
 
 use std::path::PathBuf;
 use std::sync::{Mutex, OnceLock};
@@ -45,7 +45,7 @@ fn get_model() -> &'static TTSModel {
     let _guard = model_init_lock()
         .lock()
         .unwrap_or_else(|poisoned| poisoned.into_inner());
-    MODEL.get_or_init(|| TTSModel::load("b6369a24").expect("Failed to load model"))
+    MODEL.get_or_init(|| TTSModel::load("english").expect("Failed to load model"))
 }
 
 /// Get or initialize the shared TTSModel instance with custom parameters.
@@ -55,13 +55,27 @@ fn get_model_with_params() -> &'static TTSModel {
         .unwrap_or_else(|poisoned| poisoned.into_inner());
     MODEL_WITH_PARAMS.get_or_init(|| {
         TTSModel::load_with_params(
-            "b6369a24",
+            "english",
             0.0,
             pocket_tts::config::defaults::LSD_DECODE_STEPS,
             pocket_tts::config::defaults::EOS_THRESHOLD,
         )
         .expect("Failed to load model with params")
     })
+}
+
+/// Get voice state using predefined alba embedding (v2 path).
+fn get_voice_state(model: &TTSModel) -> pocket_tts::ModelState {
+    let alba_path = download_if_necessary(
+        &format!(
+            "hf://kyutai/pocket-tts-without-voice-cloning/languages/{}/embeddings/alba.safetensors@e041936c75475d350b405bc870bcf7c22da4e9e6",
+            model.language().unwrap_or("english")
+        ),
+    )
+    .expect("Failed to download alba voice");
+    model
+        .get_voice_state_from_prompt_file(&alba_path)
+        .expect("Failed to load alba voice state")
 }
 
 fn get_ref_wav_path() -> PathBuf {
@@ -77,8 +91,8 @@ fn get_ref_wav_path() -> PathBuf {
 
 #[test]
 fn test_download_non_gated_tokenizer() {
-    // Test downloading from non-gated repo (pocket-tts-without-voice-cloning)
-    let path = "hf://kyutai/pocket-tts-without-voice-cloning/tokenizer.model@d4fdd22ae8c8e1cb3634e150ebeff1dab2d16df3";
+    // Test downloading from non-gated repo (v2 english tokenizer)
+    let path = "hf://kyutai/pocket-tts-without-voice-cloning/languages/english/tokenizer.model@d29db7978e464fb90cb3359ee0c69a273b9142cc";
     let result = download_if_necessary(path);
     assert!(result.is_ok(), "Failed to download: {:?}", result.err());
     let local_path = result.unwrap();
@@ -91,18 +105,16 @@ fn test_download_non_gated_tokenizer() {
 }
 
 #[test]
-// #[ignore = "requires HF_TOKEN and gated model access"]
 fn test_download_gated_weights() {
     if !require_hf_token("test_download_gated_weights") {
         return;
     }
 
-    // Test downloading from gated repo (pocket-tts)
+    // Test downloading from gated repo (v2 english weights)
     let _guard = model_init_lock()
         .lock()
         .unwrap_or_else(|poisoned| poisoned.into_inner());
-    let path =
-        "hf://kyutai/pocket-tts/tts_b6369a24.safetensors@427e3d61b276ed69fdd03de0d185fa8a8d97fc5b";
+    let path = "hf://kyutai/pocket-tts/languages/english/model.safetensors@39592ff23c9ef80098bb74895d104c26275fe2c9";
     let result = download_if_necessary(path);
     assert!(result.is_ok(), "Failed to download: {:?}", result.err());
 }
@@ -120,44 +132,37 @@ fn test_tts_model_load() {
 }
 
 #[test]
-// #[ignore = "requires HF_TOKEN and model download"]
-fn test_voice_cloning_from_ref_wav() {
-    if !require_hf_token("test_voice_cloning_from_ref_wav") {
+fn test_voice_state_from_embedding() {
+    if !require_hf_token("test_voice_state_from_embedding") {
         return;
     }
     let model = get_model();
+    let voice_state = get_voice_state(model);
 
-    let ref_wav_path = get_ref_wav_path();
-    if !ref_wav_path.exists() {
-        eprintln!("ref.wav not found at {:?}, skipping test", ref_wav_path);
-        return;
+    // Voice state should have entries for all 6 transformer layers
+    let layer_count = voice_state
+        .keys()
+        .filter(|k| k.contains("self_attn"))
+        .count();
+    assert_eq!(layer_count, 6, "Should have 6 transformer layer states");
+
+    // Each layer should have k_buf, v_buf, pos
+    for (name, state) in &voice_state {
+        if name.contains("self_attn") {
+            assert!(state.contains_key("k_buf"), "Missing k_buf in {}", name);
+            assert!(state.contains_key("v_buf"), "Missing v_buf in {}", name);
+            assert!(state.contains_key("pos"), "Missing pos in {}", name);
+        }
     }
-
-    let voice_state = model
-        .get_voice_state(&ref_wav_path)
-        .expect("Failed to get voice state");
-
-    // Voice state should have entries from running through the transformer
-    assert!(!voice_state.is_empty(), "Voice state should not be empty");
 }
 
 #[test]
-// #[ignore = "requires HF_TOKEN and model download"]
 fn test_audio_generation_produces_valid_output() {
     if !require_hf_token("test_audio_generation_produces_valid_output") {
         return;
     }
     let model = get_model();
-
-    let ref_wav_path = get_ref_wav_path();
-    if !ref_wav_path.exists() {
-        eprintln!("ref.wav not found at {:?}, skipping test", ref_wav_path);
-        return;
-    }
-
-    let voice_state = model
-        .get_voice_state(&ref_wav_path)
-        .expect("Failed to get voice state");
+    let voice_state = get_voice_state(model);
 
     let audio = model
         .generate("Hello world.", &voice_state)
@@ -235,11 +240,17 @@ fn test_mimi_encode_decode_roundtrip() {
 
     println!("Encoded latent shape: {:?}", latent.dims());
 
+    // In v2, encode_to_latent outputs inner_dim (32) but decode expects
+    // output_dimension (512). Run through quantizer output_proj first.
+    let quantized = model.mimi.quantize(&latent).expect("Failed to quantize");
+
+    println!("Quantized shape: {:?}", quantized.dims());
+
     // Decode
     let mut decode_state = init_states();
     let decoded = model
         .mimi
-        .decode_from_latent(&latent, &mut decode_state, 0)
+        .decode_from_latent(&quantized, &mut decode_state, 0)
         .expect("Failed to decode");
 
     println!("Decoded audio shape: {:?}", decoded.dims());
@@ -261,22 +272,12 @@ fn test_mimi_encode_decode_roundtrip() {
 }
 
 #[test]
-// #[ignore = "requires HF_TOKEN and model download"]
 fn test_generate_with_pauses_adds_silence() {
     if !require_hf_token("test_generate_with_pauses_adds_silence") {
         return;
     }
     let model = get_model_with_params();
-
-    let ref_wav_path = get_ref_wav_path();
-    if !ref_wav_path.exists() {
-        eprintln!("ref.wav not found at {:?}, skipping test", ref_wav_path);
-        return;
-    }
-
-    let voice_state = model
-        .get_voice_state(&ref_wav_path)
-        .expect("Failed to get voice state");
+    let voice_state = get_voice_state(model);
 
     // Generate with pause (should be longer due to silence)
     let text_with_pause = "Hello [pause:500ms] world.";
@@ -337,7 +338,7 @@ fn test_load_quantized_model() {
     let _guard = model_init_lock()
         .lock()
         .unwrap_or_else(|poisoned| poisoned.into_inner());
-    let model = TTSModel::load_quantized("b6369a24").expect("Failed to load quantized model");
+    let model = TTSModel::load_quantized("english").expect("Failed to load quantized model");
 
     // Verify model loaded
     assert_eq!(model.sample_rate, 24000);

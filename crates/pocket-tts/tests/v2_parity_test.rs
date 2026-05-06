@@ -187,7 +187,7 @@ fn test_v2_first_generation_step() -> Result<()> {
     )?;
 
     use std::io::Write;
-    let mut f = std::fs::File::create("/tmp/rust_parity_output.txt")?;
+    let mut f = std::fs::File::create(std::env::temp_dir().join("rust_parity_output.txt"))?;
 
     writeln!(f, "Latent step 1: shape={:?}", latent.dims())?;
     let latent_flat = latent.flatten_all()?;
@@ -220,7 +220,7 @@ fn test_v2_german_parity() -> Result<()> {
     }
 
     use std::io::Write;
-    let mut f = std::fs::File::create("/tmp/rust_german_parity.txt")?;
+    let mut f = std::fs::File::create(std::env::temp_dir().join("rust_german_parity.txt"))?;
 
     let model = TTSModel::load("german")?;
     writeln!(f, "remove_semicolons={}", model.remove_semicolons)?;
@@ -275,7 +275,9 @@ fn test_v2_german_parity() -> Result<()> {
     );
     assert_eq!(
         token_vec[0],
-        vec![392, 270, 621, 1384, 261, 357, 277, 1103, 264, 1452, 435, 264, 281, 545, 263, 262]
+        vec![
+            392, 270, 621, 1384, 261, 357, 277, 1103, 264, 1452, 435, 264, 281, 545, 263, 262
+        ]
     );
 
     // Text embeddings

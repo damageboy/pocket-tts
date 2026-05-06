@@ -132,8 +132,6 @@ pub mod defaults {
     pub const LSD_DECODE_STEPS: usize = 1;
     pub const NOISE_CLAMP: Option<f32> = None;
     pub const EOS_THRESHOLD: f32 = -4.0;
-    /// Deprecated: use DEFAULT_LANGUAGE instead
-    pub const DEFAULT_VARIANT: &str = "b6369a24";
     pub const DEFAULT_LANGUAGE: &str = "english";
 
     pub fn default_text_for_language(language: &str) -> &'static str {
@@ -176,13 +174,8 @@ mod tests {
 
     fn get_config_path() -> PathBuf {
         PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-            .parent()
-            .unwrap()
-            .parent()
-            .unwrap()
-            .join("pocket_tts")
             .join("config")
-            .join("b6369a24.yaml")
+            .join("english.yaml")
     }
 
     #[test]

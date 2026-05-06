@@ -36,14 +36,10 @@ pub struct GenerateArgs {
     #[arg(long)]
     pub language: Option<String>,
 
-    /// Path to a custom YAML config file, or legacy variant name (e.g., "b6369a24").
+    /// Path to a custom YAML config file, or config name (e.g., "english_2026-01").
     /// Incompatible with --language.
     #[arg(long)]
     pub config: Option<String>,
-
-    /// Model variant (deprecated, use --language or --config instead)
-    #[arg(long, hide = true)]
-    pub variant: Option<String>,
 
     /// Sampling temperature (higher = more variation)
     #[arg(long, default_value = "0.7")]
@@ -118,11 +114,7 @@ pub fn run(args: GenerateArgs) -> Result<()> {
     }
 
     // Resolve model identifier: --language, --config, or --variant (deprecated)
-    let model_id = resolve_model_id(
-        args.language.as_deref(),
-        args.config.as_deref(),
-        args.variant.as_deref(),
-    )?;
+    let model_id = resolve_model_id(args.language.as_deref(), args.config.as_deref())?;
 
     // Load model
     info!(quiet, "{} Loading model ({})...", "▶".cyan(), model_id);
@@ -334,21 +326,10 @@ pub fn available_voices_help() -> String {
     format!("Predefined voices: {}", PREDEFINED_VOICES.join(", "))
 }
 
-/// Resolve the model identifier from --language, --config, or --variant (deprecated)
-pub fn resolve_model_id(
-    language: Option<&str>,
-    config: Option<&str>,
-    variant: Option<&str>,
-) -> Result<String> {
-    // Check for conflicting options
-    let specified_count = [language.is_some(), config.is_some(), variant.is_some()]
-        .iter()
-        .filter(|&&x| x)
-        .count();
-    if specified_count > 1 {
-        anyhow::bail!(
-            "Cannot specify multiple of --language, --config, and --variant. Choose one."
-        );
+/// Resolve the model identifier from --language or --config.
+pub fn resolve_model_id(language: Option<&str>, config: Option<&str>) -> Result<String> {
+    if language.is_some() && config.is_some() {
+        anyhow::bail!("Cannot specify both --language and --config. Choose one.");
     }
 
     if let Some(lang) = language {
@@ -365,10 +346,5 @@ pub fn resolve_model_id(
         return Ok(cfg.to_string());
     }
 
-    if let Some(var) = variant {
-        return Ok(var.to_string());
-    }
-
-    // Default to the configured default language
     Ok(defaults::DEFAULT_LANGUAGE.to_string())
 }

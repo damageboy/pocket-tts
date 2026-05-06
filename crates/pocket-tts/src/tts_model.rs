@@ -76,7 +76,7 @@ impl TTSModel {
     /// Load a TTS model by language name, variant name, or config path.
     ///
     /// # Arguments
-    /// * `variant` - Language (e.g., "english", "french_24l"), legacy variant (e.g., "b6369a24"),
+    /// * `variant` - Language (e.g., "english", "french_24l"), legacy variant (e.g., "english_2026-01"),
     ///   or path to a YAML config file
     ///
     /// # Returns
@@ -138,7 +138,7 @@ impl TTSModel {
     /// reducing memory usage while maintaining acceptable quality.
     ///
     /// # Arguments
-    /// * `variant` - Model variant (e.g., "b6369a24")
+    /// * `variant` - Model variant (e.g., "english_2026-01")
     ///
     /// # Returns
     /// TTSModel with quantized weights
@@ -1330,7 +1330,7 @@ fn import_model_state(
 ///
 /// Accepts:
 /// - A language name (e.g., "english", "french_24l") → looks up `{name}.yaml` in config dirs
-/// - A legacy variant name (e.g., "b6369a24") → same lookup
+/// - A legacy variant name (e.g., "english_2026-01") → same lookup
 /// - A direct path ending in `.yaml`/`.yml` → used as-is
 pub fn find_config_path(variant: &str) -> Result<std::path::PathBuf> {
     // If it looks like a direct path to a YAML file, use it directly
@@ -1505,12 +1505,20 @@ mod tests {
     }
 
     #[test]
-    fn test_find_config_path() {
-        // This MUST pass now that we've moved the config into the crate
-        let result = find_config_path("b6369a24");
+    fn test_find_config_path_by_language() {
+        let result = find_config_path("english");
         assert!(result.is_ok(), "Config file should be found");
         let path = result.unwrap();
         assert!(path.exists(), "Config file path should exist");
+    }
+
+    #[test]
+    fn test_find_config_path_by_yaml_path() {
+        let path = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+            .join("config")
+            .join("german.yaml");
+        let result = find_config_path(path.to_str().unwrap());
+        assert!(result.is_ok(), "Direct YAML path should work");
     }
 
     #[test]

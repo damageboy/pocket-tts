@@ -150,21 +150,14 @@ fn resolve_voice_spec(model: &TTSModel, spec: &str) -> Result<pocket_tts::ModelS
 
 /// Resolve a predefined voice name to embeddings via HF Hub
 ///
-/// For v2+ models with a language origin, uses per-language voice paths:
+/// Uses per-language voice paths:
 ///   `hf://repo/languages/{language}/embeddings/{name}.safetensors@{revision}`
-/// Falls back to legacy path for v1 models:
-///   `hf://repo/embeddings/{name}.safetensors`
 fn resolve_predefined_voice(model: &TTSModel, name: &str) -> Result<pocket_tts::ModelState> {
-    let hf_path = if let Some(language) = model.language() {
-        // v2: per-language voice embeddings
-        format!(
-            "hf://{}/languages/{}/embeddings/{}.safetensors@{}",
-            STOCK_VOICE_REPO, language, name, STOCK_VOICE_REVISION
-        )
-    } else {
-        // v1 fallback: global embeddings
-        format!("hf://{}/embeddings/{}.safetensors", STOCK_VOICE_REPO, name)
-    };
+    let language = model.language().unwrap_or("english");
+    let hf_path = format!(
+        "hf://{}/languages/{}/embeddings/{}.safetensors@{}",
+        STOCK_VOICE_REPO, language, name, STOCK_VOICE_REVISION
+    );
 
     let local_path = download_if_necessary(&hf_path)
         .with_context(|| format!("Failed to download stock voice '{}'", name))?;

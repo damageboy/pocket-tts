@@ -15,7 +15,8 @@ fn test_german_wasm_vs_cli_path() -> Result<()> {
     }
 
     use std::io::Write;
-    let mut f = std::fs::File::create("/tmp/wasm_path_parity.txt")?;
+    let tmp = std::env::temp_dir();
+    let mut f = std::fs::File::create(tmp.join("wasm_path_parity.txt"))?;
 
     // === Path 1: Normal CLI load (known working) ===
     writeln!(f, "=== CLI path: TTSModel::load(\"german\") ===")?;
@@ -243,18 +244,12 @@ mimi:
     let cli_audio = candle_core::Tensor::cat(&cli_chunks, 2)?.squeeze(0)?;
     let wasm_audio = candle_core::Tensor::cat(&wasm_chunks, 2)?.squeeze(0)?;
 
-    pocket_tts::audio::write_wav(
-        "/tmp/parity_cli_german.wav",
-        &cli_audio,
-        cli_model.sample_rate as u32,
-    )?;
-    pocket_tts::audio::write_wav(
-        "/tmp/parity_wasm_german.wav",
-        &wasm_audio,
-        wasm_model.sample_rate as u32,
-    )?;
-    writeln!(f, "  Saved /tmp/parity_cli_german.wav")?;
-    writeln!(f, "  Saved /tmp/parity_wasm_german.wav")?;
+    let cli_wav = tmp.join("parity_cli_german.wav");
+    let wasm_wav = tmp.join("parity_wasm_german.wav");
+    pocket_tts::audio::write_wav(&cli_wav, &cli_audio, cli_model.sample_rate as u32)?;
+    pocket_tts::audio::write_wav(&wasm_wav, &wasm_audio, wasm_model.sample_rate as u32)?;
+    writeln!(f, "  Saved {:?}", cli_wav)?;
+    writeln!(f, "  Saved {:?}", wasm_wav)?;
 
     writeln!(f, "\n✓ All checks passed")?;
     Ok(())
