@@ -14,7 +14,7 @@ crate-type = ["cdylib", "rlib"]
 
 [features]
 default = []
-mkl = ["candle-core/mkl", "candle-nn/mkl"]
+mkl = ["candle-core/mkl", "candle-nn/mkl", "dep:intel-mkl-src"]
 quantized = []
 # WASM is handled by target, not feature flag - candle-core auto-detects wasm32 target
 wasm = []
@@ -50,7 +50,7 @@ memmap2.workspace = true
 # sentencepiece removed - causes protobuf conflict with onnxruntime
 # Using tokenizers crate's built-in SentencePiece support instead
 tokenizers = { workspace = true, features = ["onig", "progressbar", "http"] }
-intel-mkl-src.workspace = true
+intel-mkl-src = { workspace = true, optional = true }
 
 # WASM-specific dependencies
 [target.'cfg(target_arch = "wasm32")'.dependencies]

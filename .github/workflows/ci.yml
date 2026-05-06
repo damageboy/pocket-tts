@@ -140,4 +140,4 @@ jobs:
           bun install
           bun run build
       - name: Install pocket-tts-cli from path
-        run: cargo install --path crates/pocket-tts-cli --locked --force --no-default-features
+        run: cargo install --path crates/pocket-tts-cli --locked --force
