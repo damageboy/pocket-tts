@@ -370,7 +370,10 @@ fn print_timings(
     eprintln!("{}", format_timing_line("concat", generation.concat));
     eprintln!("{}", format_timing_line("wav_write", generation.wav_write));
     eprintln!("{}", format_timing_line("total", total));
-    eprintln!("TIMING audio_duration_s={:.3}", generation.audio_duration_sec);
+    eprintln!(
+        "TIMING audio_duration_s={:.3}",
+        generation.audio_duration_sec
+    );
     eprintln!("TIMING chunks={}", generation.chunks);
 }
 
@@ -405,6 +408,28 @@ pub fn format_timing_line(name: &str, duration: std::time::Duration) -> String {
     format!("TIMING {name}_ms={:.3}", duration.as_secs_f64() * 1000.0)
 }
 
+pub fn resolve_model_id(language: Option<&str>, config: Option<&str>) -> Result<String> {
+    if language.is_some() && config.is_some() {
+        anyhow::bail!("Cannot specify both --language and --config. Choose one.");
+    }
+
+    if let Some(lang) = language {
+        if lang == "french" {
+            anyhow::bail!(
+                "For technical reasons, only a larger 24-layer model is available for French. \
+                 Please use --language french_24l instead."
+            );
+        }
+        return Ok(lang.to_string());
+    }
+
+    if let Some(cfg) = config {
+        return Ok(cfg.to_string());
+    }
+
+    Ok(defaults::DEFAULT_LANGUAGE.to_string())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -426,26 +451,4 @@ mod tests {
         let help = String::from_utf8(help).unwrap();
         assert!(help.contains("--timings"), "help was:\n{help}");
     }
-}
-
-pub fn resolve_model_id(language: Option<&str>, config: Option<&str>) -> Result<String> {
-    if language.is_some() && config.is_some() {
-        anyhow::bail!("Cannot specify both --language and --config. Choose one.");
-    }
-
-    if let Some(lang) = language {
-        if lang == "french" {
-            anyhow::bail!(
-                "For technical reasons, only a larger 24-layer model is available for French. \
-                 Please use --language french_24l instead."
-            );
-        }
-        return Ok(lang.to_string());
-    }
-
-    if let Some(cfg) = config {
-        return Ok(cfg.to_string());
-    }
-
-    Ok(defaults::DEFAULT_LANGUAGE.to_string())
 }
