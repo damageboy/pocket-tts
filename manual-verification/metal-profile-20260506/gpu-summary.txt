@@ -1,0 +1,135 @@
+GPU / Metal Summary
+===================
+Trace: /tmp/pocket_tts_profiles/pocket_tts_metal_shader.trace
+Target: pocket-tts-cli (pid 86165)
+
+[GPU device]
+M3 Pro — Apple
+Memory: 28.08 GiB
+Driver: 3.44.6
+
+[GPU state utilization]
+Rows: 189792
+Active: 5.87s (19.1%)
+Idle:   24.87s (80.9%)
+  - Idle: 24.87s
+  - Active: 5.87s
+
+[GPU performance states]
+Rows: 1563, total: 23.40s
+  - Medium: 10.96s (46.8%)
+  - Minimum: 10.93s (46.7%)
+  - Maximum: 1.51s (6.5%)
+
+[Metal application intervals (target process)]
+Rows: 59757, total: 11.24s
+Command-buffer-like interval rows: count=238, share=0.0%
+By nesting depth:
+  - depth 14: count=23315, total=10.87s
+  - depth 15: count=36224, total=365.77ms
+  - depth 4: count=218, total=764.84µs
+Top interval labels:
+  - to_cpu: 4.37s (41.6% of listed)
+  - matmul: 2.49s (23.7% of listed)
+  - const-set: 1.00s (9.5% of listed)
+  - uexp: 986.08ms (9.4% of listed)
+  - copy2d: 680.23ms (6.5% of listed)
+  - binary: 420.66ms (4.0% of listed)
+  - to_dtype: 350.94ms (3.3% of listed)
+  - copy_strided: 209.68ms (2.0% of listed)
+
+[Command-buffer submissions]
+Count: 23533 over 23533 frame(s)
+Submission duration: count=23533, avg=462.12µs, median=173.92µs, p95=425.12µs, min=1.12µs, max=3.88s
+Encoder time: count=23315, avg=15.69µs, median=12.67µs, p95=38.63µs, min=6.67µs, max=734.37µs
+Encoders per submission: avg=1.54, max=20, total=36224
+Top command-buffer labels:
+  - to_cpu: 9359
+  - matmul: 7815
+  - copy2d: 3163
+  - binary: 1286
+  - copy_strided: 445
+  - <unnamed>: 218
+  - uexp: 194
+  - usin: 173
+
+[Encoder activity]
+Rows: 36224 across 23315 frame(s)
+Encoder duration: count=36224, avg=10.10µs, median=8.96µs, p95=17.54µs, min=3.08µs, max=278.17µs
+Top encoders by time:
+  - blit_to_cpu: 166.42ms (48.6% of listed)
+  - Compute Command 0: 137.08ms (40.0% of listed)
+  - Blit Command 1: 11.38ms (3.3% of listed)
+  - copy_contiguous: 8.62ms (2.5% of listed)
+  - Compute Command 2: 6.98ms (2.0% of listed)
+  - Blit Command 3: 4.48ms (1.3% of listed)
+  - Blit Command 1 & copy_contiguous: 3.99ms (1.2% of listed)
+  - Compute Command 4: 3.79ms (1.1% of listed)
+Encoder event types:
+  - Encoding: 36224
+
+[Shader inventory]
+Rows: 79, unique shaders: 33
+Shader stages:
+  - Compute: 79
+Top shaders:
+  - gemm_nn_f32_f32_32_32_16_2_2: 12
+  - gemm_nt_f32_f32_32_32_16_2_2: 4
+  - gemm_tn_f32_f32_32_32_16_2_2: 4
+  - cast_u32_f32: 2
+  - affine_f32: 2
+  - exp_f32: 2
+  - const_set_f32: 2
+  - copy_f32_strided: 2
+  - is_u32_f32: 2
+  - layernorm_f32: 2
+  - mul_f32_strided: 2
+  - cos_f32: 2
+
+[Shader timeline]
+unavailable: no rows matched target process in schema: metal-shader-profiler-intervals
+
+[Metal GPU intervals]
+Rows=99980, total=6.16s, target=5.05s (82.1%)
+Top GPU interval owners:
+  - pocket-tts-cli (86165): 5.05s (82.1%)
+  - WindowServer (469): 1.07s (17.4%)
+  - ChatGPT (67538): 18.68ms (0.3%)
+  - Vivaldi Helper (89191): 12.04ms (0.2%)
+  - <unknown>: 4.14ms (0.1%)
+  - OrbStack (31688): 1.34ms (0.0%)
+Target channels:
+  - Compute: 5.05s
+  - Fragment: 391.38µs
+  - Vertex: 35.46µs
+CPU→GPU start latency: count=36289, avg=600.73µs, median=132.29µs, p95=2.40ms, min=35.71µs, max=11.90ms
+Top GPU labels for target:
+  - matmul:Compute Command 0: 1.86s (48.7% of listed)
+  - binary:Compute Command 0: 657.93ms (17.3% of listed)
+  - copy2d:Compute Command 0: 510.77ms (13.4% of listed)
+  - copy_strided:Compute Command 0: 206.93ms (5.4% of listed)
+  - to_cpu:Compute Command 0: 201.35ms (5.3% of listed)
+  - uexp:Compute Command 0: 150.47ms (4.0% of listed)
+  - ugelu:Compute Command 0: 121.53ms (3.2% of listed)
+  - usin:Compute Command 0: 103.65ms (2.7% of listed)
+
+[Command-buffer lifecycle]
+Submitted=23533, completed=23525 (100.0%), GPU-correlated=23305
+Submission→GPU start: count=23305, avg=647.59µs, median=264.33µs, p95=1.25ms, min=62.58µs, max=3.88s
+Submission→completion: count=23525, avg=972.50µs, median=470.12µs, p95=2.27ms, min=12.92µs, max=3.88s
+GPU busy / command buffer: count=23305, avg=216.64µs, median=93.67µs, p95=1.08ms, min=1.62µs, max=3.29ms
+
+[Driver activity]
+Rows: 106274, total: 6.44s
+Top driver phases:
+  - Driver Processing: 6.44s (100.0% of listed)
+Top driver events:
+  - Driver Processing / Command Buffer: 4.60s (71.4% of listed)
+  - Driver Processing / Command Encoder: 1.53s (23.8% of listed)
+  - Driver Processing / Wire Memory: 303.98ms (4.7% of listed)
+  - Driver Processing / Unwire Memory Request: 3.09ms (0.0% of listed)
+
+[GPU counters]
+Counter metadata rows: 0
+Aggregated intervals unavailable: no rows recorded for schema: metal-gpu-counter-intervals
+

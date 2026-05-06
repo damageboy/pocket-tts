@@ -1,0 +1,63 @@
+Trace: /tmp/pocket_tts_profiles/pocket_tts_metal_cpu_time.trace
+Duration: 20.09s | Samples: 9908 | Template: Time Profiler
+
+ Samples   Self%  Total%  Function                                  Module
+──────────────────────────────────────────────────────────────────────────
+    2493   25.2%   25.2%  iokit_user_client_trap                    IOKit
+    1634   16.5%   16.5%  write                                     libsystem_kernel.dylib
+    1011   10.2%   10.2%  mach_msg2_trap                            libsystem_kernel.dylib
+     592    6.0%   34.2%  start_wqthread                            libsystem_pthread.dylib
+     260    2.6%    2.6%  core::sync::atomic::atomic_load::h97bb9…  pocket-tts-cli
+     187    1.9%    1.9%  MTLRangeAllocatorGetMaxFreeSize           Metal
+     168    1.7%    1.7%  objc_msgSend                              libobjc.A.dylib
+     139    1.4%    1.4%  _platform_memmove                         libsystem_platform.dylib
+     117    1.2%    1.7%  _xzm_free                                 libsystem_malloc.dylib
+      95    1.0%    1.0%  kevent_id                                 libsystem_kernel.dylib
+      89    0.9%    0.9%  _platform_memset                          libsystem_platform.dylib
+      67    0.7%    0.7%  IOGPUResourceListAddResource              IOGPU
+      65    0.7%    3.0%  AGX::ComputeContext<AGX::G15::Encoders,…  AGXMetalG15X_M1
+      65    0.7%    0.7%  candle_core::metal_backend::device::fin…  pocket-tts-cli
+      64    0.6%    0.6%  __psynch_cvbroad                          libsystem_kernel.dylib
+      63    0.6%    0.6%  __psynch_cvwait                           libsystem_kernel.dylib
+      50    0.5%    0.6%  AGX::PassiveResourceGroupUsage<AGX::G15…  AGXMetalG15X_M1
+      46    0.5%    0.5%  mach_absolute_time                        libsystem_kernel.dylib
+      46    0.5%    0.5%  _xzm_xzone_malloc                         libsystem_malloc.dylib
+      46    0.5%    0.5%  core::ptr::non_null::NonNull$LT$T$GT$::…  pocket-tts-cli
+      44    0.4%    0.4%  madvise                                   libsystem_kernel.dylib
+      38    0.4%    1.0%  AGX::ComputeContext<AGX::G15::Encoders,…  AGXMetalG15X_M1
+      38    0.4%    0.4%  _$LT$core..slice..iter..Iter$LT$T$GT$$u…  pocket-tts-cli
+      37    0.4%    0.4%  AGX::ComputeContext<AGX::G15::Encoders,…  AGXMetalG15X_M1
+      37    0.4%    0.4%  _xzm_xzone_malloc_tiny                    libsystem_malloc.dylib
+      36    0.4%    0.4%  _$LT$core..hash..sip..Hasher$LT$S$GT$$u…  pocket-tts-cli
+      35    0.4%    1.1%  -[AGXG15XFamilyComputeContext endEncodi…  AGXMetalG15X_M1
+      34    0.3%    0.3%  objc_msgSendSuper2                        libobjc.A.dylib
+      32    0.3%    0.4%  MTLResourceListAddResource                Metal
+      32    0.3%    0.3%  <deduplicated_symbol>                     libsystem_malloc.dylib
+      31    0.3%    0.3%  weak_entry_for_referent                   libobjc.A.dylib
+      29    0.3%    0.3%  MTLRangeAllocatorAllocate                 Metal
+      29    0.3%    0.3%  _$LT$alloc..sync..Arc$LT$T$C$A$GT$$u20$…  pocket-tts-cli
+      28    0.3%    0.4%  _xzm_xzone_malloc_freelist_outlined       libsystem_malloc.dylib
+      27    0.3%    0.3%  __bzero                                   libsystem_platform.dylib
+      26    0.3%    0.3%  _RNvXs12_NtNtCsl8K0bEFm1U0_4core3cmp5im…  pocket-tts-cli
+      25    0.3%    0.3%  _$LT$metal..resource.._..InternalBitFla…  pocket-tts-cli
+      25    0.3%    0.3%  AGX::ComputeContext<AGX::G15::Encoders,…  AGXMetalG15X_M1
+      25    0.3%    0.3%  _malloc_zone_malloc                       libsystem_malloc.dylib
+      25    0.3%    0.4%  <deduplicated_symbol>                     AGXMetalG15X_M1
+
+ Samples       %  Module
+────────────────────────
+    2976   30.0%  libsystem_kernel.dylib
+    2527   25.5%  IOKit
+     987   10.0%  pocket-tts-cli
+     677    6.8%  AGXMetalG15X_M1
+     613    6.2%  libsystem_pthread.dylib
+     492    5.0%  libobjc.A.dylib
+     433    4.4%  libsystem_malloc.dylib
+     363    3.7%  Metal
+     311    3.1%  IOGPU
+     279    2.8%  libsystem_platform.dylib
+     114    1.2%  CoreFoundation
+      93    0.9%  libdispatch.dylib
+      10    0.1%  libsystem_blocks.dylib
+       9    0.1%  Foundation
+       7    0.1%  FramePacing

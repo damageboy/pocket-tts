@@ -1,0 +1,11 @@
+Shader Hotspots
+===============
+Trace: /tmp/pocket_tts_profiles/pocket_tts_metal_shader.trace
+Target: pocket-tts-cli (pid 86165)
+Mode: gpu-interval-fallback
+
+  Duration    Rows  Stage       Shader                        Callsite / Label
+─────────────────────────────────────────────────────────────────────────────────────────────────────────
+     5.05s   36264  Compute     Compute (add_f32_strided, a…  uexp:Compute Command 0      ( pocket-tts-cli (86165) )  0x7a7a1f58
+  540.50µs      40  Fragment    Fragment Shader               copy2d:Compute Command 0      ( pocket-tts-cli (86165) )  0x7a7ab82e
+  351.50µs      49  Vertex      Vertex Shader                 GPU Execution      ( n/a )  0x7a7b0e47

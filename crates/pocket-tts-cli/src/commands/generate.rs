@@ -10,7 +10,7 @@ use pocket_tts::TTSModel;
 use std::path::PathBuf;
 use std::time::{Duration, Instant};
 
-use crate::voice::{PREDEFINED_VOICES, resolve_voice};
+use crate::voice::{resolve_voice, PREDEFINED_VOICES};
 use pocket_tts::config::defaults;
 
 #[derive(Parser, Debug)]
