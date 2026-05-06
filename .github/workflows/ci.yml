@@ -56,13 +56,13 @@ jobs:
       - name: Run clippy (Linux/Windows)
         if: matrix.os != 'macos-latest'
         run: |
-          cargo clippy -p pocket-tts --all-targets --features quantized -- -D warnings
-          cargo clippy -p pocket-tts-cli --all-targets --features quantized -- -D warnings
+          cargo clippy -p pocket-tts --all-targets -- -D warnings
+          cargo clippy -p pocket-tts-cli --all-targets -- -D warnings
       - name: Run clippy (macOS)
         if: matrix.os == 'macos-latest'
         run: |
-          cargo clippy -p pocket-tts --all-targets --features "quantized metal" -- -D warnings
-          cargo clippy -p pocket-tts-cli --all-targets --features "quantized metal" -- -D warnings
+          cargo clippy -p pocket-tts --all-targets --features metal -- -D warnings
+          cargo clippy -p pocket-tts-cli --all-targets --features metal -- -D warnings
         env:
           RUSTFLAGS: "-C target-cpu=apple-m1 -C target-feature=+aes,+sha2"
 
@@ -97,18 +97,18 @@ jobs:
           bun run build
       - name: Run pocket-tts tests (Linux/Windows)
         if: matrix.os != 'macos-latest'
-        run: cargo test --release -p pocket-tts --features quantized
-      - name: Check pocket-tts-cli tests (Linux/Windows)
+        run: cargo test --release -p pocket-tts
+      - name: Check pocket-tts-cli compiles (Linux/Windows)
         if: matrix.os != 'macos-latest'
-        run: cargo check --release -p pocket-tts-cli --tests --features quantized
+        run: cargo check --release -p pocket-tts-cli --tests
       - name: Run pocket-tts tests (macOS)
         if: matrix.os == 'macos-latest'
-        run: cargo test --release -p pocket-tts --features "quantized metal"
+        run: cargo test --release -p pocket-tts --features metal
         env:
           RUSTFLAGS: "-C target-cpu=apple-m1 -C target-feature=+aes,+sha2"
-      - name: Check pocket-tts-cli tests (macOS)
+      - name: Check pocket-tts-cli compiles (macOS)
         if: matrix.os == 'macos-latest'
-        run: cargo check --release -p pocket-tts-cli --tests --features "quantized metal"
+        run: cargo check --release -p pocket-tts-cli --tests --features metal
         env:
           RUSTFLAGS: "-C target-cpu=apple-m1 -C target-feature=+aes,+sha2"
 
@@ -140,4 +140,4 @@ jobs:
           bun install
           bun run build
       - name: Install pocket-tts-cli from path
-        run: cargo install --path crates/pocket-tts-cli --locked --force
+        run: cargo install --path crates/pocket-tts-cli --locked --force --no-default-features
