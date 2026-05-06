@@ -9,5 +9,7 @@ rustflags = [
 [target.aarch64-apple-darwin]
 rustflags = ["-C", "target-cpu=apple-m1", "-C", "target-feature=+aes,+sha2"]
 
-[build]
-rustflags = ["-C", "target-cpu=native"]
+# NOTE: target-cpu=native removed from [build] — it causes SIGILL on CI
+# runners when cached artifacts are reused across different CPU generations.
+# The aarch64-apple-darwin target above already sets apple-m1 for local macOS.
+# For other local platforms, set RUSTFLAGS="-C target-cpu=native" in your shell.

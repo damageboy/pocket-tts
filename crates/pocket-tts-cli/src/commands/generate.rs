@@ -8,6 +8,7 @@ use indicatif::{ProgressBar, ProgressStyle};
 use owo_colors::OwoColorize;
 use pocket_tts::TTSModel;
 use std::path::PathBuf;
+use std::time::{Duration, Instant};
 
 use crate::voice::{PREDEFINED_VOICES, resolve_voice};
 use pocket_tts::config::defaults;
@@ -76,6 +77,10 @@ pub struct GenerateArgs {
     /// Suppress all output except errors
     #[arg(short, long)]
     pub quiet: bool,
+
+    /// Print internal timing measurements to stderr
+    #[arg(long)]
+    pub timings: bool,
 }
 
 /// Print styled message (respects quiet mode)
@@ -88,6 +93,7 @@ macro_rules! info {
 }
 
 pub fn run(args: GenerateArgs) -> Result<()> {
+    let total_start = Instant::now();
     let quiet = args.quiet || args.stream;
 
     // Print banner
@@ -121,6 +127,7 @@ pub fn run(args: GenerateArgs) -> Result<()> {
 
     let quantized = args.quantized;
 
+    let load_start = Instant::now();
     let model = if quantized {
         #[cfg(feature = "quantized")]
         {
@@ -147,6 +154,7 @@ pub fn run(args: GenerateArgs) -> Result<()> {
             &device,
         )?
     };
+    let model_load = load_start.elapsed();
 
     info!(
         quiet,
@@ -173,33 +181,69 @@ pub fn run(args: GenerateArgs) -> Result<()> {
         voice_display.yellow()
     );
 
+    let voice_start = Instant::now();
     let voice_state = resolve_voice(&model, args.voice.as_deref())?;
+    let voice_resolve = voice_start.elapsed();
 
     info!(quiet, "  {} Voice ready", "✓".green());
 
     // Generate
-    if args.stream {
+    let generation = if args.stream {
         run_streaming(&model, &text, &voice_state)
     } else {
         run_to_file(&model, &args, &text, &voice_state, quiet)
+    }?;
+
+    if args.timings {
+        print_timings(model_load, voice_resolve, generation, total_start.elapsed());
     }
+
+    Ok(())
+}
+
+#[derive(Debug, Clone, Copy)]
+struct GenerationTimings {
+    inference: Duration,
+    concat: Duration,
+    wav_write: Duration,
+    audio_duration_sec: f32,
+    chunks: usize,
 }
 
 /// Run streaming generation to stdout
-fn run_streaming(model: &TTSModel, text: &str, voice_state: &pocket_tts::ModelState) -> Result<()> {
+fn run_streaming(
+    model: &TTSModel,
+    text: &str,
+    voice_state: &pocket_tts::ModelState,
+) -> Result<GenerationTimings> {
     use std::io::Write;
     let mut stdout = std::io::stdout();
+    let mut chunks = 0usize;
+    let mut total_samples = 0usize;
 
+    let inference_start = Instant::now();
     for chunk_res in model.generate_stream_long(text, voice_state) {
         let chunk = chunk_res?;
+        let dims = chunk.dims();
+        total_samples += if dims.len() == 2 { dims[1] } else { dims[0] };
+        chunks += 1;
+
         // Convert tensor to 16-bit PCM
         let chunk = chunk.squeeze(0)?;
         let bytes = pocket_tts::audio::pcm_i16_le_bytes(&chunk)?;
         stdout.write_all(&bytes)?;
         stdout.flush()?;
     }
+    model.device.synchronize()?;
+    let inference = inference_start.elapsed();
 
-    Ok(())
+    Ok(GenerationTimings {
+        inference,
+        concat: Duration::ZERO,
+        wav_write: Duration::ZERO,
+        audio_duration_sec: total_samples as f32 / model.sample_rate as f32,
+        chunks,
+    })
 }
 
 /// Run generation to file with progress bar
@@ -209,7 +253,7 @@ fn run_to_file(
     text: &str,
     voice_state: &pocket_tts::ModelState,
     quiet: bool,
-) -> Result<()> {
+) -> Result<GenerationTimings> {
     use candle_core::Tensor;
 
     info!(
@@ -240,6 +284,7 @@ fn run_to_file(
     let mut audio_chunks = Vec::new();
     let mut total_samples = 0;
 
+    let inference_start = Instant::now();
     for chunk_res in model.generate_stream_long(text, voice_state) {
         let chunk = chunk_res?;
         let dims = chunk.dims();
@@ -253,6 +298,8 @@ fn run_to_file(
             total_samples as f32 / model.sample_rate as f32
         ));
     }
+    model.device.synchronize()?;
+    let inference = inference_start.elapsed();
 
     pb.finish_and_clear();
 
@@ -260,8 +307,11 @@ fn run_to_file(
     if audio_chunks.is_empty() {
         anyhow::bail!("No audio generated - text may be too short or invalid");
     }
+    let concat_start = Instant::now();
     let audio = Tensor::cat(&audio_chunks, 2)?;
     let audio = audio.squeeze(0)?; // Remove batch dimension
+    model.device.synchronize()?;
+    let concat = concat_start.elapsed();
 
     let dims = audio.dims();
     let num_samples = if dims.len() == 2 { dims[1] } else { dims[0] };
@@ -274,7 +324,9 @@ fn run_to_file(
         "▶".cyan(),
         args.output.display().yellow()
     );
+    let wav_write_start = Instant::now();
     pocket_tts::audio::write_wav(&args.output, &audio, model.sample_rate as u32)?;
+    let wav_write = wav_write_start.elapsed();
 
     // Success message
     if !quiet {
@@ -297,7 +349,29 @@ fn run_to_file(
         );
     }
 
-    Ok(())
+    Ok(GenerationTimings {
+        inference,
+        concat,
+        wav_write,
+        audio_duration_sec: duration_sec,
+        chunks: audio_chunks.len(),
+    })
+}
+
+fn print_timings(
+    model_load: Duration,
+    voice_resolve: Duration,
+    generation: GenerationTimings,
+    total: Duration,
+) {
+    eprintln!("{}", format_timing_line("model_load", model_load));
+    eprintln!("{}", format_timing_line("voice_resolve", voice_resolve));
+    eprintln!("{}", format_timing_line("inference", generation.inference));
+    eprintln!("{}", format_timing_line("concat", generation.concat));
+    eprintln!("{}", format_timing_line("wav_write", generation.wav_write));
+    eprintln!("{}", format_timing_line("total", total));
+    eprintln!("TIMING audio_duration_s={:.3}", generation.audio_duration_sec);
+    eprintln!("TIMING chunks={}", generation.chunks);
 }
 
 /// Print startup banner
@@ -327,6 +401,33 @@ pub fn available_voices_help() -> String {
 }
 
 /// Resolve the model identifier from --language or --config.
+pub fn format_timing_line(name: &str, duration: std::time::Duration) -> String {
+    format!("TIMING {name}_ms={:.3}", duration.as_secs_f64() * 1000.0)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use clap::CommandFactory;
+    use std::time::Duration;
+
+    #[test]
+    fn timing_line_is_machine_readable_milliseconds() {
+        assert_eq!(
+            format_timing_line("inference", Duration::from_micros(1_234_567)),
+            "TIMING inference_ms=1234.567"
+        );
+    }
+
+    #[test]
+    fn generate_help_includes_timings_flag() {
+        let mut help = Vec::new();
+        GenerateArgs::command().write_long_help(&mut help).unwrap();
+        let help = String::from_utf8(help).unwrap();
+        assert!(help.contains("--timings"), "help was:\n{help}");
+    }
+}
+
 pub fn resolve_model_id(language: Option<&str>, config: Option<&str>) -> Result<String> {
     if language.is_some() && config.is_some() {
         anyhow::bail!("Cannot specify both --language and --config. Choose one.");
