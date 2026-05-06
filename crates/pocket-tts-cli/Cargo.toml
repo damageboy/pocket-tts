@@ -9,7 +9,13 @@ description = "CLI and API server for Pocket TTS"
 keywords.workspace = true
 categories.workspace = true
 build = "build.rs"
-include = ["src/**/*", "Cargo.toml", "web/dist/**/*", "tests/**/*", "../../.cargo/config.toml"]
+include = [
+  "src/**/*",
+  "Cargo.toml",
+  "web/dist/**/*",
+  "tests/**/*",
+  "../../.cargo/config.toml",
+]
 
 [lib]
 name = "pocket_tts_cli"
@@ -17,7 +23,12 @@ path = "src/lib.rs"
 
 [features]
 default = ["web-ui"]
-web-ui = ["rust-embed", "mime_guess", "percent-encoding", "pocket-tts/quantized"]
+web-ui = [
+  "rust-embed",
+  "mime_guess",
+  "percent-encoding",
+  "pocket-tts/quantized",
+]
 quantized = ["pocket-tts/quantized"]
 metal = ["pocket-tts/metal", "candle-core/metal"]
 mkl = ["pocket-tts/mkl"]
