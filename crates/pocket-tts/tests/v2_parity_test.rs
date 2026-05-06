@@ -22,9 +22,8 @@ fn test_v2_voice_state_import() -> Result<()> {
     let model = TTSModel::load("english")?;
 
     // Load voice state for alba
-    let voice_state = pocket_tts::voice_state::init_states();
     let alba_path = pocket_tts::weights::download_if_necessary(
-        "hf://kyutai/pocket-tts-without-voice-cloning/languages/english/embeddings/alba.safetensors@e041936c75475d350b405bc870bcf7c22da4e9e6"
+        "hf://kyutai/pocket-tts-without-voice-cloning/languages/english/embeddings/alba.safetensors@e041936c75475d350b405bc870bcf7c22da4e9e6",
     )?;
     let voice_state = model.get_voice_state_from_prompt_file(&alba_path)?;
 
@@ -126,7 +125,7 @@ fn test_v2_first_generation_step() -> Result<()> {
 
     // Load voice state
     let alba_path = pocket_tts::weights::download_if_necessary(
-        "hf://kyutai/pocket-tts-without-voice-cloning/languages/english/embeddings/alba.safetensors@e041936c75475d350b405bc870bcf7c22da4e9e6"
+        "hf://kyutai/pocket-tts-without-voice-cloning/languages/english/embeddings/alba.safetensors@e041936c75475d350b405bc870bcf7c22da4e9e6",
     )?;
     let voice_state = model.get_voice_state_from_prompt_file(&alba_path)?;
 
@@ -238,7 +237,7 @@ fn test_v2_german_parity() -> Result<()> {
 
     // Load voice state
     let juergen_path = pocket_tts::weights::download_if_necessary(
-        "hf://kyutai/pocket-tts-without-voice-cloning/languages/german/embeddings/juergen.safetensors@e041936c75475d350b405bc870bcf7c22da4e9e6"
+        "hf://kyutai/pocket-tts-without-voice-cloning/languages/german/embeddings/juergen.safetensors@e041936c75475d350b405bc870bcf7c22da4e9e6",
     )?;
     let voice_state = model.get_voice_state_from_prompt_file(&juergen_path)?;
 
@@ -276,7 +275,9 @@ fn test_v2_german_parity() -> Result<()> {
     );
     assert_eq!(
         token_vec[0],
-        vec![392, 270, 621, 1384, 261, 357, 277, 1103, 264, 1452, 435, 264, 281, 545, 263, 262]
+        vec![
+            392, 270, 621, 1384, 261, 357, 277, 1103, 264, 1452, 435, 264, 281, 545, 263, 262
+        ]
     );
 
     // Text embeddings

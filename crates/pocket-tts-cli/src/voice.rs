@@ -7,8 +7,8 @@
 //! - Base64-encoded audio data
 
 use anyhow::{Context, Result};
-use pocket_tts::weights::download_if_necessary;
 use pocket_tts::TTSModel;
+use pocket_tts::weights::download_if_necessary;
 use std::hash::{Hash, Hasher};
 use std::path::PathBuf;
 
@@ -241,7 +241,7 @@ fn resolve_base64_voice(model: &TTSModel, spec: &str) -> Result<pocket_tts::Mode
         spec
     };
 
-    use base64::{engine::general_purpose, Engine as _};
+    use base64::{Engine as _, engine::general_purpose};
     let bytes = general_purpose::STANDARD
         .decode(b64_str)
         .context("Failed to decode base64 audio")?;

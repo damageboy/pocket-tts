@@ -9,7 +9,7 @@ use owo_colors::OwoColorize;
 use pocket_tts::TTSModel;
 use std::path::PathBuf;
 
-use crate::voice::{resolve_voice, PREDEFINED_VOICES};
+use crate::voice::{PREDEFINED_VOICES, resolve_voice};
 use pocket_tts::config::defaults;
 
 #[derive(Parser, Debug)]

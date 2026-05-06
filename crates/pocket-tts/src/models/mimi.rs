@@ -1,7 +1,7 @@
+use crate::ModelState;
 use crate::models::seanet::{SEANetDecoder, SEANetEncoder};
 use crate::models::transformer::ProjectedTransformer;
 use crate::modules::conv::{ConvDownsample1d, ConvTrUpsample1d};
-use crate::ModelState;
 use candle_core::{Result, Tensor};
 use candle_nn::{Conv1d, Conv1dConfig, Module, VarBuilder};
 

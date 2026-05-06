@@ -750,14 +750,15 @@ impl TTSModel {
         // 4. Warn about chunks that still exceed max_tokens
         for chunk in &chunks {
             if let Ok(token_count) = self.conditioner.count_tokens(chunk.trim())
-                && token_count > MAX_TOKENS_PER_CHUNK {
-                    tracing::warn!(
-                        "Chunk has {} tokens (max {}), generation may skip words: '{:.50}...'",
-                        token_count,
-                        MAX_TOKENS_PER_CHUNK,
-                        chunk,
-                    );
-                }
+                && token_count > MAX_TOKENS_PER_CHUNK
+            {
+                tracing::warn!(
+                    "Chunk has {} tokens (max {}), generation may skip words: '{:.50}...'",
+                    token_count,
+                    MAX_TOKENS_PER_CHUNK,
+                    chunk,
+                );
+            }
         }
 
         chunks
@@ -1247,9 +1248,7 @@ fn import_model_state(
     tensors: &std::collections::HashMap<String, Tensor>,
     device: &Device,
 ) -> Result<ModelState> {
-    use crate::voice_state::{
-        ATTN_K_BUF_KEY, ATTN_LEN_KEY, ATTN_POS_KEY, ATTN_V_BUF_KEY,
-    };
+    use crate::voice_state::{ATTN_K_BUF_KEY, ATTN_LEN_KEY, ATTN_POS_KEY, ATTN_V_BUF_KEY};
 
     // First pass: collect raw Python state grouped by module
     let mut raw: std::collections::HashMap<String, std::collections::HashMap<String, Tensor>> =
@@ -1314,10 +1313,7 @@ fn import_model_state(
                 Tensor::new(offset_val as i64, device)?,
             );
             // head = 0 (linear cache, no ring buffer wrap)
-            module_state.insert(
-                "head".to_string(),
-                Tensor::new(0i64, device)?,
-            );
+            module_state.insert("head".to_string(), Tensor::new(0i64, device)?);
         }
 
         // Map to the Rust module naming convention:
@@ -1403,19 +1399,11 @@ pub fn find_config_path(variant: &str) -> Result<std::path::PathBuf> {
         })
         .unwrap_or_default();
 
-    anyhow::bail!(
-        "Config '{}' not found. Available: {:?}",
-        variant,
-        available
-    )
+    anyhow::bail!("Config '{}' not found. Available: {:?}", variant, available)
 }
 
 /// Prepare text for generation, stripping pause markers for TTS processing
-fn prepare_text_prompt(
-    text: &str,
-    pad_with_spaces: bool,
-    remove_semicolons: bool,
-) -> String {
+fn prepare_text_prompt(text: &str, pad_with_spaces: bool, remove_semicolons: bool) -> String {
     // First strip any explicit pause markers
     let text = crate::pause::strip_pause_markers(text);
 

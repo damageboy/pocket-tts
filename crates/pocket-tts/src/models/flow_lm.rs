@@ -1,6 +1,6 @@
+use crate::ModelState;
 use crate::models::transformer::StreamingTransformer;
 use crate::modules::mlp::{LayerNorm, ModulationParams, SimpleMLPAdaLN};
-use crate::ModelState;
 use candle_core::{Result, Tensor};
 use candle_nn::{Linear, Module, VarBuilder};
 

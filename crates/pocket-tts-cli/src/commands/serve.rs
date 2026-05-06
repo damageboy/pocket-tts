@@ -107,11 +107,7 @@ pub async fn run(args: ServeArgs) -> Result<()> {
         args.variant.as_deref(),
     )?;
 
-    println!(
-        "{} Loading model: {}",
-        "->".cyan(),
-        model_id.yellow()
-    );
+    println!("{} Loading model: {}", "->".cyan(), model_id.yellow());
 
     println!("{} UI mode: {}", "->".cyan(), args.ui.as_str().yellow());
 
