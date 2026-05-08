@@ -3,6 +3,13 @@ mod tests {
     use pocket_tts::TTSModel;
     use pocket_tts::anyhow::Result;
     use pocket_tts::candle_core::Tensor;
+    use std::sync::{Mutex, OnceLock};
+
+    static STREAMING_MODEL_LOCK: OnceLock<Mutex<()>> = OnceLock::new();
+
+    fn streaming_model_lock() -> &'static Mutex<()> {
+        STREAMING_MODEL_LOCK.get_or_init(|| Mutex::new(()))
+    }
 
     // Helper to compare tensors
     fn assert_tensors_close(t1: &Tensor, t2: &Tensor, tolerance: f64) -> Result<()> {
@@ -19,6 +26,10 @@ mod tests {
 
     #[test]
     fn test_streaming_matches_batch() -> Result<()> {
+        let _guard = streaming_model_lock()
+            .lock()
+            .unwrap_or_else(|poisoned| poisoned.into_inner());
+
         // Load model (assumes weights are present from previous phases)
         let mut model = TTSModel::load("b6369a24")?;
 
@@ -71,6 +82,10 @@ mod tests {
 
     #[test]
     fn test_streaming_yields_multiple_chunks() -> Result<()> {
+        let _guard = streaming_model_lock()
+            .lock()
+            .unwrap_or_else(|poisoned| poisoned.into_inner());
+
         let mut model = TTSModel::load("b6369a24")?;
         model.temp = 0.0;
 
