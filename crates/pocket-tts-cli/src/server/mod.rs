@@ -2,8 +2,8 @@
 //!
 //! Axum-based server providing TTS generation endpoints.
 
-use anyhow::Result;
 use pocket_tts::TTSModel;
+use pocket_tts::anyhow::Result;
 
 use crate::commands::serve::{ServeArgs, UiMode, print_endpoints};
 use crate::voice::{resolve_voice, voice_cache_key};
@@ -26,7 +26,7 @@ pub async fn start_server(args: ServeArgs, model_id: &str) -> Result<()> {
         let wasm_js = wasm_pkg_dir.join("pocket_tts.js");
         let wasm_bin = wasm_pkg_dir.join("pocket_tts_bg.wasm");
         if !wasm_js.is_file() || !wasm_bin.is_file() {
-            anyhow::bail!(
+            pocket_tts::anyhow::bail!(
                 "WASM UI mode requires built WASM assets at {:?}. Run scripts/build-wasm.ps1 (Windows) or scripts/build-wasm.sh (Unix).",
                 wasm_pkg_dir
             );
@@ -61,7 +61,9 @@ pub async fn start_server(args: ServeArgs, model_id: &str) -> Result<()> {
         }
         #[cfg(not(feature = "quantized"))]
         {
-            anyhow::bail!("Quantization feature not enabled. Rebuild with --features quantized");
+            pocket_tts::anyhow::bail!(
+                "Quantization feature not enabled. Rebuild with --features quantized"
+            );
         }
     } else {
         TTSModel::load_with_params(
@@ -94,7 +96,7 @@ pub async fn start_server(args: ServeArgs, model_id: &str) -> Result<()> {
         let mut cache = state
             .voice_cache
             .lock()
-            .map_err(|_| anyhow::anyhow!("voice cache lock poisoned"))?;
+            .map_err(|_| pocket_tts::anyhow::anyhow!("voice cache lock poisoned"))?;
         cache.put(
             voice_cache_key(default_voice),
             state.default_voice_state.clone(),
@@ -112,7 +114,7 @@ pub async fn start_server(args: ServeArgs, model_id: &str) -> Result<()> {
             let mut cache = state
                 .voice_cache
                 .lock()
-                .map_err(|_| anyhow::anyhow!("voice cache lock poisoned"))?;
+                .map_err(|_| pocket_tts::anyhow::anyhow!("voice cache lock poisoned"))?;
             cache.get(&key).is_some()
         };
         if already_cached {
@@ -125,7 +127,7 @@ pub async fn start_server(args: ServeArgs, model_id: &str) -> Result<()> {
                 let mut cache = state
                     .voice_cache
                     .lock()
-                    .map_err(|_| anyhow::anyhow!("voice cache lock poisoned"))?;
+                    .map_err(|_| pocket_tts::anyhow::anyhow!("voice cache lock poisoned"))?;
                 cache.put(key, std::sync::Arc::new(vs));
                 println!("  - Voice prewarmed: {voice}");
             }

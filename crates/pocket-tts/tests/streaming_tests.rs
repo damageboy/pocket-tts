@@ -1,8 +1,8 @@
 #[cfg(test)]
 mod tests {
-    use anyhow::Result;
-    use candle_core::Tensor;
     use pocket_tts::TTSModel;
+    use pocket_tts::anyhow::Result;
+    use pocket_tts::candle_core::Tensor;
 
     // Helper to compare tensors
     fn assert_tensors_close(t1: &Tensor, t2: &Tensor, tolerance: f64) -> Result<()> {

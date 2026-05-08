@@ -8,7 +8,7 @@ members = [
 ]
 
 [workspace.package]
-version = "0.8.0"
+version = "0.8.1"
 edition = "2024"
 authors = ["Pocket TTS Contributors"]
 license = "MIT OR Apache-2.0"
@@ -47,7 +47,6 @@ rand_distr = "0.4"
 lto = "fat"
 codegen-units = 1
 panic = "abort"
-
 
 [profile.bench]
 debug = true

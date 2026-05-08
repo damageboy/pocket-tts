@@ -1,7 +1,7 @@
 use pocket_tts::TTSModel;
 use std::time::Instant;
 
-fn main() -> anyhow::Result<()> {
+fn main() -> pocket_tts::anyhow::Result<()> {
     let model = TTSModel::load("b6369a24")?;
     let hf_path = "hf://kyutai/pocket-tts-without-voice-cloning/embeddings/cosette.safetensors";
     let local_path = pocket_tts::weights::download_if_necessary(hf_path)?;

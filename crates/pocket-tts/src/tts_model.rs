@@ -255,7 +255,15 @@ impl TTSModel {
 
         #[cfg(target_arch = "wasm32")]
         {
-            let _ = (config, temp, lsd_decode_steps, eos_threshold, device, dtype);
+            let _ = (
+                config,
+                temp,
+                lsd_decode_steps,
+                eos_threshold,
+                noise_clamp,
+                device,
+                dtype,
+            );
             anyhow::bail!(
                 "WASM requires from_bytes or providing a pre-built VarBuilder. Use load_from_bytes instead."
             );

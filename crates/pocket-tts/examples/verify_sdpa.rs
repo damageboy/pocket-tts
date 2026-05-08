@@ -1,4 +1,5 @@
-use candle_core::{Device, Tensor};
+use pocket_tts::candle_core::{self, Device, Tensor};
+use pocket_tts::candle_nn;
 use pocket_tts::modules::sdpa::sdpa;
 
 fn naive_sdpa_masked_reference(
@@ -7,7 +8,7 @@ fn naive_sdpa_masked_reference(
     v: &Tensor,
     scale: f64,
     is_causal: bool,
-) -> anyhow::Result<Tensor> {
+) -> pocket_tts::anyhow::Result<Tensor> {
     let (_b, _h, q_len, _d) = q.dims4()?;
     let kv_len = k.dims()[2];
 
@@ -39,7 +40,7 @@ fn naive_sdpa_masked_reference(
     Ok(probs.matmul(v)?)
 }
 
-fn main() -> anyhow::Result<()> {
+fn main() -> pocket_tts::anyhow::Result<()> {
     let device = Device::Cpu;
     let b = 1;
     let h = 4;

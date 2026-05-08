@@ -2,9 +2,9 @@
 //!
 //! Provides `pocket-tts serve` for HTTP API server.
 
-use anyhow::Result;
 use clap::{ArgAction, Parser, ValueEnum};
 use owo_colors::OwoColorize;
+use pocket_tts::anyhow::Result;
 
 use crate::voice::PREDEFINED_VOICES;
 

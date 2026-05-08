@@ -5,8 +5,8 @@
 //!
 //! Run with: `cargo run --example quantize_demo --features quantized`
 
-use anyhow::Result;
-use candle_core::{Device, Tensor};
+use pocket_tts::anyhow::Result;
+use pocket_tts::candle_core::{Device, Tensor};
 
 fn main() -> Result<()> {
     println!("=== Pocket TTS Quantization Demo ===\n");

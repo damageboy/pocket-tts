@@ -4,9 +4,9 @@
 //!
 //! Prerequisites: v2 english model must be downloaded (run `pocket-tts generate --language english` first)
 
-use anyhow::Result;
-use candle_core::{DType, Device, Tensor};
 use pocket_tts::TTSModel;
+use pocket_tts::anyhow::Result;
+use pocket_tts::candle_core::{DType, Device, Tensor};
 
 fn has_v2_model() -> bool {
     TTSModel::load("english").is_ok()

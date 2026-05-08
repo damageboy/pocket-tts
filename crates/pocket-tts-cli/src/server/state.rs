@@ -31,10 +31,6 @@ impl VoiceStateCache {
         Some(value)
     }
 
-    pub fn contains(&self, key: &str) -> bool {
-        self.entries.contains_key(key)
-    }
-
     pub fn put(&mut self, key: String, value: Arc<ModelState>) {
         if self.entries.contains_key(&key) {
             self.entries.insert(key.clone(), value);

@@ -2,15 +2,15 @@
 //!
 //! Provides `pocket-tts generate` for text-to-speech synthesis.
 
-use anyhow::Result;
 use clap::Parser;
 use indicatif::{ProgressBar, ProgressStyle};
 use owo_colors::OwoColorize;
 use pocket_tts::TTSModel;
+use pocket_tts::anyhow::Result;
 use std::path::PathBuf;
 use std::time::{Duration, Instant};
 
-use crate::voice::{PREDEFINED_VOICES, resolve_voice};
+use crate::voice::resolve_voice;
 use pocket_tts::config::defaults;
 
 #[derive(Parser, Debug)]
@@ -105,14 +105,14 @@ pub fn run(args: GenerateArgs) -> Result<()> {
     let device = if args.use_metal {
         #[cfg(feature = "metal")]
         {
-            candle_core::Device::new_metal(0)?
+            pocket_tts::candle_core::Device::new_metal(0)?
         }
         #[cfg(not(feature = "metal"))]
         {
-            anyhow::bail!("Metal feature not enabled. Rebuild with --features metal");
+            pocket_tts::anyhow::bail!("Metal feature not enabled. Rebuild with --features metal");
         }
     } else {
-        candle_core::Device::Cpu
+        pocket_tts::candle_core::Device::Cpu
     };
 
     if !quiet {
@@ -142,7 +142,9 @@ pub fn run(args: GenerateArgs) -> Result<()> {
         }
         #[cfg(not(feature = "quantized"))]
         {
-            anyhow::bail!("Quantization feature not enabled. Rebuild with --features quantized");
+            pocket_tts::anyhow::bail!(
+                "Quantization feature not enabled. Rebuild with --features quantized"
+            );
         }
     } else {
         TTSModel::load_with_params_device(
@@ -254,7 +256,7 @@ fn run_to_file(
     voice_state: &pocket_tts::ModelState,
     quiet: bool,
 ) -> Result<GenerationTimings> {
-    use candle_core::Tensor;
+    use pocket_tts::candle_core::Tensor;
 
     info!(
         quiet,
@@ -305,7 +307,7 @@ fn run_to_file(
 
     // Concatenate all audio chunks
     if audio_chunks.is_empty() {
-        anyhow::bail!("No audio generated - text may be too short or invalid");
+        pocket_tts::anyhow::bail!("No audio generated - text may be too short or invalid");
     }
     let concat_start = Instant::now();
     let audio = Tensor::cat(&audio_chunks, 2)?;
@@ -398,11 +400,6 @@ fn truncate_text(text: &str, max_len: usize) -> String {
     }
 }
 
-/// Print available voices (for help text)
-pub fn available_voices_help() -> String {
-    format!("Predefined voices: {}", PREDEFINED_VOICES.join(", "))
-}
-
 /// Resolve the model identifier from --language or --config.
 pub fn format_timing_line(name: &str, duration: std::time::Duration) -> String {
     format!("TIMING {name}_ms={:.3}", duration.as_secs_f64() * 1000.0)
@@ -410,12 +407,12 @@ pub fn format_timing_line(name: &str, duration: std::time::Duration) -> String {
 
 pub fn resolve_model_id(language: Option<&str>, config: Option<&str>) -> Result<String> {
     if language.is_some() && config.is_some() {
-        anyhow::bail!("Cannot specify both --language and --config. Choose one.");
+        pocket_tts::anyhow::bail!("Cannot specify both --language and --config. Choose one.");
     }
 
     if let Some(lang) = language {
         if lang == "french" {
-            anyhow::bail!(
+            pocket_tts::anyhow::bail!(
                 "For technical reasons, only a larger 24-layer model is available for French. \
                  Please use --language french_24l instead."
             );

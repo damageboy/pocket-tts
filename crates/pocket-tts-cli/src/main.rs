@@ -2,10 +2,12 @@
 //!
 //! A blazingly fast text-to-speech tool.
 
-use anyhow::Result;
 use clap::Parser;
+use pocket_tts::anyhow::Result;
 
-use pocket_tts_cli::commands;
+mod commands;
+mod server;
+mod voice;
 
 /// Pocket TTS - High-quality text-to-speech, blazingly fast on CPU
 #[derive(Parser)]

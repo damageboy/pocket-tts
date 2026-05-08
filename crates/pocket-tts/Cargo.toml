@@ -34,12 +34,12 @@ serde_yaml.workspace = true
 byteorder.workspace = true
 tokenizers = { workspace = true, features = ["fancy-regex"] }
 lenient_semver = "0.4.2"
-rubato = "0.14.1"
+rubato = "2.0.0"
 regex = "1"
 hound.workspace = true
 rand.workspace = true
 rand_distr.workspace = true
-rayon = "1.11.0"
+rayon = "1.12.0"
 tracing.workspace = true
 
 # Dependencies for all non-WASM targets
@@ -66,8 +66,7 @@ name = "streaming_bench"
 harness = false
 
 [dev-dependencies]
-criterion = "0.8.1"
-candle-core.workspace = true
+criterion = "0.8.2"
 anyhow.workspace = true
 [[bench]]
 name = "full_benchmark"

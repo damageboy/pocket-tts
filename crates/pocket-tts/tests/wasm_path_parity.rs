@@ -3,9 +3,9 @@
 //!
 //! Run: cargo test -p pocket-tts --release --test wasm_path_parity -- --nocapture
 
-use anyhow::Result;
-use candle_core::DType;
 use pocket_tts::TTSModel;
+use pocket_tts::anyhow::Result;
+use pocket_tts::candle_core::{self, DType};
 
 #[test]
 fn test_german_wasm_vs_cli_path() -> Result<()> {

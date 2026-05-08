@@ -12,6 +12,9 @@ pub mod weights;
 #[cfg(target_arch = "wasm32")]
 pub mod wasm;
 
+pub use anyhow;
+pub use candle_core;
+pub use candle_nn;
 pub use pause::{ParsedText, PauseMarker, parse_text_with_pauses};
 pub use quantize::{QuantizeConfig, QuantizedTensor};
 pub use tts_model::TTSModel;

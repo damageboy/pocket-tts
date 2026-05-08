@@ -1,12 +1,12 @@
 #[cfg(test)]
 mod tests {
-    use candle_core::Tensor;
     use pocket_tts::TTSModel;
+    use pocket_tts::candle_core::Tensor;
     use std::time::Instant;
 
     #[test]
     #[ignore] // Ignore by default as it requires weights and takes time
-    fn test_long_audio_prompt_memory() -> anyhow::Result<()> {
+    fn test_long_audio_prompt_memory() -> pocket_tts::anyhow::Result<()> {
         println!("Loading model...");
         // Assuming weights are available for this variant.
         // User's context implies "b6369a24" is relevant.

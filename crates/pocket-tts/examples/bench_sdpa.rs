@@ -1,4 +1,5 @@
-use candle_core::{Device, Tensor};
+use pocket_tts::candle_core::{self, Device, Tensor};
+use pocket_tts::candle_nn;
 use pocket_tts::modules::sdpa::sdpa;
 use std::time::Instant;
 
@@ -9,7 +10,12 @@ fn naive_sdpa(q: &Tensor, k: &Tensor, v: &Tensor, scale: f64) -> candle_core::Re
     att.matmul(v)
 }
 
-fn run_bench_case(device: &Device, q_len: usize, kv_len: usize, iter: u32) -> anyhow::Result<()> {
+fn run_bench_case(
+    device: &Device,
+    q_len: usize,
+    kv_len: usize,
+    iter: u32,
+) -> pocket_tts::anyhow::Result<()> {
     // Dimensions
     let b = 1;
     let h = 8;
@@ -65,7 +71,7 @@ fn run_bench_case(device: &Device, q_len: usize, kv_len: usize, iter: u32) -> an
     Ok(())
 }
 
-fn main() -> anyhow::Result<()> {
+fn main() -> pocket_tts::anyhow::Result<()> {
     let device = Device::Cpu;
 
     println!("Running Comprehensive SDPA Benchmark...");

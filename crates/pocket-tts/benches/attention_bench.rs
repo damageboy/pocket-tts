@@ -1,6 +1,6 @@
-use candle_core::{DType, Device, Tensor};
-use candle_nn::VarBuilder;
 use criterion::{BenchmarkId, Criterion, criterion_group, criterion_main};
+use pocket_tts::candle_core::{DType, Device, Tensor};
+use pocket_tts::candle_nn::VarBuilder;
 use pocket_tts::modules::{attention::StreamingMultiheadAttention, rope::RotaryEmbedding};
 use std::collections::HashMap;
 

@@ -168,7 +168,7 @@ fn resolve_voice_cached(
     default_voice: &SharedVoiceState,
     voice_cache: &VoiceCache,
     voice_spec: Option<&str>,
-) -> anyhow::Result<SharedVoiceState> {
+) -> pocket_tts::anyhow::Result<SharedVoiceState> {
     let Some(spec) = voice_spec else {
         return Ok(default_voice.clone());
     };
@@ -178,7 +178,7 @@ fn resolve_voice_cached(
     {
         let mut cache = voice_cache
             .lock()
-            .map_err(|_| anyhow::anyhow!("voice cache lock poisoned"))?;
+            .map_err(|_| pocket_tts::anyhow::anyhow!("voice cache lock poisoned"))?;
         if let Some(cached) = cache.get(&key) {
             return Ok(cached.clone());
         }
@@ -187,7 +187,7 @@ fn resolve_voice_cached(
     let resolved = std::sync::Arc::new(resolve_voice(model, Some(spec))?);
     let mut cache = voice_cache
         .lock()
-        .map_err(|_| anyhow::anyhow!("voice cache lock poisoned"))?;
+        .map_err(|_| pocket_tts::anyhow::anyhow!("voice cache lock poisoned"))?;
     cache.put(key, resolved.clone());
     Ok(resolved)
 }
@@ -233,16 +233,16 @@ pub async fn generate(
             audio_chunks.push(chunk?);
         }
         if audio_chunks.is_empty() {
-            anyhow::bail!("No audio generated");
+            pocket_tts::anyhow::bail!("No audio generated");
         }
-        let audio = candle_core::Tensor::cat(&audio_chunks, 2)?;
+        let audio = pocket_tts::candle_core::Tensor::cat(&audio_chunks, 2)?;
         let audio = audio.squeeze(0)?;
 
         // Encode as WAV
         let mut buffer = std::io::Cursor::new(Vec::new());
         pocket_tts::audio::write_wav_to_writer(&mut buffer, &audio, model.sample_rate as u32)?;
 
-        Ok::<Vec<u8>, anyhow::Error>(buffer.into_inner())
+        Ok::<Vec<u8>, pocket_tts::anyhow::Error>(buffer.into_inner())
     })
     .await;
 
@@ -291,7 +291,7 @@ pub async fn generate_stream(
     let lock = state.lock.clone();
 
     // Channel for streaming chunks
-    let (tx, rx) = tokio::sync::mpsc::channel::<Result<Vec<u8>, anyhow::Error>>(10);
+    let (tx, rx) = tokio::sync::mpsc::channel::<Result<Vec<u8>, pocket_tts::anyhow::Error>>(10);
 
     // Spawn generation task
     tokio::spawn(async move {
@@ -333,25 +333,29 @@ pub async fn generate_stream(
                 match chunk_res {
                     Ok(chunk) => {
                         // Convert tensor to 16-bit PCM bytes
-                        let chunk = chunk.squeeze(0).map_err(|e| anyhow::anyhow!(e))?;
+                        let chunk = chunk
+                            .squeeze(0)
+                            .map_err(|e| pocket_tts::anyhow::anyhow!(e))?;
                         let bytes = pocket_tts::audio::pcm_i16_le_bytes(&chunk)
-                            .map_err(|e| anyhow::anyhow!(e))?;
+                            .map_err(|e| pocket_tts::anyhow::anyhow!(e))?;
 
                         if tx_inner.blocking_send(Ok(bytes)).is_err() {
                             break; // Receiver dropped
                         }
                     }
                     Err(e) => {
-                        let _ = tx_inner.blocking_send(Err(anyhow::anyhow!(e)));
+                        let _ = tx_inner.blocking_send(Err(pocket_tts::anyhow::anyhow!(e)));
                         break;
                     }
                 }
             }
-            Ok::<(), anyhow::Error>(())
+            Ok::<(), pocket_tts::anyhow::Error>(())
         });
 
         if let Err(e) = result.await {
-            let _ = tx.send(Err(anyhow::anyhow!("Task error: {}", e))).await;
+            let _ = tx
+                .send(Err(pocket_tts::anyhow::anyhow!("Task error: {}", e)))
+                .await;
         }
     });
 

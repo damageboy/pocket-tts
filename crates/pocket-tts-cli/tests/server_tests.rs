@@ -3,12 +3,13 @@ use axum::{
     http::{Request, StatusCode},
 };
 use pocket_tts::TTSModel;
-use pocket_tts_cli::commands::serve::UiMode;
-use pocket_tts_cli::server::{routes, state::AppState};
-use pocket_tts_cli::voice::resolve_voice;
 use serde_json::json;
 use std::path::Path;
 use tower::ServiceExt; // for oneshot
+
+use pocket_tts_cli::commands::serve::UiMode;
+use pocket_tts_cli::server::{routes, state::AppState};
+use pocket_tts_cli::voice::resolve_voice;
 
 fn create_test_state() -> Option<AppState> {
     println!("Loading model for API test...");

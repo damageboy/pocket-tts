@@ -1,5 +1,5 @@
-use anyhow::Result;
 use clap::Parser;
+use pocket_tts::anyhow::Result;
 use std::path::PathBuf;
 
 use crate::commands::serve::{ServeArgs, UiMode};

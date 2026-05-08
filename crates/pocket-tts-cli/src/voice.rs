@@ -6,8 +6,8 @@
 //! - HuggingFace URLs (hf://...)
 //! - Base64-encoded audio data
 
-use anyhow::{Context, Result};
 use pocket_tts::TTSModel;
+use pocket_tts::anyhow::{Context, Result};
 use pocket_tts::weights::download_if_necessary;
 use std::hash::{Hash, Hasher};
 use std::path::PathBuf;
@@ -137,7 +137,7 @@ fn resolve_voice_spec(model: &TTSModel, spec: &str) -> Result<pocket_tts::ModelS
     }
 
     // Not found as anything - give a helpful error
-    anyhow::bail!(
+    pocket_tts::anyhow::bail!(
         "Voice '{}' not found. Expected one of:\n\
          - Predefined name: {}\n\
          - File path: /path/to/voice.wav or /path/to/embeddings.safetensors\n\
@@ -197,7 +197,7 @@ fn resolve_file_voice(model: &TTSModel, path: &PathBuf) -> Result<pocket_tts::Mo
                 .with_context(|| format!("Failed to process audio from {:?}", path))
         }
         _ => {
-            anyhow::bail!(
+            pocket_tts::anyhow::bail!(
                 "Unsupported file extension '{}' for voice file. Expected .wav or .safetensors",
                 ext
             )

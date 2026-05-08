@@ -3,13 +3,14 @@ use axum::{
     http::{Request, StatusCode},
 };
 use pocket_tts::TTSModel;
-use pocket_tts_cli::commands::serve::UiMode;
-use pocket_tts_cli::server::{routes, state::AppState};
-use pocket_tts_cli::voice::resolve_voice;
 use serde_json::json;
 use std::path::Path;
 use tokio_stream::StreamExt;
 use tower::ServiceExt;
+
+use pocket_tts_cli::commands::serve::UiMode;
+use pocket_tts_cli::server::{routes, state::AppState};
+use pocket_tts_cli::voice::resolve_voice;
 
 /// Create test app state
 fn create_test_app() -> Option<axum::Router> {

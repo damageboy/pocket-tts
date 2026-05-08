@@ -5,6 +5,7 @@
 
 use pocket_tts::TTSModel;
 use pocket_tts::audio::{read_wav, write_wav};
+use pocket_tts::candle_core;
 use pocket_tts::voice_state::init_states;
 use pocket_tts::weights::download_if_necessary;
 
@@ -371,7 +372,7 @@ fn test_pause_module_integration() {
 
 #[test]
 fn test_quantize_module_integration() {
-    use candle_core::{Device, Tensor};
+    use pocket_tts::candle_core::{Device, Tensor};
     use pocket_tts::{QuantizeConfig, QuantizedTensor};
 
     let device = Device::Cpu;

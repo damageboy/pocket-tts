@@ -112,7 +112,7 @@ impl PyTTSModel {
 }
 
 /// Python wrapper for ModelState
-#[pyclass]
+#[pyclass(skip_from_py_object)]
 #[derive(Clone)]
 struct PyModelState {
     inner: ModelState,

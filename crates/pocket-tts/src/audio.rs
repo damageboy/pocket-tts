@@ -207,7 +207,9 @@ pub fn resample(audio: &Tensor, from_rate: u32, to_rate: u32) -> anyhow::Result<
         return Ok(audio.clone());
     }
 
-    use rubato::{FastFixedIn, Resampler};
+    use rubato::{
+        Async, FixedAsync, Resampler, audioadapter_buffers::direct::SequentialSliceOfVecs,
+    };
 
     // Calculate output size
     let ratio = to_rate as f64 / from_rate as f64;
@@ -217,18 +219,27 @@ pub fn resample(audio: &Tensor, from_rate: u32, to_rate: u32) -> anyhow::Result<
     // Rubato expects [channel][sample]
     let audio_vec = audio.to_vec2::<f32>()?;
 
-    // Create resampler
-    // FastFixedIn is synchronous and suitable for full-file resampling
-    let mut resampler = FastFixedIn::<f32>::new(
+    // Create resampler for full-file resampling using rubato's v2 adapter API.
+    let mut resampler = Async::<f32>::new_poly(
         ratio,
         1.0,                              // max_resample_ratio_relative (1.0 for fixed)
         rubato::PolynomialDegree::Septic, // High quality interpolation
         num_samples,                      // block_size_in
         channels,
+        FixedAsync::Input,
     )?;
 
+    let input = SequentialSliceOfVecs::new(&audio_vec, channels, num_samples)?;
+    let output_len = resampler.process_all_needed_output_len(num_samples);
+    let mut resampled_vec = vec![vec![0.0f32; output_len]; channels];
+    let mut output = SequentialSliceOfVecs::new_mut(&mut resampled_vec, channels, output_len)?;
+
     // Resample
-    let resampled_vec = resampler.process(&audio_vec, None)?;
+    let (_input_samples, written_samples) =
+        resampler.process_all_into_buffer(&input, &mut output, num_samples, None)?;
+    for channel in &mut resampled_vec {
+        channel.truncate(written_samples);
+    }
 
     // Truncate or pad to exact expected length if necessary (rubato might return slightly more/less due to block/filter delay)
     // But FastFixedIn with fixed block size should be mainly correct.

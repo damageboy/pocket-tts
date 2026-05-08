@@ -1,5 +1,6 @@
 use criterion::{BenchmarkId, Criterion, criterion_group, criterion_main};
 use pocket_tts::TTSModel;
+use pocket_tts::candle_core;
 
 fn bench_voice_state_from_tensor(c: &mut Criterion) {
     let model = match TTSModel::load("b6369a24") {
