@@ -31,7 +31,7 @@ export class WasmTTSModel {
      * # Arguments
      * * `config_yaml` - ArrayBuffer containing config.yaml
      * * `weights_data` - ArrayBuffer containing safetensors model weights
-     * * `tokenizer_bytes` - Optional ArrayBuffer containing tokenizer.json (falls back to embedded)
+     * * `tokenizer_bytes` - ArrayBuffer containing the sentencepiece tokenizer.model
      */
     load_from_buffer(config_yaml: Uint8Array, weights_data: Uint8Array, tokenizer_bytes: Uint8Array): void;
     /**
