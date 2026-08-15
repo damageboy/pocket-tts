@@ -40,7 +40,7 @@ candle-core.workspace = true
 anyhow.workspace = true
 clap = { workspace = true, features = ["derive"] }
 axum = { workspace = true, features = ["multipart"] }
-base64 = "0.22"
+base64 = "0.23"
 tokio = { workspace = true, features = ["full"] }
 serde = { workspace = true, features = ["derive"] }
 serde_json.workspace = true

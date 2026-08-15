@@ -265,7 +265,7 @@ fn test_v2_german_parity() -> Result<()> {
     let tokens = model.conditioner.prepare(text, &Device::Cpu)?;
     let tokens_i64 = tokens.to_dtype(DType::I64)?;
     let token_vec: Vec<Vec<i64>> = tokens_i64.to_vec2()?;
-    writeln!(f, "Token IDs: {:?}", &token_vec[0])?;
+    writeln!(f, "Token IDs: {:?}", token_vec[0])?;
     // Python: [392, 270, 621, 1384, 261, 357, 277, 1103, 264, 1452, 435, 264, 281, 545, 263, 262]
     assert_eq!(
         token_vec[0].len(),

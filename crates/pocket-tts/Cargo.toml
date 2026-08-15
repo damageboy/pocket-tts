@@ -25,7 +25,6 @@ metal = ["candle-core/metal", "candle-nn/metal"]
 candle-core.workspace = true
 candle-nn.workspace = true
 candle-transformers.workspace = true
-safetensors.workspace = true
 anyhow.workspace = true
 thiserror.workspace = true
 serde.workspace = true
@@ -34,7 +33,7 @@ serde_yaml.workspace = true
 byteorder.workspace = true
 tokenizers = { workspace = true, features = ["fancy-regex"] }
 lenient_semver = "0.4.2"
-rubato = "2.0.0"
+rubato = "5.0.0"
 regex = "1"
 hound.workspace = true
 rand.workspace = true
@@ -59,6 +58,7 @@ js-sys = "0.3"
 web-sys = { version = "0.3", features = ["console"] }
 getrandom = { version = "0.3", features = ["wasm_js"] }
 getrandom_02 = { package = "getrandom", version = "0.2", features = ["js"] }
+getrandom_04 = { package = "getrandom", version = "0.4", features = ["wasm_js"] }
 console_error_panic_hook = "0.1"
 
 [[bench]]

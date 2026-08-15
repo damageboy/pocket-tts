@@ -5,9 +5,7 @@ use std::path::PathBuf;
 use candle_core::Device;
 
 #[cfg(not(target_arch = "wasm32"))]
-use hf_hub::api::sync::ApiBuilder;
-#[cfg(not(target_arch = "wasm32"))]
-use hf_hub::{Repo, RepoType};
+use hf_hub::{HFClientSync, split_id};
 
 /// Download a file from HuggingFace Hub if necessary.
 ///
@@ -37,20 +35,14 @@ pub fn download_if_necessary(file_path: &str) -> Result<PathBuf> {
             (filename_with_revision, None)
         };
 
-        // Use ApiBuilder to support HF_TOKEN from environment
-        let token = std::env::var("HF_TOKEN").ok();
-
-        let api = ApiBuilder::new().with_token(token).build()?;
-
-        // Create repo with or without revision
-        let repo = if let Some(rev) = revision {
-            Repo::with_revision(repo_id, RepoType::Model, rev)
-        } else {
-            Repo::model(repo_id)
-        };
-
-        let api_repo = api.repo(repo);
-        let path = api_repo.get(&filename)?;
+        let client = HFClientSync::new()?;
+        let (owner, name) = split_id(&repo_id);
+        let repo = client.model(owner, name);
+        let path = repo
+            .download_file()
+            .filename(filename)
+            .maybe_revision(revision)
+            .send()?;
         Ok(path)
     } else {
         Ok(PathBuf::from(file_path))
