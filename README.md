@@ -171,7 +171,8 @@ Options:
   -v, --voice <VOICE>            Voice: predefined name, .wav file, or .safetensors
   -o, --output <PATH>            Output file [default: output.wav]
       --variant <VARIANT>        Model variant [default: b6369a24]
-      --temperature <FLOAT>      Sampling temperature [default: 0.7]
+      --temperature <FLOAT>      Sampling temperature [default: model recommendation;
+                                 0.3 for English, 0.7 otherwise]
       --lsd-decode-steps <INT>   LSD decode steps [default: 1]
       --eos-threshold <FLOAT>    EOS threshold [default: -4.0]
       --stream                   Stream raw PCM to stdout
@@ -193,7 +194,8 @@ Options:
   -p, --port <PORT>              Port number [default: 8000]
       --voice <VOICE>            Default voice [default: alba]
       --variant <VARIANT>        Model variant [default: b6369a24]
-      --temperature <FLOAT>      Temperature [default: 0.7]
+      --temperature <FLOAT>      Temperature [default: model recommendation;
+                                 0.3 for English, 0.7 otherwise]
       --lsd-decode-steps <INT>   LSD steps [default: 1]
       --eos-threshold <FLOAT>    EOS threshold [default: -4.0]
       --ui <UI>                  Web UI mode: standard|wasm-experimental [default: standard]

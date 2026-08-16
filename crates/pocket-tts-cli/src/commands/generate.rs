@@ -42,9 +42,10 @@ pub struct GenerateArgs {
     #[arg(long)]
     pub config: Option<String>,
 
-    /// Sampling temperature (higher = more variation)
-    #[arg(long, default_value = "0.7")]
-    pub temperature: f32,
+    /// Sampling temperature. Defaults to the model's recommended value
+    /// (0.3 for English, 0.7 otherwise).
+    #[arg(long)]
+    pub temperature: Option<f32>,
 
     /// LSD decode steps (more steps = better quality, slower)
     #[arg(long, default_value = "1")]
@@ -131,7 +132,7 @@ pub fn run(args: GenerateArgs) -> Result<()> {
     let model = if quantized {
         #[cfg(feature = "quantized")]
         {
-            TTSModel::load_quantized_with_params_device(
+            TTSModel::load_quantized_with_optional_params_device(
                 &model_id,
                 args.temperature,
                 args.lsd_decode_steps,
@@ -147,7 +148,7 @@ pub fn run(args: GenerateArgs) -> Result<()> {
             );
         }
     } else {
-        TTSModel::load_with_params_device(
+        TTSModel::load_with_optional_params_device(
             &model_id,
             args.temperature,
             args.lsd_decode_steps,
@@ -430,7 +431,7 @@ pub fn resolve_model_id(language: Option<&str>, config: Option<&str>) -> Result<
 #[cfg(test)]
 mod tests {
     use super::*;
-    use clap::CommandFactory;
+    use clap::{CommandFactory, Parser};
     use std::time::Duration;
 
     #[test]
@@ -447,5 +448,19 @@ mod tests {
         GenerateArgs::command().write_long_help(&mut help).unwrap();
         let help = String::from_utf8(help).unwrap();
         assert!(help.contains("--timings"), "help was:\n{help}");
+    }
+
+    #[test]
+    fn omitted_temperature_uses_model_recommendation() {
+        let args = GenerateArgs::try_parse_from(["pocket-tts"]).unwrap();
+        assert_eq!(args.temperature, None);
+
+        let mut help = Vec::new();
+        GenerateArgs::command().write_long_help(&mut help).unwrap();
+        let help = String::from_utf8(help).unwrap();
+        assert!(
+            help.contains("model's recommended value"),
+            "help was:\n{help}"
+        );
     }
 }

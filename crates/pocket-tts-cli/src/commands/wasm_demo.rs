@@ -38,7 +38,7 @@ pub async fn run(args: WasmDemoArgs) -> Result<()> {
         voice: None,
         language: None,
         config: None,
-        temperature: 0.7,
+        temperature: None,
         lsd_decode_steps: 1,
         eos_threshold: -4.0,
         quantized: false,

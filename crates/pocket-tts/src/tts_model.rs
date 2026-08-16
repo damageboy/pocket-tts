@@ -82,11 +82,30 @@ impl TTSModel {
     /// # Returns
     /// Fully initialized TTSModel ready for generation
     pub fn load(variant: &str) -> Result<Self> {
-        Self::load_with_params(
+        Self::load_with_optional_params(
             variant,
-            defaults::TEMPERATURE,
+            None,
             defaults::LSD_DECODE_STEPS,
             defaults::EOS_THRESHOLD,
+        )
+    }
+
+    /// Load with an optional temperature override.
+    ///
+    /// When `temp` is `None`, the model's configured recommendation is used.
+    pub fn load_with_optional_params(
+        variant: &str,
+        temp: Option<f32>,
+        lsd_decode_steps: usize,
+        eos_threshold: f32,
+    ) -> Result<Self> {
+        Self::load_with_optional_params_device(
+            variant,
+            temp,
+            lsd_decode_steps,
+            eos_threshold,
+            None,
+            &Device::Cpu,
         )
     }
 
@@ -97,9 +116,9 @@ impl TTSModel {
         lsd_decode_steps: usize,
         eos_threshold: f32,
     ) -> Result<Self> {
-        Self::load_with_params_device(
+        Self::load_with_optional_params_device(
             variant,
-            temp,
+            Some(temp),
             lsd_decode_steps,
             eos_threshold,
             None,
@@ -116,9 +135,29 @@ impl TTSModel {
         noise_clamp: Option<f32>,
         device: &Device,
     ) -> Result<Self> {
+        Self::load_with_optional_params_device(
+            variant,
+            Some(temp),
+            lsd_decode_steps,
+            eos_threshold,
+            noise_clamp,
+            device,
+        )
+    }
+
+    /// Load with an optional temperature override and specific device.
+    pub fn load_with_optional_params_device(
+        variant: &str,
+        temp: Option<f32>,
+        lsd_decode_steps: usize,
+        eos_threshold: f32,
+        noise_clamp: Option<f32>,
+        device: &Device,
+    ) -> Result<Self> {
         // Find config file - look relative to the Rust crate, then fall back to Python location
         let config_path = find_config_path(variant)?;
         let config = load_config(&config_path)?;
+        let temp = config.resolve_temperature(temp);
 
         let mut model = Self::from_config(
             config,
@@ -148,11 +187,29 @@ impl TTSModel {
     /// Some layers (embeddings, output projections) are kept in full precision.
     #[cfg(feature = "quantized")]
     pub fn load_quantized(variant: &str) -> Result<Self> {
-        Self::load_quantized_with_params(
+        Self::load_quantized_with_optional_params(
             variant,
-            defaults::TEMPERATURE,
+            None,
             defaults::LSD_DECODE_STEPS,
             defaults::EOS_THRESHOLD,
+        )
+    }
+
+    /// Load a quantized model with an optional temperature override.
+    #[cfg(feature = "quantized")]
+    pub fn load_quantized_with_optional_params(
+        variant: &str,
+        temp: Option<f32>,
+        lsd_decode_steps: usize,
+        eos_threshold: f32,
+    ) -> Result<Self> {
+        Self::load_quantized_with_optional_params_device(
+            variant,
+            temp,
+            lsd_decode_steps,
+            eos_threshold,
+            None,
+            &Device::Cpu,
         )
     }
 
@@ -164,9 +221,9 @@ impl TTSModel {
         lsd_decode_steps: usize,
         eos_threshold: f32,
     ) -> Result<Self> {
-        Self::load_quantized_with_params_device(
+        Self::load_quantized_with_optional_params_device(
             variant,
-            temp,
+            Some(temp),
             lsd_decode_steps,
             eos_threshold,
             None,
@@ -184,8 +241,28 @@ impl TTSModel {
         noise_clamp: Option<f32>,
         device: &Device,
     ) -> Result<Self> {
+        Self::load_quantized_with_optional_params_device(
+            variant,
+            Some(temp),
+            lsd_decode_steps,
+            eos_threshold,
+            noise_clamp,
+            device,
+        )
+    }
+
+    /// Load a quantized model with an optional temperature override and specific device.
+    #[cfg(feature = "quantized")]
+    pub fn load_quantized_with_optional_params_device(
+        variant: &str,
+        temp: Option<f32>,
+        lsd_decode_steps: usize,
+        eos_threshold: f32,
+        noise_clamp: Option<f32>,
+        device: &Device,
+    ) -> Result<Self> {
         // Load model normally first
-        let model = Self::load_with_params_device(
+        let model = Self::load_with_optional_params_device(
             variant,
             temp,
             lsd_decode_steps,
@@ -277,6 +354,7 @@ impl TTSModel {
         tokenizer_bytes: &[u8],
     ) -> Result<Self> {
         let config: Config = serde_yaml::from_slice(config_yaml)?;
+        let temp = config.resolve_temperature(None);
         let device = Device::Cpu;
         let dtype = DType::F32;
 
@@ -301,7 +379,7 @@ impl TTSModel {
 
         Self::from_config_and_vb(
             config,
-            defaults::TEMPERATURE,
+            temp,
             defaults::LSD_DECODE_STEPS,
             defaults::EOS_THRESHOLD,
             None,

@@ -51,9 +51,10 @@ pub struct ServeArgs {
     #[arg(long)]
     pub config: Option<String>,
 
-    /// Sampling temperature
-    #[arg(long, default_value = "0.7")]
-    pub temperature: f32,
+    /// Sampling temperature. Defaults to the model's recommended value
+    /// (0.3 for English, 0.7 otherwise).
+    #[arg(long)]
+    pub temperature: Option<f32>,
 
     /// LSD decode steps
     #[arg(long, default_value = "1")]
@@ -189,4 +190,16 @@ pub fn print_endpoints(host: &str, port: u16, ui_mode: UiMode) {
         base
     );
     println!();
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use clap::Parser;
+
+    #[test]
+    fn omitted_temperature_uses_model_recommendation() {
+        let args = ServeArgs::try_parse_from(["pocket-tts"]).unwrap();
+        assert_eq!(args.temperature, None);
+    }
 }

@@ -52,7 +52,7 @@ pub async fn start_server(args: ServeArgs, model_id: &str) -> Result<()> {
     let model = if args.quantized {
         #[cfg(feature = "quantized")]
         {
-            TTSModel::load_quantized_with_params(
+            TTSModel::load_quantized_with_optional_params(
                 model_id,
                 args.temperature,
                 args.lsd_decode_steps,
@@ -66,7 +66,7 @@ pub async fn start_server(args: ServeArgs, model_id: &str) -> Result<()> {
             );
         }
     } else {
-        TTSModel::load_with_params(
+        TTSModel::load_with_optional_params(
             model_id,
             args.temperature,
             args.lsd_decode_steps,

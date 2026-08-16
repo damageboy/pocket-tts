@@ -107,6 +107,8 @@ pub struct MimiConfig {
 pub struct Config {
     pub flow_lm: FlowLMConfig,
     pub mimi: MimiConfig,
+    #[serde(default = "default_temperature")]
+    pub default_temperature: f32,
     #[serde(default)]
     pub pad_with_spaces_for_short_inputs: bool,
     #[serde(default)]
@@ -117,6 +119,16 @@ pub struct Config {
     pub weights_path: Option<String>,
     #[serde(default)]
     pub weights_path_without_voice_cloning: Option<String>,
+}
+
+fn default_temperature() -> f32 {
+    defaults::TEMPERATURE
+}
+
+impl Config {
+    pub fn resolve_temperature(&self, temperature: Option<f32>) -> f32 {
+        temperature.unwrap_or(self.default_temperature)
+    }
 }
 
 /// Load configuration from a YAML file
@@ -203,5 +215,43 @@ mod tests {
         } else {
             eprintln!("Config file not found at {:?}, skipping test", path);
         }
+    }
+
+    #[test]
+    fn english_configs_declare_recommended_temperature() {
+        for name in ["english.yaml", "english_2026-04.yaml"] {
+            let path = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+                .join("config")
+                .join(name);
+            let contents = std::fs::read_to_string(path).unwrap();
+            let yaml: serde_yaml::Value = serde_yaml::from_str(&contents).unwrap();
+
+            assert_eq!(
+                yaml["default_temperature"].as_f64(),
+                Some(0.3),
+                "{name} must carry upstream's recommended temperature"
+            );
+        }
+    }
+
+    #[test]
+    fn config_deserializes_model_temperature_with_legacy_fallback() {
+        let config_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("config");
+        let english = load_config(config_dir.join("english.yaml")).unwrap();
+        let german = load_config(config_dir.join("german.yaml")).unwrap();
+
+        assert_eq!(english.default_temperature, 0.3);
+        assert_eq!(german.default_temperature, 0.7);
+    }
+
+    #[test]
+    fn explicit_temperature_overrides_model_recommendation() {
+        let path = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+            .join("config")
+            .join("english.yaml");
+        let config = load_config(path).unwrap();
+
+        assert_eq!(config.resolve_temperature(None), 0.3);
+        assert_eq!(config.resolve_temperature(Some(0.9)), 0.9);
     }
 }
