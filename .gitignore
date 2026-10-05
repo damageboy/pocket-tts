@@ -84,6 +84,7 @@ profile_output*
 !/assets/ref_voice_conditioning.safetensors
 !/assets/ref_decoder_intermediates.safetensors
 !/assets/ref_mimi_input.safetensors
+!/assets/upstream-v3.3/operators.safetensors
 !/crates/pocket-tts/config/*.yaml
 
 # Agents files, use a symlink to AGENTS.md instead. 
