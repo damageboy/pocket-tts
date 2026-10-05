@@ -21,6 +21,7 @@ pub const PREDEFINED_VOICES: &[&str] = &[
     "caro_davy",
     "charles",
     "cosette",
+    "daan",
     "eponine",
     "estelle",
     "eve",
@@ -46,7 +47,7 @@ pub const PREDEFINED_VOICES: &[&str] = &[
 const STOCK_VOICE_REPO: &str = "kyutai/pocket-tts-without-voice-cloning";
 
 /// Voice embeddings revision for per-language voices
-const STOCK_VOICE_REVISION: &str = "e041936c75475d350b405bc870bcf7c22da4e9e6";
+const STOCK_VOICE_REVISION: &str = "4e1e0a3e611c51c0b4ed8174fc10f32a54644303";
 
 /// Build a stable cache key for a voice specification.
 ///
@@ -153,11 +154,7 @@ fn resolve_voice_spec(model: &TTSModel, spec: &str) -> Result<pocket_tts::ModelS
 /// Uses per-language voice paths:
 ///   `hf://repo/languages/{language}/embeddings/{name}.safetensors@{revision}`
 fn resolve_predefined_voice(model: &TTSModel, name: &str) -> Result<pocket_tts::ModelState> {
-    let language = model.language().unwrap_or("english");
-    let hf_path = format!(
-        "hf://{}/languages/{}/embeddings/{}.safetensors@{}",
-        STOCK_VOICE_REPO, language, name, STOCK_VOICE_REVISION
-    );
+    let hf_path = stock_voice_url(model.origin.as_deref(), name)?;
 
     let local_path = download_if_necessary(&hf_path)
         .with_context(|| format!("Failed to download stock voice '{}'", name))?;
@@ -165,6 +162,34 @@ fn resolve_predefined_voice(model: &TTSModel, name: &str) -> Result<pocket_tts::
     model
         .get_voice_state_from_prompt_file(&local_path)
         .with_context(|| format!("Failed to load voice embeddings from {:?}", local_path))
+}
+
+fn stock_voice_url(origin: Option<&std::path::Path>, name: &str) -> Result<String> {
+    // Cached transformer states are weight-specific, not merely language-specific.
+    // Do not infer compatibility from a custom YAML's filename (even english.yaml).
+    let language = origin
+        .and_then(|p| p.file_stem())
+        .and_then(|s| s.to_str())
+        .context("Stock voices require a released config; provide an explicit WAV voice for custom models")?;
+    let released = crate::commands::list::language_catalog()
+        .iter()
+        .any(|entry| entry.name == language);
+    let matches_origin = released
+        && pocket_tts::tts_model::find_config_path(language)
+            .ok()
+            .and_then(|path| path.canonicalize().ok())
+            .zip(origin.and_then(|path| path.canonicalize().ok()))
+            .is_some_and(|(released, loaded)| released == loaded);
+    if !matches_origin {
+        pocket_tts::anyhow::bail!(
+            "Stock voice '{}' is precomputed for released weights and cannot be used with a custom config. Provide an explicit WAV voice or a compatible .safetensors state instead.",
+            name
+        );
+    }
+    Ok(format!(
+        "hf://{}/languages/{}/embeddings/{}.safetensors@{}",
+        STOCK_VOICE_REPO, language, name, STOCK_VOICE_REVISION
+    ))
 }
 
 /// Resolve an hf:// URL (audio or safetensors)
@@ -266,7 +291,30 @@ mod tests {
     fn test_predefined_voices_list() {
         assert!(PREDEFINED_VOICES.contains(&"alba"));
         assert!(PREDEFINED_VOICES.contains(&"marius"));
+        assert!(PREDEFINED_VOICES.contains(&"daan"));
         assert!(!PREDEFINED_VOICES.contains(&"unknown"));
+    }
+
+    #[test]
+    fn stock_states_use_released_revision() {
+        assert_eq!(
+            STOCK_VOICE_REVISION,
+            "4e1e0a3e611c51c0b4ed8174fc10f32a54644303"
+        );
+    }
+
+    #[test]
+    fn stock_voice_resolution_requires_released_config_origin() {
+        let origin = pocket_tts::tts_model::find_config_path("english").unwrap();
+        assert!(stock_voice_url(Some(&origin), "alba").unwrap().contains(
+            "/languages/english/embeddings/alba.safetensors@4e1e0a3e611c51c0b4ed8174fc10f32a54644303"
+        ));
+        assert!(stock_voice_url(None, "alba").is_err());
+        assert!(stock_voice_url(Some(std::path::Path::new("custom.yaml")), "alba").is_err());
+        // A familiar filename alone does not establish weight compatibility.
+        assert!(
+            stock_voice_url(Some(std::path::Path::new("/custom/english.yaml")), "alba").is_err()
+        );
     }
 
     #[test]

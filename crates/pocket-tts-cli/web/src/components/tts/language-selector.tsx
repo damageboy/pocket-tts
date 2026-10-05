@@ -17,6 +17,14 @@ const FALLBACK_LANGUAGES: LanguageEntry[] = [
 		layers: 6,
 		status: "production",
 	},
+	{ name: "english_2026-09", description: "English (September 2026)", default_voice: "alba", layers: 6, status: "production" },
+	{ name: "english_2026-09_24l", description: "English (September 2026, 24-layer)", default_voice: "alba", layers: 24, status: "preview" },
+	{ name: "english_2026-04", description: "English (April 2026)", default_voice: "alba", layers: 6, status: "legacy" },
+	{ name: "english_2026-04_24l", description: "English (April 2026, 24-layer)", default_voice: "alba", layers: 24, status: "legacy" },
+	{ name: "english_2026-01", description: "English (January 2026)", default_voice: "alba", layers: 6, status: "legacy" },
+	{ name: "dutch", description: "Dutch", default_voice: "daan", layers: 6, status: "production" },
+	{ name: "dutch_24l", description: "Dutch (24-layer)", default_voice: "daan", layers: 24, status: "preview" },
+	{ name: "french", description: "French", default_voice: "estelle", layers: 6, status: "production" },
 	{
 		name: "german",
 		description: "German",
@@ -89,6 +97,7 @@ const DEFAULT_TEXT: Record<string, string> = {
 	spanish: "Es lo suficientemente pequeño como para caber en tu bolsillo.",
 	portuguese: "É pequeno o suficiente para caber no seu bolso.",
 	italian: "È abbastanza piccolo da stare in tasca.",
+	dutch: "Het is klein genoeg om in je zak te passen.",
 };
 
 export function defaultTextForLanguage(language: string): string {
@@ -121,10 +130,7 @@ export function LanguageSelector({
 			.then((r) => r.json())
 			.then((data) => {
 				if (Array.isArray(data) && data.length > 0) {
-					// Filter out legacy entries for the UI
-					setLanguages(
-						data.filter((l: LanguageEntry) => l.status !== "legacy"),
-					);
+					setLanguages(data);
 				}
 			})
 			.catch(() => {
@@ -139,6 +145,7 @@ export function LanguageSelector({
 		if (name.startsWith("italian")) return "🇮🇹";
 		if (name.startsWith("spanish")) return "🇪🇸";
 		if (name.startsWith("portuguese")) return "🇧🇷";
+		if (name.startsWith("dutch")) return "🇳🇱";
 		return "🌍";
 	};
 

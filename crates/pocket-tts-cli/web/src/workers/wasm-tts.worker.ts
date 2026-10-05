@@ -9,95 +9,16 @@ import type {
 
 declare const self: DedicatedWorkerGlobalScope;
 
-// v2 model URLs
-const V2_REPO = "kyutai/pocket-tts-without-voice-cloning";
-const V2_MODEL_REVISION = "d29db7978e464fb90cb3359ee0c69a273b9142cc";
-const V2_VOICE_REVISION = "e041936c75475d350b405bc870bcf7c22da4e9e6";
+import { configAssets, presetVoiceUrl, selectConfig } from "./model-config";
+
+const rawConfigs = import.meta.glob<string>("../../../../pocket-tts/config/*.yaml", {
+	query: "?raw", import: "default", eager: true,
+});
+const configs = Object.fromEntries(Object.entries(rawConfigs).map(([path, yaml]) => [
+	path.substring(path.lastIndexOf("/") + 1, path.length - 5), yaml,
+]));
 let currentLanguage = "english";
-
-interface LangMeta {
-	layers: number;
-	removeSemicolons: boolean;
-	framesAfterEos: number | null;
-}
-
-const LANG_META: Record<string, LangMeta> = {
-	english: { layers: 6, removeSemicolons: false, framesAfterEos: null },
-	english_2026_04: { layers: 6, removeSemicolons: false, framesAfterEos: null },
-	english_2026_01: { layers: 6, removeSemicolons: false, framesAfterEos: null },
-	german: { layers: 6, removeSemicolons: true, framesAfterEos: null },
-	italian: { layers: 6, removeSemicolons: false, framesAfterEos: null },
-	spanish: { layers: 6, removeSemicolons: false, framesAfterEos: null },
-	portuguese: { layers: 6, removeSemicolons: false, framesAfterEos: null },
-	french_24l: { layers: 24, removeSemicolons: true, framesAfterEos: 8 },
-	german_24l: { layers: 24, removeSemicolons: true, framesAfterEos: null },
-	italian_24l: { layers: 24, removeSemicolons: false, framesAfterEos: null },
-	portuguese_24l: { layers: 24, removeSemicolons: false, framesAfterEos: null },
-	spanish_24l: { layers: 24, removeSemicolons: false, framesAfterEos: null },
-};
-
-const buildConfigYaml = (lang: string): string => {
-	const meta = LANG_META[lang] ?? LANG_META.english;
-	let yaml = `
-flow_lm:
-  insert_bos_before_voice: true
-  dtype: float32
-  flow:
-    depth: 6
-    dim: 512
-  transformer:
-    d_model: 1024
-    hidden_scale: 4
-    max_period: 10000
-    num_heads: 16
-    num_layers: ${meta.layers}
-  lookup_table:
-    dim: 1024
-    n_bins: 4000
-    tokenizer: sentencepiece
-    tokenizer_path: dummy
-
-mimi:
-  dtype: float32
-  sample_rate: 24000
-  inner_dim: 32
-  outer_dim: 512
-  channels: 1
-  frame_rate: 12.5
-  seanet:
-    dimension: 512
-    channels: 1
-    n_filters: 64
-    n_residual_layers: 1
-    ratios: [6, 5, 4]
-    kernel_size: 7
-    residual_kernel_size: 3
-    last_kernel_size: 3
-    dilation_base: 2
-    pad_mode: constant
-    compress: 2
-  transformer:
-    d_model: 512
-    num_heads: 8
-    num_layers: 2
-    layer_scale: 0.01
-    context: 250
-    dim_feedforward: 2048
-    input_dimension: 512
-    output_dimensions: [512]
-  quantizer:
-    dimension: 32
-    output_dimension: 512
-`;
-	if (meta.removeSemicolons) {
-		yaml = `remove_semicolons: true\n` + yaml;
-	}
-	if (meta.framesAfterEos !== null) {
-		yaml =
-			`model_recommended_frames_after_eos: ${meta.framesAfterEos}\n` + yaml;
-	}
-	return yaml;
-};
+let stockVoicesCompatible = true;
 
 const PRESET_VOICES = [
 	"alba",
@@ -107,6 +28,7 @@ const PRESET_VOICES = [
 	"caro_davy",
 	"charles",
 	"cosette",
+	"daan",
 	"eponine",
 	"estelle",
 	"eve",
@@ -146,6 +68,7 @@ interface WasmModelLike {
 		config: Uint8Array,
 		weights: Uint8Array,
 		tokenizer: Uint8Array,
+		hasVoiceCloning?: boolean,
 	): void;
 	is_ready(): boolean;
 	start_stream(text: string): WasmStreamLike;
@@ -202,13 +125,10 @@ const ensureReadyModel = (): WasmModelLike => {
 const CACHE_NAME = "pocket-tts-models-v3";
 
 const fetchHF = async (
-	path: string,
-	revision: string,
+	url: string,
 	hfToken: string,
 	label: string,
 ): Promise<Uint8Array> => {
-	const url = `https://huggingface.co/${V2_REPO}/resolve/${revision}/${path}`;
-
 	// Check browser Cache API first
 	try {
 		const cache = await caches.open(CACHE_NAME);
@@ -245,87 +165,11 @@ const fetchHF = async (
 	return new Uint8Array(await res.arrayBuffer());
 };
 
-const fetchWeights = async (
-	_hfRepo: string,
-	hfToken: string,
-): Promise<{ bytes: Uint8Array; source: "local" | "hf" }> => {
-	// Try local path first
-	const localPath = "/model.safetensors";
-	try {
-		const localRes = await fetch(localPath);
-		if (localRes.ok) {
-			return {
-				bytes: new Uint8Array(await localRes.arrayBuffer()),
-				source: "local",
-			};
-		}
-	} catch {
-		// Ignore local fallback failures.
-	}
-
-	const bytes = await fetchHF(
-		`languages/${currentLanguage}/model.safetensors`,
-		V2_MODEL_REVISION,
-		hfToken,
-		"model weights",
-	);
-	return { bytes, source: "hf" };
-};
-
-const fetchTokenizer = async (hfToken: string): Promise<Uint8Array> => {
-	// Try local path first
-	try {
-		const localRes = await fetch("/tokenizer.model");
-		if (localRes.ok) {
-			return new Uint8Array(await localRes.arrayBuffer());
-		}
-	} catch {
-		// Ignore.
-	}
-
-	return fetchHF(
-		`languages/${currentLanguage}/tokenizer.model`,
-		V2_MODEL_REVISION,
-		hfToken,
-		"tokenizer",
-	);
-};
-
 const fetchEmbedding = async (
 	voice: string,
-	_hfRepo: string,
 	hfToken: string,
 ): Promise<Uint8Array> => {
-	// Try local path first
-	const localUrl = `/embeddings/${voice}.safetensors`;
-	try {
-		const localRes = await fetch(localUrl);
-		if (localRes.ok) {
-			return new Uint8Array(await localRes.arrayBuffer());
-		}
-	} catch {
-		// Ignore local fallback failures.
-	}
-
-	const headers: Record<string, string> = {};
-	if (hfToken.trim()) {
-		headers.Authorization = `Bearer ${hfToken.trim()}`;
-	}
-
-	// v2 per-language voice embeddings
-	const url = `https://huggingface.co/${V2_REPO}/resolve/${V2_VOICE_REVISION}/languages/${currentLanguage}/embeddings/${voice}.safetensors`;
-	const res = await fetch(url, { headers });
-	if (!res.ok) {
-		if (res.status === 401) {
-			throw new Error("HF auth required for preset voice fetch.");
-		}
-		throw new Error(
-			`Failed to fetch voice "${voice}" (${res.status}). ` +
-				`Check voice name with: pocket-tts voice-list`,
-		);
-	}
-
-	return new Uint8Array(await res.arrayBuffer());
+	return fetchHF(presetVoiceUrl(currentLanguage, voice), hfToken, `preset voice "${voice}"`);
 };
 
 const handleInit = async (
@@ -333,6 +177,14 @@ const handleInit = async (
 ) => {
 	stopRequested = true;
 	activeStreamToken += 1;
+	model = null;
+	const selected = selectConfig(configs, message.language ?? "english");
+	currentLanguage = selected.name;
+	const manual = message.manualAssets;
+	stockVoicesCompatible = !manual?.configBytes && !manual?.weightsBytes;
+	const configBytes = manual?.configBytes ?? encoder.encode(selected.yaml);
+	// Fully supplied manual bundles need not declare remote asset URLs.
+	const assets = () => configAssets(new TextDecoder().decode(configBytes));
 
 	postStatus({
 		phase: "initializing-runtime",
@@ -349,12 +201,7 @@ const handleInit = async (
 	}
 	await bindings.default();
 
-	// Set language BEFORE fetching — weights/tokenizer/voice URLs depend on it
-	currentLanguage = message.language ?? "english";
-
-	const manual = message.manualAssets;
-
-	let source: "local" | "hf" | "manual" = "manual";
+	let source: "hf" | "manual" = "manual";
 	let weightsBytes = manual?.weightsBytes;
 
 	if (!weightsBytes) {
@@ -366,13 +213,9 @@ const handleInit = async (
 			ready: false,
 			error: null,
 		});
-		const fetched = await fetchWeights(message.hfRepo, message.hfToken);
-		weightsBytes = fetched.bytes;
-		source = fetched.source;
+		weightsBytes = await fetchHF(assets().weightsUrl, message.hfToken, "model weights");
+		source = "hf";
 	}
-
-	const configBytes =
-		manual?.configBytes ?? encoder.encode(buildConfigYaml(currentLanguage));
 
 	let tokenizerBytes = manual?.tokenizerBytes;
 	if (!tokenizerBytes || tokenizerBytes.byteLength === 0) {
@@ -384,7 +227,7 @@ const handleInit = async (
 			ready: false,
 			error: null,
 		});
-		tokenizerBytes = await fetchTokenizer(message.hfToken);
+		tokenizerBytes = await fetchHF(assets().tokenizerUrl, message.hfToken, "tokenizer");
 	}
 
 	postStatus({
@@ -400,7 +243,7 @@ const handleInit = async (
 		`[wasm-worker] Loading model: language=${currentLanguage}, config=${configBytes.byteLength}b, weights=${weightsBytes.byteLength}b, tokenizer=${tokenizerBytes.byteLength}b`,
 	);
 	model = new bindings.WasmTTSModel();
-	model.load_from_buffer(configBytes, weightsBytes, tokenizerBytes);
+	model.load_from_buffer(configBytes, weightsBytes, tokenizerBytes, !!manual?.weightsBytes);
 	sampleRate = model.sample_rate;
 	console.log(`[wasm-worker] Model ready: sampleRate=${sampleRate}`);
 
@@ -437,8 +280,11 @@ const handlePrepareVoice = async (
 	if (!isPresetVoice(input.voice)) {
 		throw new Error(`Unknown preset voice: ${input.voice}`);
 	}
+	if (!stockVoicesCompatible) {
+		throw new Error("Preset voices require a released model bundle. Supply a matching embedding for manual weights or configs.");
+	}
 
-	const bytes = await fetchEmbedding(input.voice, input.hfRepo, input.hfToken);
+	const bytes = await fetchEmbedding(input.voice, input.hfToken);
 	readyModel.load_voice_from_safetensors(bytes);
 	postOk(message.requestId);
 };
@@ -531,6 +377,10 @@ self.onmessage = (event: MessageEvent<WasmWorkerRequest>) => {
 				return;
 			}
 		} catch (err) {
+			if (message.kind === "init") {
+				const error = err instanceof Error ? err.message : String(err);
+				postStatus({ phase: "error", progress: 0, message: error, source: null, ready: false, error });
+			}
 			if (message.kind === "start_stream") {
 				const text = err instanceof Error ? err.message : String(err);
 				postEvent({ kind: "stream_error", error: text });

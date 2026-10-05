@@ -31,9 +31,10 @@ export class WasmTTSModel {
      * # Arguments
      * * `config_yaml` - ArrayBuffer containing config.yaml
      * * `weights_data` - ArrayBuffer containing safetensors model weights
-     * * `tokenizer_bytes` - ArrayBuffer containing the sentencepiece tokenizer.model
+     * * `tokenizer_bytes` - ArrayBuffer containing the configured tokenizer JSON or model
+     * * `has_voice_cloning` - False for known open-weight bundles; defaults to true
      */
-    load_from_buffer(config_yaml: Uint8Array, weights_data: Uint8Array, tokenizer_bytes: Uint8Array): void;
+    load_from_buffer(config_yaml: Uint8Array, weights_data: Uint8Array, tokenizer_bytes: Uint8Array, has_voice_cloning?: boolean | null): void;
     /**
      * Load voice from WAV audio buffer for voice cloning
      */
@@ -103,7 +104,7 @@ export interface InitOutput {
     readonly wasmttsmodel_generate: (a: number, b: number, c: number) => [number, number, number];
     readonly wasmttsmodel_generate_wav_base64: (a: number, b: number, c: number) => [number, number, number, number];
     readonly wasmttsmodel_is_ready: (a: number) => number;
-    readonly wasmttsmodel_load_from_buffer: (a: number, b: number, c: number, d: number, e: number, f: number, g: number) => [number, number];
+    readonly wasmttsmodel_load_from_buffer: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number) => [number, number];
     readonly wasmttsmodel_load_voice_from_buffer: (a: number, b: number, c: number) => [number, number];
     readonly wasmttsmodel_load_voice_from_safetensors: (a: number, b: number, c: number) => [number, number];
     readonly wasmttsmodel_new: () => number;
@@ -113,10 +114,10 @@ export interface InitOutput {
     readonly wasmttsstream_next_chunk: (a: number) => [number, number, number];
     readonly wasmttsstream_next_chunk_min_samples: (a: number, b: number) => [number, number, number];
     readonly init: () => void;
+    readonly __wbindgen_free: (a: number, b: number, c: number) => void;
     readonly __wbindgen_exn_store: (a: number) => void;
     readonly __externref_table_alloc: () => number;
     readonly __wbindgen_externrefs: WebAssembly.Table;
-    readonly __wbindgen_free: (a: number, b: number, c: number) => void;
     readonly __wbindgen_malloc: (a: number, b: number) => number;
     readonly __wbindgen_realloc: (a: number, b: number, c: number, d: number) => number;
     readonly __externref_table_dealloc: (a: number) => void;

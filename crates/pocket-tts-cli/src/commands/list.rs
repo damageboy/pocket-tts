@@ -63,6 +63,12 @@ const VOICE_CATALOG: &[VoiceCatalogEntry] = &[
         language: "english",
     },
     VoiceCatalogEntry {
+        name: "daan",
+        gender: "m",
+        style: "reading",
+        language: "dutch",
+    },
+    VoiceCatalogEntry {
         name: "eponine",
         gender: "f",
         style: "reading",
@@ -195,9 +201,23 @@ pub fn language_catalog() -> &'static [LanguageCatalogEntry] {
 const LANGUAGE_CATALOG: &[LanguageCatalogEntry] = &[
     // ── Production models (distilled 6-layer, fast, real-time on CPU) ──
     LanguageCatalogEntry {
+        name: "dutch",
+        description: "Dutch",
+        default_voice: "daan",
+        layers: 6,
+        status: "production",
+    },
+    LanguageCatalogEntry {
         name: "english",
         description: "English (latest)",
         default_voice: "alba",
+        layers: 6,
+        status: "production",
+    },
+    LanguageCatalogEntry {
+        name: "french",
+        description: "French (distilled)",
+        default_voice: "estelle",
         layers: 6,
         status: "production",
     },
@@ -231,8 +251,15 @@ const LANGUAGE_CATALOG: &[LanguageCatalogEntry] = &[
     },
     // ── Preview models (undistilled 24-layer, slower, higher quality) ──
     LanguageCatalogEntry {
+        name: "dutch_24l",
+        description: "Dutch (undistilled, slower but higher quality)",
+        default_voice: "daan",
+        layers: 24,
+        status: "preview",
+    },
+    LanguageCatalogEntry {
         name: "french_24l",
-        description: "French (no distilled model available yet)",
+        description: "French (undistilled, slower but higher quality)",
         default_voice: "estelle",
         layers: 24,
         status: "preview",
@@ -267,10 +294,31 @@ const LANGUAGE_CATALOG: &[LanguageCatalogEntry] = &[
     },
     // ── Legacy / alternate English models ──
     LanguageCatalogEntry {
-        name: "english_2026-04",
-        description: "English April 2026 (same weights as 'english')",
+        name: "english_2026-09",
+        description: "English September 2026 (same weights as 'english')",
         default_voice: "alba",
         layers: 6,
+        status: "legacy",
+    },
+    LanguageCatalogEntry {
+        name: "english_2026-09_24l",
+        description: "English September 2026 (undistilled)",
+        default_voice: "alba",
+        layers: 24,
+        status: "legacy",
+    },
+    LanguageCatalogEntry {
+        name: "english_2026-04",
+        description: "English April 2026",
+        default_voice: "alba",
+        layers: 6,
+        status: "legacy",
+    },
+    LanguageCatalogEntry {
+        name: "english_2026-04_24l",
+        description: "English April 2026 (undistilled)",
+        default_voice: "alba",
+        layers: 24,
         status: "legacy",
     },
     LanguageCatalogEntry {
@@ -380,4 +428,48 @@ pub fn list_voices() {
         PREDEFINED_VOICES.len(),
         "VOICE_CATALOG and PREDEFINED_VOICES are out of sync"
     );
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn catalog_matches_released_v3_3_configs() {
+        let mut names: Vec<_> = language_catalog().iter().map(|entry| entry.name).collect();
+        names.sort_unstable();
+        assert_eq!(
+            names,
+            [
+                "dutch",
+                "dutch_24l",
+                "english",
+                "english_2026-01",
+                "english_2026-04",
+                "english_2026-04_24l",
+                "english_2026-09",
+                "english_2026-09_24l",
+                "french",
+                "french_24l",
+                "german",
+                "german_24l",
+                "italian",
+                "italian_24l",
+                "portuguese",
+                "portuguese_24l",
+                "spanish",
+                "spanish_24l",
+            ]
+        );
+        for entry in language_catalog() {
+            assert_eq!(
+                entry.layers,
+                if entry.name.ends_with("_24l") { 24 } else { 6 }
+            );
+            assert!(PREDEFINED_VOICES.contains(&entry.default_voice));
+        }
+        let mut voices: Vec<_> = voice_catalog().iter().map(|entry| entry.name).collect();
+        voices.sort_unstable();
+        assert_eq!(voices, PREDEFINED_VOICES);
+    }
 }

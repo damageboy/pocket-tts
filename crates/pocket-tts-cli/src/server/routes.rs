@@ -31,7 +31,7 @@ pub fn create_router(state: AppState) -> Router {
         .route("/api/languages", get(handlers::list_languages));
 
     #[cfg(feature = "web-ui")]
-    let router = router.route("/wasm/pkg/*path", get(handlers::serve_wasm_pkg));
+    let router = router.route("/wasm/pkg/{*path}", get(handlers::serve_wasm_pkg));
 
     // Static files and SPA fallback (conditionally included)
     #[cfg(feature = "web-ui")]

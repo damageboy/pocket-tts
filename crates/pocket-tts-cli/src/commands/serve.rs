@@ -52,12 +52,16 @@ pub struct ServeArgs {
     pub config: Option<String>,
 
     /// Sampling temperature. Defaults to the model's recommended value
-    /// (0.3 for English, 0.7 otherwise).
+    /// (0.3 if the model has no recommendation).
     #[arg(long)]
     pub temperature: Option<f32>,
 
-    /// LSD decode steps
-    #[arg(long, default_value = "1")]
+    /// Sampler decode steps
+    #[arg(
+        long = "sampler-decode-steps",
+        visible_alias = "lsd-decode-steps",
+        default_value = "1"
+    )]
     pub lsd_decode_steps: usize,
 
     /// EOS threshold
@@ -196,6 +200,14 @@ pub fn print_endpoints(host: &str, port: u16, ui_mode: UiMode) {
 mod tests {
     use super::*;
     use clap::Parser;
+
+    #[test]
+    fn sampler_decode_steps_accepts_both_spellings() {
+        for flag in ["--sampler-decode-steps", "--lsd-decode-steps"] {
+            let args = ServeArgs::try_parse_from(["pocket-tts", flag, "3"]).unwrap();
+            assert_eq!(args.lsd_decode_steps, 3);
+        }
+    }
 
     #[test]
     fn omitted_temperature_uses_model_recommendation() {

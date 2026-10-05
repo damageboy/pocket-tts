@@ -20,6 +20,7 @@ const FALLBACK_VOICES: VoiceEntry[] = [
 	{ name: "caro_davy", gender: "f", style: "reading", language: "english" },
 	{ name: "charles", gender: "m", style: "conversation", language: "english" },
 	{ name: "cosette", gender: "f", style: "expressive", language: "english" },
+	{ name: "daan", gender: "m", style: "reading", language: "dutch" },
 	{ name: "eponine", gender: "f", style: "reading", language: "english" },
 	{ name: "estelle", gender: "f", style: "conversation", language: "french" },
 	{ name: "eve", gender: "f", style: "conversation", language: "english" },
@@ -92,6 +93,7 @@ export function VoiceSelector({
 			italian: "🇮🇹",
 			spanish: "🇪🇸",
 			portuguese: "🇧🇷",
+			dutch: "🇳🇱",
 		};
 		return flags[l] || "🌍";
 	};

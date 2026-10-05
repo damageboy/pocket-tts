@@ -43,12 +43,16 @@ pub struct GenerateArgs {
     pub config: Option<String>,
 
     /// Sampling temperature. Defaults to the model's recommended value
-    /// (0.3 for English, 0.7 otherwise).
+    /// (0.3 if the model has no recommendation).
     #[arg(long)]
     pub temperature: Option<f32>,
 
-    /// LSD decode steps (more steps = better quality, slower)
-    #[arg(long, default_value = "1")]
+    /// Sampler decode steps (more steps = better quality, slower)
+    #[arg(
+        long = "sampler-decode-steps",
+        visible_alias = "lsd-decode-steps",
+        default_value = "1"
+    )]
     pub lsd_decode_steps: usize,
 
     /// EOS threshold (more negative = longer audio)
@@ -129,7 +133,7 @@ pub fn run(args: GenerateArgs) -> Result<()> {
     let quantized = args.quantized;
 
     let load_start = Instant::now();
-    let model = if quantized {
+    let mut model = if quantized {
         #[cfg(feature = "quantized")]
         {
             TTSModel::load_quantized_with_optional_params_device(
@@ -157,6 +161,7 @@ pub fn run(args: GenerateArgs) -> Result<()> {
             &device,
         )?
     };
+    model.frames_after_eos = args.frames_after_eos;
     let model_load = load_start.elapsed();
 
     info!(
@@ -412,12 +417,6 @@ pub fn resolve_model_id(language: Option<&str>, config: Option<&str>) -> Result<
     }
 
     if let Some(lang) = language {
-        if lang == "french" {
-            pocket_tts::anyhow::bail!(
-                "For technical reasons, only a larger 24-layer model is available for French. \
-                 Please use --language french_24l instead."
-            );
-        }
         return Ok(lang.to_string());
     }
 
@@ -433,6 +432,21 @@ mod tests {
     use super::*;
     use clap::{CommandFactory, Parser};
     use std::time::Duration;
+
+    #[test]
+    fn sampler_decode_steps_accepts_both_spellings() {
+        for flag in ["--sampler-decode-steps", "--lsd-decode-steps"] {
+            let args = GenerateArgs::try_parse_from(["pocket-tts", flag, "3"]).unwrap();
+            assert_eq!(args.lsd_decode_steps, 3);
+        }
+    }
+
+    #[test]
+    fn released_french_and_dutch_are_model_identifiers() {
+        for language in ["french", "dutch"] {
+            assert_eq!(resolve_model_id(Some(language), None).unwrap(), language);
+        }
+    }
 
     #[test]
     fn timing_line_is_machine_readable_milliseconds() {
