@@ -3,11 +3,30 @@
 use serde::Deserialize;
 use std::path::Path;
 
+#[derive(Debug, Clone, Copy, Default, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "snake_case")]
+pub enum SamplerType {
+    #[default]
+    Lsd,
+    FlowMatching,
+}
+
+impl SamplerType {
+    pub fn time_conditions(self) -> usize {
+        match self {
+            Self::Lsd => 2,
+            Self::FlowMatching => 1,
+        }
+    }
+}
+
 /// Flow network configuration
 #[derive(Debug, Clone, Deserialize)]
 pub struct FlowConfig {
     pub dim: usize,
     pub depth: usize,
+    #[serde(default, rename = "type")]
+    pub sampler: SamplerType,
 }
 
 /// Transformer configuration for FlowLM
@@ -113,6 +132,12 @@ pub struct Config {
     pub pad_with_spaces_for_short_inputs: bool,
     #[serde(default)]
     pub remove_semicolons: bool,
+    #[serde(default = "default_true")]
+    pub append_terminal_punctuation: bool,
+    #[serde(default = "default_true")]
+    pub capitalize_first_letter: bool,
+    #[serde(default)]
+    pub replace_characters: std::collections::HashMap<char, String>,
     #[serde(default)]
     pub model_recommended_frames_after_eos: Option<usize>,
     #[serde(default)]
@@ -123,6 +148,10 @@ pub struct Config {
 
 fn default_temperature() -> f32 {
     defaults::TEMPERATURE
+}
+
+fn default_true() -> bool {
+    true
 }
 
 impl Config {
@@ -140,8 +169,9 @@ pub fn load_config<P: AsRef<Path>>(path: P) -> anyhow::Result<Config> {
 
 /// Default generation parameters (matching Python's default_parameters.py)
 pub mod defaults {
-    pub const TEMPERATURE: f32 = 0.7;
-    pub const LSD_DECODE_STEPS: usize = 1;
+    pub const TEMPERATURE: f32 = 0.3;
+    pub const SAMPLER_DECODE_STEPS: usize = 1;
+    pub const LSD_DECODE_STEPS: usize = SAMPLER_DECODE_STEPS;
     pub const NOISE_CLAMP: Option<f32> = None;
     pub const EOS_THRESHOLD: f32 = -4.0;
     pub const DEFAULT_LANGUAGE: &str = "english";
@@ -157,6 +187,8 @@ pub mod defaults {
             "È abbastanza piccolo da stare in tasca."
         } else if language.contains("spanish") {
             "Es lo suficientemente pequeño como para caber en tu bolsillo."
+        } else if language.contains("dutch") {
+            "Het is klein genoeg om in je zak te passen."
         } else {
             "It's small enough to fit in your pocket."
         }
@@ -173,6 +205,8 @@ pub mod defaults {
             "rafael"
         } else if language.contains("french") {
             "estelle"
+        } else if language.contains("dutch") {
+            "daan"
         } else {
             "alba"
         }
@@ -235,13 +269,13 @@ mod tests {
     }
 
     #[test]
-    fn config_deserializes_model_temperature_with_legacy_fallback() {
+    fn config_deserializes_model_temperature_with_v3_fallback() {
         let config_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("config");
         let english = load_config(config_dir.join("english.yaml")).unwrap();
         let german = load_config(config_dir.join("german.yaml")).unwrap();
 
         assert_eq!(english.default_temperature, 0.3);
-        assert_eq!(german.default_temperature, 0.7);
+        assert_eq!(german.default_temperature, 0.3);
     }
 
     #[test]
@@ -253,5 +287,23 @@ mod tests {
 
         assert_eq!(config.resolve_temperature(None), 0.3);
         assert_eq!(config.resolve_temperature(Some(0.9)), 0.9);
+    }
+
+    #[test]
+    fn v3_defaults_apply_without_an_explicit_temperature() {
+        let mut yaml: serde_yaml::Value =
+            serde_yaml::from_str(&std::fs::read_to_string(get_config_path()).unwrap()).unwrap();
+        yaml.as_mapping_mut().unwrap().remove("default_temperature");
+        let config: Config = serde_yaml::from_value(yaml).unwrap();
+        assert_eq!(config.resolve_temperature(None), 0.3);
+        assert_eq!(config.resolve_temperature(Some(0.0)), 0.0);
+    }
+
+    #[test]
+    fn unknown_sampler_is_not_silently_loaded_as_lsd() {
+        let mut yaml: serde_yaml::Value =
+            serde_yaml::from_str(&std::fs::read_to_string(get_config_path()).unwrap()).unwrap();
+        yaml["flow_lm"]["flow"]["type"] = "unknown_sampler".into();
+        assert!(serde_yaml::from_value::<Config>(yaml).is_err());
     }
 }

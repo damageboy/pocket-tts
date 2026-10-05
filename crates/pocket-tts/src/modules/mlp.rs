@@ -234,6 +234,9 @@ impl SimpleMLPAdaLN {
         max_period: f32,
         vb: VarBuilder,
     ) -> Result<Self> {
+        if !matches!(num_time_conds, 1 | 2) {
+            candle_core::bail!("unsupported time-condition count {num_time_conds}: expected 1 or 2")
+        }
         let mut time_embeds = Vec::new();
         for i in 0..num_time_conds {
             time_embeds.push(TimestepEmbedder::new(
@@ -267,6 +270,8 @@ impl SimpleMLPAdaLN {
         })
     }
 
+    /// Two-condition LSD uses `(s, t)`; one-condition flow matching uses `t`
+    /// only, retaining the existing signature for compatibility.
     pub fn forward(&self, c: &Tensor, s: &Tensor, t: &Tensor, x: &Tensor) -> Result<Tensor> {
         let c_emb = self.embed_condition(c)?;
         self.forward_step(x, &c_emb, s, t)
@@ -276,6 +281,15 @@ impl SimpleMLPAdaLN {
         self.cond_embed.forward(c)
     }
 
+    // The legacy LSD signatures retain s and t. A one-condition head uses only t.
+    fn embed_times(&self, s: &Tensor, t: &Tensor) -> Result<Tensor> {
+        if self.num_time_conds == 1 {
+            self.time_embeds[0].forward(t)
+        } else {
+            (self.time_embeds[0].forward(s)? + self.time_embeds[1].forward(t)?)? / 2.0
+        }
+    }
+
     pub fn forward_step(
         &self,
         x: &Tensor,
@@ -283,8 +297,7 @@ impl SimpleMLPAdaLN {
         s: &Tensor,
         t: &Tensor,
     ) -> Result<Tensor> {
-        let y = (self.time_embeds[0].forward(s)? + self.time_embeds[1].forward(t)?)?;
-        let t_combined = (y / self.num_time_conds as f64)?;
+        let t_combined = self.embed_times(s, t)?;
 
         // Compute modulations on the fly for non-cached call
         let mod_vec = self.precompute_modulations(c_emb, &t_combined)?;
@@ -293,24 +306,31 @@ impl SimpleMLPAdaLN {
 }
 
 impl SimpleMLPAdaLN {
+    /// Cache the sampler schedule: Euler uses `t=i/N`, LSD uses
+    /// `(s=i/N, t=(i+1)/N)`. Returns `[N, model_channels]`; N must be positive.
     pub fn compute_time_embeddings(
         &self,
         num_steps: usize,
         device: &candle_core::Device,
         dtype: DType,
     ) -> Result<Tensor> {
+        if num_steps == 0 {
+            candle_core::bail!("sampler requires at least one step")
+        }
         let mut embeddings = Vec::with_capacity(num_steps);
         for i in 0..num_steps {
             let s = i as f64 / num_steps as f64;
-            let t = (i + 1) as f64 / num_steps as f64;
+            let t = if self.num_time_conds == 1 {
+                s // Flow matching: Euler evaluates the direction at the start time.
+            } else {
+                (i + 1) as f64 / num_steps as f64
+            };
 
             // 1D Tensors [1]
             let s_tensor = Tensor::new(&[s as f32], device)?.to_dtype(dtype)?;
             let t_tensor = Tensor::new(&[t as f32], device)?.to_dtype(dtype)?;
 
-            let t0 = self.time_embeds[0].forward(&s_tensor)?;
-            let t1 = self.time_embeds[1].forward(&t_tensor)?;
-            let t_combined = ((t0 + t1)? / self.num_time_conds as f64)?;
+            let t_combined = self.embed_times(&s_tensor, &t_tensor)?;
             embeddings.push(t_combined);
         }
         // stack of [1, 512] -> [num_steps, 1, 512]

@@ -12,6 +12,9 @@ pub fn lsd_decode(
     let mut current = x_0.clone();
     let num_steps = modulations.len();
 
+    if num_steps == 0 {
+        candle_core::bail!("sampler requires at least one step")
+    }
     let step_factor = 1.0 / num_steps as f64;
     for step_mod in modulations {
         // Use forward_step_cached with pre-computed modulation batch for this ODE step
@@ -117,6 +120,70 @@ impl FlowLMModel {
         eos_threshold: f32,
         step: usize,
     ) -> Result<(Tensor, bool)> {
+        self.forward_impl(
+            sequence,
+            text_embeddings,
+            model_state,
+            time_embeddings,
+            eos_threshold,
+            step,
+            |last_frame| {
+                sample_noise(
+                    last_frame.device(),
+                    (last_frame.dims()[0], self.ldim),
+                    temp,
+                    self.noise_clamp,
+                )
+            },
+        )
+    }
+
+    /// Generate from an explicit initial latent `[B, ldim]`, used verbatim.
+    /// No RNG, temperature scaling, or noise truncation is applied. Noise must
+    /// have the sequence's dtype and device. As in `forward`, EOS is batch-one.
+    #[allow(clippy::too_many_arguments)]
+    pub fn forward_with_noise(
+        &self,
+        sequence: &Tensor,
+        text_embeddings: &Tensor,
+        model_state: &mut ModelState,
+        time_embeddings: &Tensor,
+        noise: &Tensor,
+        eos_threshold: f32,
+        step: usize,
+    ) -> Result<(Tensor, bool)> {
+        let (batch, _, _) = sequence.dims3()?;
+        if noise.dims() != [batch, self.ldim] {
+            candle_core::bail!("noise must have shape [{batch}, {}]", self.ldim)
+        }
+        if noise.dtype() != sequence.dtype() || !noise.device().same_device(sequence.device()) {
+            candle_core::bail!("noise must match sequence dtype and device")
+        }
+        self.forward_impl(
+            sequence,
+            text_embeddings,
+            model_state,
+            time_embeddings,
+            eos_threshold,
+            step,
+            |_| Ok(noise.clone()),
+        )
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    fn forward_impl(
+        &self,
+        sequence: &Tensor,
+        text_embeddings: &Tensor,
+        model_state: &mut ModelState,
+        time_embeddings: &Tensor,
+        eos_threshold: f32,
+        step: usize,
+        make_noise: impl FnOnce(&Tensor) -> Result<Tensor>,
+    ) -> Result<(Tensor, bool)> {
+        if time_embeddings.dim(0)? == 0 {
+            candle_core::bail!("sampler requires at least one step")
+        }
         // sequence is [B, T, ldim]
         // text_embeddings is [B, S, dim]
 
@@ -156,13 +223,7 @@ impl FlowLMModel {
             .to_scalar::<f32>()?;
         let is_eos = eos_score > eos_threshold;
 
-        // Generate noise with optional clamping
-        let noise = sample_noise(
-            last_frame.device(),
-            (last_frame.dims()[0], self.ldim),
-            temp,
-            self.noise_clamp,
-        )?;
+        let noise = make_noise(&last_frame)?;
 
         // Pre-compute all modulations for this frame's ODE steps (8 steps * N blocks) in batch
         let c_emb = self.flow_net.embed_condition(&last_frame)?;

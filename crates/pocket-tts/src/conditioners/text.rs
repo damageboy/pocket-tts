@@ -267,6 +267,15 @@ impl LUTConditioner {
             tok
         };
 
+        let vocab_size = tokenizer.get_vocab_size(true);
+        if vocab_size != n_bins {
+            anyhow::bail!(
+                "Tokenizer vocab size {} doesn't match n_bins {}",
+                vocab_size,
+                n_bins
+            );
+        }
+
         // n_bins + 1 for padding
         let embed = candle_nn::embedding(n_bins + 1, dim, vb.pp("embed"))?;
 
@@ -284,6 +293,10 @@ impl LUTConditioner {
 
         let ids = encoding.get_ids();
         Ok(Tensor::from_vec(ids.to_vec(), (1, ids.len()), device)?)
+    }
+
+    pub(crate) fn tokenizer(&self) -> &Tokenizer {
+        &self.tokenizer
     }
 
     pub fn forward(&self, tokens: &Tensor) -> Result<Tensor> {
@@ -316,6 +329,33 @@ impl LUTConditioner {
 #[cfg(test)]
 mod tests {
     use super::LUTConditioner;
+
+    #[test]
+    fn byte_loading_rejects_mismatched_vocabulary_before_embedding_lookup() {
+        use candle_core::{DType, Device};
+        use candle_nn::VarBuilder;
+        use tokenizers::{Tokenizer, models::wordlevel::WordLevel};
+
+        let model = WordLevel::builder()
+            .vocab([("<unk>".to_string(), 0), ("hello".to_string(), 1)].into())
+            .unk_token("<unk>".to_string())
+            .build()
+            .unwrap();
+        let json = Tokenizer::new(model).to_string(false).unwrap();
+        let result = LUTConditioner::new_from_bytes(
+            1,
+            json.as_bytes(),
+            4,
+            4,
+            VarBuilder::zeros(DType::F32, &Device::Cpu),
+        );
+        let error = result.err().expect("wrong vocabulary must not load");
+        assert!(
+            error
+                .to_string()
+                .contains("vocab size 2 doesn't match n_bins 1")
+        );
+    }
 
     fn encode_varint(mut value: u64) -> Vec<u8> {
         let mut out = Vec::new();

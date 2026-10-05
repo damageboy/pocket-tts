@@ -7,6 +7,29 @@ use candle_core::Device;
 #[cfg(not(target_arch = "wasm32"))]
 use hf_hub::{HFClientSync, split_id};
 
+/// Resolve the configured bundle and its voice-cloning capability. Like the
+/// reference, only download failures trigger fallback, not invalid weights.
+#[cfg(not(target_arch = "wasm32"))]
+pub(crate) fn download_model_weights(
+    config: &crate::config::Config,
+    mut download: impl FnMut(&str) -> Result<PathBuf>,
+) -> Result<(PathBuf, bool)> {
+    if let Some(path) = &config.weights_path {
+        match download(path) {
+            Ok(file) => return Ok((file, true)),
+            Err(error) if config.weights_path_without_voice_cloning.is_some() => {
+                tracing::warn!("Cloning weights unavailable ({error}); using preset-only weights");
+            }
+            Err(error) => return Err(error),
+        }
+    }
+    let path = config
+        .weights_path_without_voice_cloning
+        .as_deref()
+        .ok_or_else(|| anyhow::anyhow!("No model weights specified in config"))?;
+    Ok((download(path)?, false))
+}
+
 /// Download a file from HuggingFace Hub if necessary.
 ///
 /// Supports the format: `hf://owner/repo/filename@revision`
@@ -77,6 +100,38 @@ mod tests {
         let path = "test.safetensors";
         let res = download_if_necessary(path).unwrap();
         assert_eq!(res, PathBuf::from(path));
+    }
+
+    #[test]
+    #[cfg(not(target_arch = "wasm32"))]
+    fn model_download_fallback_tracks_capability_and_preserves_errors() -> Result<()> {
+        let mut config = crate::config::load_config(concat!(
+            env!("CARGO_MANIFEST_DIR"),
+            "/config/english.yaml"
+        ))?;
+        config.weights_path = Some("gated".into());
+        config.weights_path_without_voice_cloning = Some("open".into());
+        let mut requested = Vec::new();
+        let (path, cloning) = download_model_weights(&config, |path| {
+            requested.push(path.to_owned());
+            if path == "gated" {
+                anyhow::bail!("access denied")
+            }
+            Ok(path.into())
+        })?;
+        assert_eq!(requested, ["gated", "open"]);
+        assert_eq!(path, PathBuf::from("open"));
+        assert!(!cloning);
+        let (_, cloning) = download_model_weights(&config, |path| Ok(path.into()))?;
+        assert!(cloning);
+        config.weights_path_without_voice_cloning = None;
+        let error =
+            download_model_weights(&config, |_| anyhow::bail!("access denied")).unwrap_err();
+        assert!(error.to_string().contains("access denied"));
+        config.weights_path = None;
+        config.weights_path_without_voice_cloning = Some("open".into());
+        assert!(!download_model_weights(&config, |path| Ok(path.into()))?.1);
+        Ok(())
     }
 
     #[test]

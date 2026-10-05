@@ -2,14 +2,21 @@
 //!
 //! Run with: cargo test -p pocket-tts --release --test v2_parity_test
 //!
-//! Prerequisites: v2 english model must be downloaded (run `pocket-tts generate --language english` first)
+//! Configs are pinned under tests/fixtures; never mix these historical preset
+//! caches and expected values with the current `english`/`german` defaults.
 
 use pocket_tts::TTSModel;
 use pocket_tts::anyhow::Result;
 use pocket_tts::candle_core::{DType, Device, Tensor};
 
+const ENGLISH: &str = concat!(
+    env!("CARGO_MANIFEST_DIR"),
+    "/tests/fixtures/v2-english.yaml"
+);
+const GERMAN: &str = concat!(env!("CARGO_MANIFEST_DIR"), "/tests/fixtures/v2-german.yaml");
+
 fn has_v2_model() -> bool {
-    TTSModel::load("english").is_ok()
+    TTSModel::load(ENGLISH).is_ok()
 }
 
 #[test]
@@ -19,7 +26,7 @@ fn test_v2_voice_state_import() -> Result<()> {
         return Ok(());
     }
 
-    let model = TTSModel::load("english")?;
+    let model = TTSModel::load(ENGLISH)?;
 
     // Load voice state for alba
     let alba_path = pocket_tts::weights::download_if_necessary(
@@ -90,7 +97,7 @@ fn test_v2_tokenization() -> Result<()> {
         return Ok(());
     }
 
-    let model = TTSModel::load("english")?;
+    let model = TTSModel::load(ENGLISH)?;
 
     // Python: token_ids = [2994, 578, 263] for "Hello world."
     let tokens = model.conditioner.prepare("Hello world.", &Device::Cpu)?;
@@ -121,7 +128,7 @@ fn test_v2_first_generation_step() -> Result<()> {
         return Ok(());
     }
 
-    let model = TTSModel::load("english")?;
+    let model = TTSModel::load(ENGLISH)?;
 
     // Load voice state
     let alba_path = pocket_tts::weights::download_if_necessary(
@@ -214,7 +221,7 @@ fn test_v2_first_generation_step() -> Result<()> {
 
 #[test]
 fn test_v2_german_parity() -> Result<()> {
-    if TTSModel::load("german").is_err() {
+    if TTSModel::load(GERMAN).is_err() {
         eprintln!("Skipping: v2 german model not available");
         return Ok(());
     }
@@ -222,7 +229,7 @@ fn test_v2_german_parity() -> Result<()> {
     use std::io::Write;
     let mut f = std::fs::File::create(std::env::temp_dir().join("rust_german_parity.txt"))?;
 
-    let model = TTSModel::load("german")?;
+    let model = TTSModel::load(GERMAN)?;
     writeln!(f, "remove_semicolons={}", model.remove_semicolons)?;
     writeln!(
         f,

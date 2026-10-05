@@ -11,6 +11,7 @@ use crate::models::mimi::MimiModel;
 use crate::models::seanet::{SEANetDecoder, SEANetEncoder};
 use crate::models::transformer::{ProjectedTransformer, StreamingTransformer};
 use crate::modules::mlp::SimpleMLPAdaLN;
+use crate::text::TextOptions;
 use crate::voice_state::{increment_steps, init_states};
 
 use anyhow::Result;
@@ -50,6 +51,14 @@ pub struct TTSModel {
     pub pad_with_spaces_for_short_inputs: bool,
     /// Whether to replace semicolons with commas (needed for some languages)
     pub remove_semicolons: bool,
+    pub append_terminal_punctuation: bool,
+    pub capitalize_first_letter: bool,
+    pub replace_characters: std::collections::HashMap<char, String>,
+    /// Explicit generation tail override, including zero. Otherwise use the
+    /// model recommendation, then the prepared-text heuristic.
+    pub frames_after_eos: Option<usize>,
+    /// Whether the loaded bundle supports encoding an audio voice prompt.
+    pub has_voice_cloning: bool,
     /// Model-recommended frames after EOS (from config)
     pub model_recommended_frames_after_eos: Option<usize>,
     /// Origin config path (used to determine language for voice resolution)
@@ -296,11 +305,10 @@ impl TTSModel {
         // Download weights
         #[cfg(not(target_arch = "wasm32"))]
         {
-            let weights_path = config
-                .weights_path
-                .as_ref()
-                .ok_or_else(|| anyhow::anyhow!("weights_path not specified in config"))?;
-            let weights_file = crate::weights::download_if_necessary(weights_path)?;
+            let (weights_file, has_voice_cloning) = crate::weights::download_model_weights(
+                &config,
+                crate::weights::download_if_necessary,
+            )?;
 
             // Load safetensors with VarBuilder
             let vb =
@@ -319,7 +327,7 @@ impl TTSModel {
                 vb.pp("flow_lm.conditioner"),
             )?;
 
-            Self::from_config_and_vb(
+            let mut model = Self::from_config_and_vb(
                 config,
                 temp,
                 lsd_decode_steps,
@@ -327,7 +335,9 @@ impl TTSModel {
                 noise_clamp,
                 conditioner,
                 vb,
-            )
+            )?;
+            model.has_voice_cloning = has_voice_cloning;
+            Ok(model)
         }
 
         #[cfg(target_arch = "wasm32")]
@@ -347,7 +357,10 @@ impl TTSModel {
         }
     }
 
-    /// Load model from byte slices (useful for WASM)
+    /// Load model from byte slices (useful for WASM).
+    ///
+    /// Raw bytes carry no bundle provenance. For compatibility this assumes
+    /// cloning weights; set `has_voice_cloning = false` for open bundles.
     pub fn load_from_bytes(
         config_yaml: &[u8],
         weights_bytes: &[u8],
@@ -412,7 +425,7 @@ impl TTSModel {
             ldim,                      // out_channels (output is also latent dim)
             dim,                       // cond_channels (conditioning from transformer)
             config.flow_lm.flow.depth, // num_res_blocks
-            2,                         // num_time_conds (s and t)
+            config.flow_lm.flow.sampler.time_conditions(),
             config.flow_lm.transformer.max_period as f32,
             vb.pp("flow_lm.flow_net"),
         )?;
@@ -551,6 +564,11 @@ impl TTSModel {
             device,
             pad_with_spaces_for_short_inputs: config.pad_with_spaces_for_short_inputs,
             remove_semicolons: config.remove_semicolons,
+            append_terminal_punctuation: config.append_terminal_punctuation,
+            capitalize_first_letter: config.capitalize_first_letter,
+            replace_characters: config.replace_characters,
+            frames_after_eos: None,
+            has_voice_cloning: true,
             model_recommended_frames_after_eos: config.model_recommended_frames_after_eos,
             origin: None, // Set by the caller after construction
         })
@@ -558,6 +576,7 @@ impl TTSModel {
 
     /// Create voice state from audio prompt bytes for voice cloning
     pub fn get_voice_state_from_bytes(&self, bytes: &[u8]) -> Result<ModelState> {
+        self.require_voice_cloning()?;
         let (audio, sample_rate) = crate::audio::read_wav_from_bytes(bytes)?;
 
         // Resample to model sample rate if needed
@@ -578,6 +597,7 @@ impl TTSModel {
     /// Encodes the audio through Mimi and projects to flow model space.
     #[cfg(not(target_arch = "wasm32"))]
     pub fn get_voice_state<P: AsRef<std::path::Path>>(&self, audio_path: P) -> Result<ModelState> {
+        self.require_voice_cloning()?;
         let (audio, sample_rate) = crate::audio::read_wav(audio_path)?;
 
         // Resample to model sample rate if needed
@@ -644,8 +664,17 @@ impl TTSModel {
         Ok(flow_state)
     }
 
+    fn require_voice_cloning(&self) -> Result<()> {
+        anyhow::ensure!(
+            self.has_voice_cloning,
+            "These weights do not support voice cloning. Use a preset voice or load the gated cloning weights."
+        );
+        Ok(())
+    }
+
     /// Create voice state from audio tensor
     pub fn get_voice_state_from_tensor(&self, audio: &Tensor) -> Result<ModelState> {
+        self.require_voice_cloning()?;
         let mut model_state = init_states();
 
         // Ensure audio tensor is on the same device as the model (fixes Metal device mismatch)
@@ -749,105 +778,29 @@ impl TTSModel {
         Ok(())
     }
 
-    /// Split text into optimal chunks for generation, matching Python's logic exactly.
-    /// Uses actual tokenization to ensure chunks never exceed MAX_TOKENS_PER_CHUNK (50).
-    /// This prevents O(N²) attention complexity for long texts.
-    ///
-    /// When a single sentence exceeds `max_tokens` and has no sentence-ending punctuation
-    /// (`.`, `!`, `?`), falls back to splitting on commas, semicolons, and colons to
-    /// prevent the model from silently skipping parts of long sentences.
+    fn text_options(&self) -> TextOptions {
+        TextOptions {
+            pad_with_spaces_for_short_inputs: self.pad_with_spaces_for_short_inputs,
+            remove_semicolons: self.remove_semicolons,
+            append_terminal_punctuation: self.append_terminal_punctuation,
+            capitalize_first_letter: self.capitalize_first_letter,
+            replace_characters: self.replace_characters.clone(),
+        }
+    }
+
+    /// Legacy convenience API; invalid text yields no chunks. Generation uses
+    /// the fallible variant below so preparation/tokenization errors propagate.
     pub fn split_into_best_sentences(&self, text: &str) -> Vec<String> {
-        const MAX_TOKENS_PER_CHUNK: usize = 50;
+        self.try_split_into_best_sentences(text).unwrap_or_default()
+    }
 
-        let prepared_text = prepare_text_prompt(
-            text,
-            self.pad_with_spaces_for_short_inputs,
-            self.remove_semicolons,
-        );
-
-        // 1. Initial split by sentence-ending punctuation only
-        let raw_sentences: Vec<&str> = prepared_text
-            .split_inclusive(&['.', '!', '?'])
-            .map(|s| s.trim())
-            .filter(|s| !s.is_empty())
-            .collect();
-
-        if raw_sentences.is_empty() {
-            return vec![prepared_text];
-        }
-
-        // 2. Sub-split oversized sentences on commas, semicolons, and colons
-        //    to prevent skipped words (port of upstream Python commit ef69ab8)
-        let mut refined_segments: Vec<(usize, String)> = Vec::new();
-        for sentence in &raw_sentences {
-            let token_count = self
-                .conditioner
-                .count_tokens(sentence)
-                .unwrap_or(MAX_TOKENS_PER_CHUNK);
-
-            if token_count <= MAX_TOKENS_PER_CHUNK {
-                refined_segments.push((token_count, sentence.to_string()));
-            } else {
-                let sub_parts: Vec<&str> = sentence
-                    .split_inclusive(&[',', ';', ':'])
-                    .map(|s| s.trim())
-                    .filter(|s| !s.is_empty())
-                    .collect();
-
-                if sub_parts.len() > 1 {
-                    for part in sub_parts {
-                        let part_tokens = self
-                            .conditioner
-                            .count_tokens(part)
-                            .unwrap_or(MAX_TOKENS_PER_CHUNK);
-                        refined_segments.push((part_tokens, part.to_string()));
-                    }
-                } else {
-                    // No fallback split points found, keep as-is
-                    refined_segments.push((token_count, sentence.to_string()));
-                }
-            }
-        }
-
-        // 3. Accumulate segments into chunks respecting max_tokens
-        let mut chunks = Vec::new();
-        let mut current_chunk = String::new();
-        let mut current_token_count = 0;
-
-        for (nb_tokens, sentence) in refined_segments {
-            if current_chunk.is_empty() {
-                current_chunk = sentence;
-                current_token_count = nb_tokens;
-            } else if current_token_count + nb_tokens > MAX_TOKENS_PER_CHUNK {
-                chunks.push(current_chunk);
-                current_chunk = sentence;
-                current_token_count = nb_tokens;
-            } else {
-                current_chunk.push(' ');
-                current_chunk.push_str(&sentence);
-                current_token_count += nb_tokens;
-            }
-        }
-
-        if !current_chunk.is_empty() {
-            chunks.push(current_chunk);
-        }
-
-        // 4. Warn about chunks that still exceed max_tokens
-        for chunk in &chunks {
-            if let Ok(token_count) = self.conditioner.count_tokens(chunk.trim())
-                && token_count > MAX_TOKENS_PER_CHUNK
-            {
-                tracing::warn!(
-                    "Chunk has {} tokens (max {}), generation may skip words: '{:.50}...'",
-                    token_count,
-                    MAX_TOKENS_PER_CHUNK,
-                    chunk,
-                );
-            }
-        }
-
-        chunks
+    /// Token-based upstream chunking, with a soft 50-token limit.
+    pub fn try_split_into_best_sentences(&self, text: &str) -> Result<Vec<String>> {
+        self.text_options().split(
+            self.conditioner.tokenizer(),
+            &crate::pause::strip_pause_markers(text),
+            50,
+        )
     }
 
     /// Generate audio from text with voice state
@@ -1068,7 +1021,10 @@ impl TTSModel {
         voice_state: &'c ModelState,
     ) -> Box<dyn Iterator<Item = Result<Tensor>> + 'a> {
         // Split text into chunks to avoid quadratic complexity scaling
-        let chunks = self.split_into_best_sentences(text);
+        let chunks = match self.try_split_into_best_sentences(text) {
+            Ok(chunks) => chunks,
+            Err(error) => return Box::new(std::iter::once(Err(error))),
+        };
 
         // Clone voice state so the iterator owns a copy, untied from lifetime 'c
         let voice_state_owned = voice_state.clone();
@@ -1080,7 +1036,7 @@ impl TTSModel {
             self.generate_stream_segment(chunk_text, &voice_state_owned)
         });
 
-        Box::new(iterator)
+        Box::new(stop_after_error(iterator))
     }
 
     /// Generate audio stream from text with voice state, returning an owned iterator.
@@ -1093,13 +1049,16 @@ impl TTSModel {
     ) -> Box<dyn Iterator<Item = Result<Tensor>> + 'static> {
         let model = self.clone();
         let voice_state_owned = voice_state.clone();
-        let chunks = model.split_into_best_sentences(text);
+        let chunks = match model.try_split_into_best_sentences(text) {
+            Ok(chunks) => chunks,
+            Err(error) => return Box::new(std::iter::once(Err(error))),
+        };
 
         let iterator = chunks.into_iter().flat_map(move |chunk_text| {
             model.generate_stream_segment(chunk_text, &voice_state_owned)
         });
 
-        Box::new(iterator)
+        Box::new(stop_after_error(iterator))
     }
 
     /// Internal helper to generate a single segment (short text) matching Python's _generate
@@ -1109,14 +1068,29 @@ impl TTSModel {
         voice_state: &ModelState,
     ) -> Box<dyn Iterator<Item = Result<Tensor>>> {
         let mut state = voice_state.clone();
+        // Tensor::clone shares storage and slice_set mutates it. Each segment
+        // needs private KV buffers, including audio-derived caches with spare
+        // capacity that would not otherwise reallocate before their first write.
+        for values in state.values_mut() {
+            for key in [
+                crate::voice_state::ATTN_K_BUF_KEY,
+                crate::voice_state::ATTN_V_BUF_KEY,
+            ] {
+                if let Some(buffer) = values.get_mut(key) {
+                    match buffer.copy() {
+                        Ok(copy) => *buffer = copy,
+                        Err(error) => return Box::new(std::iter::once(Err(error.into()))),
+                    }
+                }
+            }
+        }
         let mut mimi_state = init_states();
 
         // Prepare text
-        let prepared_text = prepare_text_prompt(
-            &text,
-            self.pad_with_spaces_for_short_inputs,
-            self.remove_semicolons,
-        );
+        let (prepared_text, tail_guess) = match self.text_options().prepare(&text) {
+            Ok(prepared) => prepared,
+            Err(error) => return Box::new(std::iter::once(Err(error))),
+        };
 
         // Error handling for preparation failures inside the iterator
         let tokens = match self.conditioner.prepare(&prepared_text, &self.device) {
@@ -1140,8 +1114,12 @@ impl TTSModel {
 
         // Removed redundant increment_steps("offset") - handled internally by RoPE/Attention with current_end_len
 
-        let max_gen_len = (prepared_text.split_whitespace().count() + 2) * 13;
-        let frames_after_eos = estimate_frames_after_eos(&text);
+        let max_gen_len =
+            ((tokens.dims()[1] as f64 / 3.0 + 2.0) * self.mimi.frame_rate).ceil() as usize;
+        let frames_after_eos = self
+            .frames_after_eos
+            .or(self.model_recommended_frames_after_eos)
+            .unwrap_or(tail_guess + 2);
 
         let mut backbone_input = match self.flow_lm.bos_emb.clone().reshape((1, 1, self.ldim)) {
             Ok(t) => t,
@@ -1178,8 +1156,18 @@ impl TTSModel {
         let empty_text_embeddings =
             Tensor::zeros((1, 0, model.dim), DType::F32, &model.device).unwrap();
 
-        Box::new((0..max_gen_len).map_while(move |step| {
+        Box::new((0..=max_gen_len).map_while(move |step| {
             if finished {
+                return None;
+            }
+            if step == max_gen_len {
+                finished = true;
+                if std::env::var("KPOCKET_TTS_ERROR_WITHOUT_EOS").as_deref() == Ok("1") {
+                    return Some(Err(anyhow::anyhow!(
+                        "Generation reached maximum length without EOS!"
+                    )));
+                }
+                tracing::warn!("Maximum generation length reached without EOS");
                 return None;
             }
 
@@ -1201,8 +1189,21 @@ impl TTSModel {
                     )
                 }) {
                 Ok(res) => res,
-                Err(e) => return Some(Err(anyhow::anyhow!(e))),
+                Err(e) => {
+                    finished = true;
+                    return Some(Err(anyhow::anyhow!(e)));
+                }
             };
+
+            if is_eos && eos_step.is_none() && step >= 6 {
+                eos_step = Some(step);
+            }
+            if let Some(e_step) = eos_step
+                && step - e_step >= frames_after_eos
+            {
+                finished = true;
+                return None;
+            }
 
             let audio_frame = match (|| -> Result<Tensor> {
                 let next_latent_denorm = next_latent
@@ -1224,18 +1225,11 @@ impl TTSModel {
                 Ok(audio)
             })() {
                 Ok(frame) => frame,
-                Err(e) => return Some(Err(e)),
+                Err(e) => {
+                    finished = true;
+                    return Some(Err(e));
+                }
             };
-
-            if is_eos && eos_step.is_none() {
-                eos_step = Some(step);
-            }
-
-            if let Some(e_step) = eos_step
-                && step >= e_step + frames_after_eos
-            {
-                finished = true;
-            }
 
             backbone_input = next_latent.unsqueeze(1).unwrap();
 
@@ -1283,7 +1277,7 @@ impl TTSModel {
         }
 
         let model = self;
-        segments.into_iter().flat_map(move |seg| match seg {
+        stop_after_error(segments.into_iter().flat_map(move |seg| match seg {
             Segment::Text(s) => {
                 let iter = model.generate_stream(&s, voice_state);
                 Box::new(iter) as Box<dyn Iterator<Item = Result<Tensor>>>
@@ -1298,16 +1292,30 @@ impl TTSModel {
                 Box::new(std::iter::once(silence_res.map_err(anyhow::Error::from)))
                     as Box<dyn Iterator<Item = Result<Tensor>>>
             }
-        })
+        }))
     }
     pub fn estimate_generation_steps(&self, text: &str) -> usize {
-        let prepared = prepare_text_prompt(
-            text,
-            self.pad_with_spaces_for_short_inputs,
-            self.remove_semicolons,
-        );
-        (prepared.split_whitespace().count() + 2) * 13
+        self.text_options()
+            .prepare(&crate::pause::strip_pause_markers(text))
+            .and_then(|(prepared, _)| self.conditioner.count_tokens(&prepared))
+            .map(|count| ((count as f64 / 3.0 + 2.0) * self.mimi.frame_rate).ceil() as usize)
+            .unwrap_or(0)
     }
+}
+
+/// Yield an error once, without advancing into the next segment afterwards.
+fn stop_after_error<T>(
+    mut iterator: impl Iterator<Item = Result<T>>,
+) -> impl Iterator<Item = Result<T>> {
+    let mut finished = false;
+    std::iter::from_fn(move || {
+        if finished {
+            return None;
+        }
+        let item = iterator.next();
+        finished = item.as_ref().is_none_or(Result::is_err);
+        item
+    })
 }
 
 /// Internal segment type for interleaving text and pauses
@@ -1489,43 +1497,16 @@ pub fn find_config_path(variant: &str) -> Result<std::path::PathBuf> {
 }
 
 /// Prepare text for generation, stripping pause markers for TTS processing
+#[cfg(test)]
 fn prepare_text_prompt(text: &str, pad_with_spaces: bool, remove_semicolons: bool) -> String {
-    // First strip any explicit pause markers
-    let text = crate::pause::strip_pause_markers(text);
-
-    let mut text = text.trim().to_string();
-    if text.is_empty() {
-        return ".".to_string(); // Or handle error
+    TextOptions {
+        pad_with_spaces_for_short_inputs: pad_with_spaces,
+        remove_semicolons,
+        ..Default::default()
     }
-
-    text = text.replace(['\n', '\r'], " ").replace("  ", " ");
-
-    if remove_semicolons {
-        text = text.replace(';', ",");
-    }
-
-    let word_count = text.split_whitespace().count();
-
-    // Ensure first character is uppercase
-    if let Some(first) = text.chars().next()
-        && !first.is_uppercase()
-    {
-        text = format!("{}{}", first.to_uppercase(), &text[first.len_utf8()..]);
-    }
-
-    // Ensure ends with punctuation
-    if let Some(last) = text.chars().last()
-        && last.is_alphanumeric()
-    {
-        text.push('.');
-    }
-
-    // Pad short inputs with spaces (only if flag is set)
-    if pad_with_spaces && word_count < 5 {
-        text = format!("{}{}", " ".repeat(8), text);
-    }
-
-    text
+    .prepare(&crate::pause::strip_pause_markers(text))
+    .unwrap()
+    .0
 }
 
 /// Estimate frames after EOS based on text length
@@ -1541,6 +1522,175 @@ pub fn estimate_frames_after_eos(text: &str) -> usize {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    fn tiny_model() -> Result<TTSModel> {
+        let mut config = load_config(find_config_path("english")?)?;
+        config.flow_lm.transformer.d_model = 4;
+        config.flow_lm.transformer.num_heads = 1;
+        config.flow_lm.transformer.num_layers = 1;
+        config.flow_lm.flow.dim = 4;
+        config.flow_lm.flow.depth = 1;
+        config.flow_lm.lookup_table.dim = 4;
+        config.mimi.sample_rate = 100;
+        config.mimi.inner_dim = Some(2);
+        config.mimi.outer_dim = Some(4);
+        config.mimi.quantizer.dimension = 2;
+        config.mimi.quantizer.output_dimension = 4;
+        config.mimi.seanet.dimension = 4;
+        config.mimi.seanet.n_filters = 2;
+        config.mimi.seanet.ratios = vec![2];
+        config.mimi.transformer.d_model = 4;
+        config.mimi.transformer.input_dimension = 4;
+        config.mimi.transformer.output_dimensions = vec![4];
+        config.mimi.transformer.num_heads = 1;
+        config.mimi.transformer.num_layers = 1;
+        config.mimi.transformer.dim_feedforward = 8;
+        let vb = VarBuilder::zeros(DType::F32, &Device::Cpu);
+        let conditioner = LUTConditioner::new_from_bytes(
+            4000,
+            include_bytes!("../../../assets/upstream-v3.3/english.tokenizer.json"),
+            4,
+            4,
+            vb.clone(),
+        )?;
+        TTSModel::from_config_and_vb(config, 0.0, 1, -4.0, None, conditioner, vb)
+    }
+
+    #[test]
+    fn v3_stream_ignores_early_eos_and_does_not_decode_cutoff() -> Result<()> {
+        let mut model = tiny_model()?;
+        let state = init_states();
+        // Zero weights produce EOS=0 > -4 on every step. First accepted EOS
+        // must be step 6; a three-frame tail discards step 9.
+        let frames = model
+            .generate_stream("one two three four five", &state)
+            .collect::<Result<Vec<_>>>()?;
+        assert_eq!(frames.len(), 9);
+        let frames = model
+            .generate_stream_owned("hello world", &state)
+            .collect::<Result<Vec<_>>>()?;
+        assert_eq!(frames.len(), 11); // short-text tail = 5
+        model.model_recommended_frames_after_eos = Some(1);
+        assert_eq!(
+            model
+                .generate_stream("hello world", &state)
+                .collect::<Result<Vec<_>>>()?
+                .len(),
+            7
+        );
+        model.frames_after_eos = Some(0);
+        assert_eq!(
+            model
+                .generate_stream("hello world", &state)
+                .collect::<Result<Vec<_>>>()?
+                .len(),
+            6
+        );
+        Ok(())
+    }
+
+    #[test]
+    fn v3_generation_bound_uses_tokens_and_rejects_empty_text() -> Result<()> {
+        let mut model = tiny_model()?;
+        assert_eq!(model.estimate_generation_steps("hello world"), 38); // 3 tokens, 12.5 Hz
+        model.eos_threshold = 1.0; // zero logit never reaches EOS
+        assert_eq!(
+            model
+                .generate_stream("hello world", &init_states())
+                .collect::<Result<Vec<_>>>()?
+                .len(),
+            38
+        );
+        assert!(model.generate(" \n ", &init_states()).is_err());
+        Ok(())
+    }
+
+    #[test]
+    fn open_weights_reject_audio_cloning_but_accept_precomputed_prompts() -> Result<()> {
+        let mut model = tiny_model()?;
+        model.has_voice_cloning = false;
+        let audio = Tensor::zeros((1, 1, 200), DType::F32, &Device::Cpu)?;
+        assert!(
+            model
+                .get_voice_state_from_tensor(&audio)
+                .unwrap_err()
+                .to_string()
+                .contains("voice cloning")
+        );
+        assert!(
+            model
+                .get_voice_state_from_bytes(b"not a WAV")
+                .unwrap_err()
+                .to_string()
+                .contains("voice cloning")
+        );
+        assert!(
+            model
+                .get_voice_state("missing.wav")
+                .unwrap_err()
+                .to_string()
+                .contains("voice cloning")
+        );
+        let prompt = Tensor::zeros((1, 2, model.dim), DType::F32, &Device::Cpu)?;
+        assert!(
+            !model
+                .get_voice_state_from_prompt_tensor(&prompt)?
+                .is_empty()
+        );
+        Ok(())
+    }
+
+    #[test]
+    fn stream_errors_are_terminal_across_text_chunks_and_pauses() -> Result<()> {
+        let mut model = tiny_model()?;
+        model.lsd_decode_steps = 0;
+        let text = "This is a sentence with enough words to require several chunks. ".repeat(20);
+        assert!(model.try_split_into_best_sentences(&text)?.len() > 1);
+        let state = init_states();
+        for mut stream in [
+            model.generate_stream(&text, &state),
+            model.generate_stream_owned(&text, &state),
+        ] {
+            assert!(stream.next().unwrap().is_err());
+            assert!(stream.next().is_none());
+        }
+        let mut stream = model.generate_stream_long("Hello [pause:20ms] world", &state);
+        assert!(stream.next().unwrap().is_err());
+        assert!(stream.next().is_none());
+        Ok(())
+    }
+
+    #[test]
+    fn dropping_a_stream_preserves_voice_cache_with_spare_capacity() -> Result<()> {
+        let model = tiny_model()?;
+        let prompt = Tensor::zeros((1, 2, model.dim), DType::F32, &Device::Cpu)?;
+        let mut state = model.get_voice_state_from_prompt_tensor(&prompt)?;
+        // Imported presets normally have no spare capacity, masking shared
+        // storage writes. Audio-derived states do have unused tail capacity.
+        for values in state.values_mut() {
+            for key in ["k_buf", "v_buf"] {
+                values.insert(
+                    key.into(),
+                    Tensor::full(5f32, values[key].shape(), &Device::Cpu)?,
+                );
+            }
+        }
+        let mut stream = model.generate_stream("hello world", &state);
+        stream.next().unwrap()?;
+        drop(stream);
+        for values in state.values() {
+            for key in ["k_buf", "v_buf"] {
+                assert!(
+                    values[key]
+                        .flatten_all()?
+                        .to_vec1::<f32>()?
+                        .iter()
+                        .all(|&v| v == 5.0)
+                );
+            }
+        }
+        Ok(())
+    }
 
     #[test]
     fn test_prepare_text_prompt_with_padding() {

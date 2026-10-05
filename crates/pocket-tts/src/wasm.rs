@@ -53,13 +53,15 @@ impl WasmTTSModel {
     /// # Arguments
     /// * `config_yaml` - ArrayBuffer containing config.yaml
     /// * `weights_data` - ArrayBuffer containing safetensors model weights
-    /// * `tokenizer_bytes` - ArrayBuffer containing the sentencepiece tokenizer.model
+    /// * `tokenizer_bytes` - ArrayBuffer containing the configured tokenizer JSON or model
+    /// * `has_voice_cloning` - False for known open-weight bundles; defaults to true
     #[wasm_bindgen]
     pub fn load_from_buffer(
         &mut self,
         config_yaml: &[u8],
         weights_data: &[u8],
         tokenizer_bytes: &[u8],
+        has_voice_cloning: Option<bool>,
     ) -> Result<(), JsValue> {
         web_sys::console::log_1(
             &format!(
@@ -73,12 +75,13 @@ impl WasmTTSModel {
 
         if tokenizer_bytes.is_empty() {
             return Err(JsValue::from_str(
-                "tokenizer_bytes is empty. Provide the sentencepiece tokenizer.model for the selected language.",
+                "tokenizer_bytes is empty. Provide the configured tokenizer for the selected language.",
             ));
         }
 
-        let model = TTSModel::load_from_bytes(config_yaml, weights_data, tokenizer_bytes)
+        let mut model = TTSModel::load_from_bytes(config_yaml, weights_data, tokenizer_bytes)
             .map_err(|e| JsValue::from_str(&format!("Model loading failed: {:?}", e)))?;
+        model.has_voice_cloning = has_voice_cloning.unwrap_or(true);
 
         self.sample_rate = model.sample_rate as u32;
         web_sys::console::log_1(
@@ -105,6 +108,12 @@ impl WasmTTSModel {
             .model
             .as_ref()
             .ok_or_else(|| JsValue::from_str("Model not loaded. Call load_from_buffer first."))?;
+
+        if !model.has_voice_cloning {
+            return Err(JsValue::from_str(
+                "Voice cloning is unavailable for this open-weight bundle. Use a preset or safetensors voice state.",
+            ));
+        }
 
         let voice_state = model
             .get_voice_state_from_bytes(wav_bytes)
