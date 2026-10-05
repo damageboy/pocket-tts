@@ -19,6 +19,29 @@ Text-to-speech that runs entirely on CPU—no Python, no GPU required.
 - **Flexible Builds** - Use `--no-default-features` for a "lite" build without web UI assets
 - **Python Bindings** - Use the Rust implementation from Python for improved performance
 
+## Model compatibility
+
+The configuration catalog targets upstream **v3.3.0**, pinned to
+[`3dbee45`](https://github.com/kyutai-labs/pocket-tts/commit/3dbee45d343d7dddd0d105468d17f8dcba14db3e).
+It includes English, French, German, Italian, Spanish, Portuguese and Dutch,
+their released 24-layer variants, and dated English checkpoints. Use
+`pocket-tts-cli language-list` and `pocket-tts-cli voice-list` to list the catalog.
+For example, `generate --language dutch --voice daan` uses the Dutch model.
+
+Configs pin weights and JSON tokenizers; stock voice states have a separate
+pinned revision. These states contain weight-specific attention caches: do not
+mix them with custom weights. Native loading falls back to public preset-only
+weights when cloning weights cannot be downloaded. WAV cloning then returns an
+error; use a preset or obtain access to the gated cloning weights. Browser
+automatic downloads use the public bundle. Raw-byte/manual loaders cannot infer
+weight provenance; callers must set `has_voice_cloning` correctly.
+
+The existing `--lsd-decode-steps` flag remains an alias for
+`--sampler-decode-steps`; the config chooses LSD or flow matching. Unreleased
+October weights, end-on-pause preprocessing and drifting are **not** included.
+See the [resync plan and validation record](docs/superpowers/plans/2026-10-05-upstream-v3-resync.md)
+for reproducible Python comparisons and remaining acceptance limits.
+
 ## Quick Start
 
 ```bash
@@ -113,7 +136,7 @@ use anyhow::Result;
 
 fn main() -> Result<()> {
     // Load the model
-    let model = TTSModel::load("b6369a24")?;
+    let model = TTSModel::load("english")?;
     
     // Get voice state from audio file
     let voice_state = model.get_voice_state("voice.wav")?;
@@ -133,7 +156,7 @@ fn main() -> Result<()> {
 ```rust
 use pocket_tts::TTSModel;
 
-let model = TTSModel::load("b6369a24")?;
+let model = TTSModel::load("english")?;
 let voice_state = model.get_voice_state("voice.wav")?;
 
 // Stream audio chunks as they're generated
@@ -147,15 +170,16 @@ for chunk in model.generate_stream("Long text here...", &voice_state) {
 
 ```rust
 let model = TTSModel::load_with_params(
-    "b6369a24",     // variant
-    0.7,            // temperature (higher = more variation)
-    1,              // lsd_decode_steps (more = better quality, slower)
+    "english",      // language or config name
+    0.3,            // temperature (higher = more variation)
+    1,              // sampler steps (legacy Rust argument name: lsd_decode_steps)
     -4.0,           // eos_threshold (more negative = longer audio)
 )?;
 ```
 
 ### HuggingFace token
-If you're using a model that has to be downloaded from huggingface you will need a token in the `HF_TOKEN` environment variable
+Public weights and preset voices do not require a token. For WAV voice cloning,
+accept the gated model terms on Hugging Face and provide an authorized `HF_TOKEN`.
 
 ## CLI Reference
 
@@ -170,17 +194,18 @@ Options:
   -t, --text <TEXT>              Text to synthesize [default: greeting]
   -v, --voice <VOICE>            Voice: predefined name, .wav file, or .safetensors
   -o, --output <PATH>            Output file [default: output.wav]
-      --variant <VARIANT>        Model variant [default: b6369a24]
-      --temperature <FLOAT>      Sampling temperature [default: model recommendation;
-                                 0.3 for English, 0.7 otherwise]
-      --lsd-decode-steps <INT>   LSD decode steps [default: 1]
+      --language <LANGUAGE>      Model language [default: english]
+      --config <CONFIG>          Config name or YAML path (instead of --language)
+      --temperature <FLOAT>      Model recommendation, otherwise 0.3
+      --sampler-decode-steps <INT> Sampler steps [default: 1; alias: --lsd-decode-steps]
+      --frames-after-eos <INT>   Override model/text-dependent EOS tail
       --eos-threshold <FLOAT>    EOS threshold [default: -4.0]
       --stream                   Stream raw PCM to stdout
   -q, --quiet                    Suppress output
       --use-metal                Use Metal acceleration (macOS)
 ```
 
-**Predefined voices:** `alba`, `marius`, `javert`, `jean`, `fantine`, `cosette`, `eponine`, `azelma`
+Use `pocket-tts-cli voice-list` for all 27 predefined voices and their languages.
 
 ### `serve` command
 
@@ -193,10 +218,10 @@ Options:
       --host <HOST>              Bind address [default: 127.0.0.1]
   -p, --port <PORT>              Port number [default: 8000]
       --voice <VOICE>            Default voice [default: alba]
-      --variant <VARIANT>        Model variant [default: b6369a24]
-      --temperature <FLOAT>      Temperature [default: model recommendation;
-                                 0.3 for English, 0.7 otherwise]
-      --lsd-decode-steps <INT>   LSD steps [default: 1]
+      --language <LANGUAGE>      Model language [default: english]
+      --config <CONFIG>          Config name or YAML path (instead of --language)
+      --temperature <FLOAT>      Model recommendation, otherwise 0.3
+      --sampler-decode-steps <INT> Sampler steps [default: 1; alias: --lsd-decode-steps]
       --eos-threshold <FLOAT>    EOS threshold [default: -4.0]
       --ui <UI>                  Web UI mode: standard|wasm-experimental [default: standard]
 ```
@@ -304,8 +329,8 @@ candle/
 
 The Rust port mirrors the Python implementation:
 
-1. **Text Conditioning**: SentencePiece tokenizer → embedding lookup table
-2. **FlowLM Transformer**: Generates latent representations from text using Lagrangian Self Distillation (LSD)
+1. **Text Conditioning**: Model-specific preparation → configured tokenizer → embedding lookup table
+2. **FlowLM Transformer**: Generates latent representations using LSD or flow matching, as configured
 3. **Mimi Decoder**: Converts latents to audio via SEANet decoder
 
 ### Key differences from Python
