@@ -24,6 +24,10 @@ try {
     () => model.start_stream("Smoke test"),
     (error) => error === "Model not loaded. Call load_from_buffer first.",
   );
+  assert.throws(
+    () => model.start_stream_with_timestamps("Smoke test"),
+    (error) => error === "Model not loaded. Call load_from_buffer first.",
+  );
 } finally {
   model.free();
 }

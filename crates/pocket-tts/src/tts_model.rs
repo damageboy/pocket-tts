@@ -12,6 +12,9 @@ use crate::models::seanet::{SEANetDecoder, SEANetEncoder};
 use crate::models::transformer::{ProjectedTransformer, StreamingTransformer};
 use crate::modules::mlp::SimpleMLPAdaLN;
 use crate::text::TextOptions;
+use crate::timestamps::{
+    TimestampStream, attention::AttentionCapture, text::prepare_timestamp_chunks,
+};
 use crate::voice_state::{increment_steps, init_states};
 
 use anyhow::Result;
@@ -63,6 +66,14 @@ pub struct TTSModel {
     pub model_recommended_frames_after_eos: Option<usize>,
     /// Origin config path (used to determine language for voice resolution)
     pub origin: Option<std::path::PathBuf>,
+    /// Calibrated zero-based (layer, head) pairs for this checkpoint.
+    pub timestamp_heads: Vec<(usize, usize)>,
+    timestamp_dimensions: (usize, usize),
+}
+
+pub(crate) struct GeneratedFrame {
+    pub audio: Tensor,
+    pub unit_scores: Option<Vec<f32>>,
 }
 
 impl TTSModel {
@@ -571,6 +582,11 @@ impl TTSModel {
             has_voice_cloning: true,
             model_recommended_frames_after_eos: config.model_recommended_frames_after_eos,
             origin: None, // Set by the caller after construction
+            timestamp_heads: config.timestamp_heads,
+            timestamp_dimensions: (
+                config.flow_lm.transformer.num_layers,
+                config.flow_lm.transformer.num_heads,
+            ),
         })
     }
 
@@ -1061,12 +1077,59 @@ impl TTSModel {
         Box::new(stop_after_error(iterator))
     }
 
+    /// Generate audio and approximate word-boundary events in one pass.
+    ///
+    /// The owned stream works on native and WASM targets. Like `generate_stream`,
+    /// it splits long text and strips explicit pause markers (does not insert
+    /// silence). Times are seconds on the generated audio sample clock, not wall
+    /// time. Missing/ambiguous source words may be omitted. Drop to cancel.
+    /// Requires checkpoint-specific `timestamp_heads`; ordinary audio APIs do not.
+    pub fn generate_audio_with_timestamps_stream(
+        &self,
+        text: &str,
+        voice_state: &ModelState,
+    ) -> Result<TimestampStream> {
+        crate::config::validate_timestamp_heads(
+            &self.timestamp_heads,
+            self.timestamp_dimensions.0,
+            self.timestamp_dimensions.1,
+        )?;
+        let chunks = prepare_timestamp_chunks(
+            &crate::pause::strip_pause_markers(text),
+            &self.text_options(),
+            self.conditioner.tokenizer(),
+        )?;
+        Ok(TimestampStream::new(
+            self.clone(),
+            voice_state.clone(),
+            chunks,
+        ))
+    }
+
     /// Internal helper to generate a single segment (short text) matching Python's _generate
     fn generate_stream_segment(
         &self,
         text: String,
         voice_state: &ModelState,
     ) -> Box<dyn Iterator<Item = Result<Tensor>>> {
+        let (prepared, tail) = match self.text_options().prepare(&text) {
+            Ok(prepared) => prepared,
+            Err(error) => return Box::new(std::iter::once(Err(error))),
+        };
+        Box::new(
+            self.generate_segment_frames(prepared, tail, voice_state, None)
+                .map(|frame| frame.map(|f| f.audio)),
+        )
+    }
+
+    /// The same decoder and EOS behavior for ordinary and timestamped streams.
+    pub(crate) fn generate_segment_frames(
+        &self,
+        prepared_text: String,
+        tail_guess: usize,
+        voice_state: &ModelState,
+        mut capture: Option<AttentionCapture>,
+    ) -> Box<dyn Iterator<Item = Result<GeneratedFrame>>> {
         let mut state = voice_state.clone();
         // Tensor::clone shares storage and slice_set mutates it. Each segment
         // needs private KV buffers, including audio-derived caches with spare
@@ -1085,12 +1148,6 @@ impl TTSModel {
             }
         }
         let mut mimi_state = init_states();
-
-        // Prepare text
-        let (prepared_text, tail_guess) = match self.text_options().prepare(&text) {
-            Ok(prepared) => prepared,
-            Err(error) => return Box::new(std::iter::once(Err(error))),
-        };
 
         // Error handling for preparation failures inside the iterator
         let tokens = match self.conditioner.prepare(&prepared_text, &self.device) {
@@ -1178,7 +1235,7 @@ impl TTSModel {
 
             let (next_latent, is_eos) = match tracing::info_span!("flow_lm.forward", step = step)
                 .in_scope(|| {
-                    model.flow_lm.forward(
+                    model.flow_lm.forward_with_capture(
                         &backbone_input,
                         text_tokens_to_pass,
                         &mut state,
@@ -1186,6 +1243,7 @@ impl TTSModel {
                         model.temp,
                         model.eos_threshold,
                         step,
+                        capture.as_mut(),
                     )
                 }) {
                 Ok(res) => res,
@@ -1235,7 +1293,21 @@ impl TTSModel {
 
             // Removed redundant increment_steps("offset") for FlowLM - handled by attention state
 
-            Some(Ok(audio_frame))
+            let unit_scores = match capture
+                .as_mut()
+                .map(AttentionCapture::finish_frame)
+                .transpose()
+            {
+                Ok(scores) => scores,
+                Err(error) => {
+                    finished = true;
+                    return Some(Err(error.into()));
+                }
+            };
+            Some(Ok(GeneratedFrame {
+                audio: audio_frame,
+                unit_scores,
+            }))
         }))
     }
 
@@ -1554,6 +1626,72 @@ mod tests {
             vb.clone(),
         )?;
         TTSModel::from_config_and_vb(config, 0.0, 1, -4.0, None, conditioner, vb)
+    }
+
+    #[test]
+    fn timestamped_stream_preserves_audio_and_segment_sample_clock() -> Result<()> {
+        use crate::timestamps::TimestampEvent;
+        let mut model = tiny_model()?;
+        model.timestamp_heads = vec![(0, 0)];
+        let text =
+            "Hello world. This sentence deliberately has enough words to fill a text chunk. "
+                .repeat(4);
+        assert!(model.try_split_into_best_sentences(&text)?.len() > 1);
+        let state = init_states();
+        let audio = model
+            .generate_stream_owned(&text, &state)
+            .collect::<Result<Vec<_>>>()?;
+        let events = model
+            .generate_audio_with_timestamps_stream(&text, &state)?
+            .collect::<Result<Vec<_>>>()?;
+        let mut samples = 0;
+        let mut frames = 0;
+        for event in events {
+            // Zero-weight Mimi emits silence: timestamps must not invent words.
+            let TimestampEvent::AudioChunk(chunk) = event else {
+                panic!("word in silent audio")
+            };
+            assert_eq!(chunk.start_time, samples as f64 / model.sample_rate as f64);
+            samples += chunk.audio.dim(2)?;
+            assert_eq!(chunk.end_time, samples as f64 / model.sample_rate as f64);
+            assert_eq!(
+                (&chunk.audio - &audio[frames])?
+                    .abs()?
+                    .max_all()?
+                    .to_scalar::<f32>()?,
+                0.0
+            );
+            frames += 1;
+        }
+        assert_eq!(frames, audio.len());
+        assert!(samples > 0);
+        Ok(())
+    }
+
+    #[test]
+    fn timestamped_requests_validate_before_generation_and_fail_terminally() -> Result<()> {
+        let mut model = tiny_model()?;
+        let state = init_states();
+        for heads in [vec![], vec![(1, 0)], vec![(0, 1)], vec![(0, 0), (0, 0)]] {
+            model.timestamp_heads = heads;
+            assert!(
+                model
+                    .generate_audio_with_timestamps_stream("hello", &state)
+                    .is_err()
+            );
+        }
+        model.timestamp_heads = vec![(0, 0)];
+        assert!(
+            model
+                .generate_audio_with_timestamps_stream("  ", &state)
+                .is_err()
+        );
+        model.lsd_decode_steps = 0;
+        let text = "A sentence to repeat across several text chunks. ".repeat(20);
+        let mut stream = model.generate_audio_with_timestamps_stream(&text, &state)?;
+        assert!(stream.next().unwrap().is_err());
+        assert!(stream.next().is_none());
+        Ok(())
     }
 
     #[test]

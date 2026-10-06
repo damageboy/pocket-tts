@@ -41,11 +41,28 @@ pub fn sdpa(
     is_causal: bool,
     context_window: Option<usize>,
 ) -> Result<Tensor> {
+    sdpa_with_capture(q, k, v, scale, is_causal, context_window, None)
+}
+
+#[allow(clippy::too_many_arguments)]
+pub(crate) fn sdpa_with_capture(
+    q: &Tensor,
+    k: &Tensor,
+    v: &Tensor,
+    scale: f64,
+    is_causal: bool,
+    context_window: Option<usize>,
+    capture: Option<(usize, &mut crate::timestamps::attention::AttentionCapture)>,
+) -> Result<Tensor> {
     let q = q.contiguous()?;
     let k = k.contiguous()?;
     let v = v.contiguous()?;
     let (_b, _h, q_len, _dim) = q.dims4()?;
     let kv_len = k.dims()[2];
+
+    if capture.is_some() && (q_len != 1 || context_window.is_some()) {
+        candle_core::bail!("Timestamp capture is only supported for FlowLM decoding");
+    }
 
     // Adaptive strategy:
     // For small Q (decoding, chunked prefill), tiling overhead hurts performance.
@@ -58,6 +75,10 @@ pub fn sdpa(
     if q_len < TILING_THRESHOLD {
         // Naive path (no tiling)
         let scores = (q.matmul(&k_t)? * scale)?;
+
+        if let Some((layer, capture)) = capture {
+            capture.record(layer, &scores)?;
+        }
 
         let scores = if can_skip_mask_for_single_query(q_len, kv_len, is_causal, context_window) {
             scores

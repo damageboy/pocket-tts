@@ -126,6 +126,10 @@ pub struct MimiConfig {
 pub struct Config {
     pub flow_lm: FlowLMConfig,
     pub mimi: MimiConfig,
+    /// Checkpoint-specific, zero-based (FlowLM layer, attention head) selections.
+    /// An empty selection permits ordinary synthesis but not timestamp generation.
+    #[serde(default)]
+    pub timestamp_heads: Vec<(usize, usize)>,
     #[serde(default = "default_temperature")]
     pub default_temperature: f32,
     #[serde(default)]
@@ -158,6 +162,42 @@ impl Config {
     pub fn resolve_temperature(&self, temperature: Option<f32>) -> f32 {
         temperature.unwrap_or(self.default_temperature)
     }
+
+    /// Validate selections when timestamp generation is requested, not at load time.
+    pub fn validate_timestamp_heads(&self) -> anyhow::Result<()> {
+        validate_timestamp_heads(
+            &self.timestamp_heads,
+            self.flow_lm.transformer.num_layers,
+            self.flow_lm.transformer.num_heads,
+        )
+    }
+}
+
+pub(crate) fn validate_timestamp_heads(
+    heads: &[(usize, usize)],
+    num_layers: usize,
+    num_heads: usize,
+) -> anyhow::Result<()> {
+    anyhow::ensure!(
+        !heads.is_empty(),
+        "Timestamp generation requires checkpoint-specific timestamp_heads"
+    );
+    let mut seen = std::collections::HashSet::new();
+    for &(layer, head) in heads {
+        anyhow::ensure!(
+            layer < num_layers,
+            "Timestamp layer {layer} is out of range for {num_layers} FlowLM layers"
+        );
+        anyhow::ensure!(
+            head < num_heads,
+            "Timestamp head {head} is out of range for {num_heads} FlowLM heads"
+        );
+        anyhow::ensure!(
+            seen.insert((layer, head)),
+            "Duplicate timestamp head ({layer}, {head})"
+        );
+    }
+    Ok(())
 }
 
 /// Load configuration from a YAML file
@@ -305,5 +345,79 @@ mod tests {
             serde_yaml::from_str(&std::fs::read_to_string(get_config_path()).unwrap()).unwrap();
         yaml["flow_lm"]["flow"]["type"] = "unknown_sampler".into();
         assert!(serde_yaml::from_value::<Config>(yaml).is_err());
+    }
+
+    #[test]
+    fn timestamp_heads_are_optional_for_ordinary_configs() {
+        let mut yaml: serde_yaml::Value =
+            serde_yaml::from_str(&std::fs::read_to_string(get_config_path()).unwrap()).unwrap();
+        yaml.as_mapping_mut().unwrap().remove("timestamp_heads");
+        let config: Config = serde_yaml::from_value(yaml).unwrap();
+        assert!(config.timestamp_heads.is_empty());
+        assert!(config.validate_timestamp_heads().is_err());
+    }
+
+    #[test]
+    fn timestamp_validation_rejects_empty_duplicate_and_out_of_range_heads() {
+        let mut config = load_config(get_config_path()).unwrap();
+        let layers = config.flow_lm.transformer.num_layers;
+        let heads = config.flow_lm.transformer.num_heads;
+        for selection in [
+            vec![],
+            vec![(0, 0), (0, 0)],
+            vec![(layers, 0)],
+            vec![(0, heads)],
+        ] {
+            config.timestamp_heads = selection;
+            assert!(config.validate_timestamp_heads().is_err());
+        }
+        config.timestamp_heads = vec![(0, 0), (layers - 1, heads - 1)];
+        config.validate_timestamp_heads().unwrap();
+    }
+
+    #[test]
+    fn timestamp_validation_is_not_applied_during_deserialization() {
+        let mut yaml: serde_yaml::Value =
+            serde_yaml::from_str(&std::fs::read_to_string(get_config_path()).unwrap()).unwrap();
+        yaml["timestamp_heads"] = serde_yaml::from_str("[[999, 999]]").unwrap();
+        let config: Config = serde_yaml::from_value(yaml).unwrap();
+        assert!(config.validate_timestamp_heads().is_err());
+    }
+
+    #[test]
+    fn checkpoint_timestamp_selections_match_verified_upstream_models() {
+        let selections: &[(&str, &[(usize, usize)])] = &[
+            ("english", &[(3, 8), (2, 0)]),
+            ("english_2026-01", &[(3, 8), (2, 0)]),
+            ("english_2026-04", &[(3, 8), (2, 0)]),
+            ("english_2026-09", &[(3, 8), (2, 0)]),
+            ("english_2026-04_24l", &[(14, 10), (17, 11), (15, 4)]),
+            ("english_2026-09_24l", &[(14, 10), (17, 11), (15, 4)]),
+            ("dutch_24l", &[(17, 13), (17, 11)]),
+            ("german_24l", &[(17, 11), (15, 4)]),
+            ("portuguese_24l", &[(17, 13), (18, 1), (20, 12)]),
+            ("spanish_24l", &[(17, 13), (17, 11), (18, 1)]),
+        ];
+        let dir = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("config");
+        for &(name, expected) in selections {
+            let config = load_config(dir.join(format!("{name}.yaml"))).unwrap();
+            assert_eq!(config.timestamp_heads, expected, "{name}");
+            config.validate_timestamp_heads().unwrap();
+        }
+        // The fork pins different weight revisions for these checkpoints.
+        for name in [
+            "dutch",
+            "french",
+            "french_24l",
+            "german",
+            "italian",
+            "italian_24l",
+            "portuguese",
+            "spanish",
+        ] {
+            let config = load_config(dir.join(format!("{name}.yaml"))).unwrap();
+            assert!(config.timestamp_heads.is_empty(), "{name}");
+            assert!(config.validate_timestamp_heads().is_err());
+        }
     }
 }

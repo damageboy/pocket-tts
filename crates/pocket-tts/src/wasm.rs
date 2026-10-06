@@ -36,6 +36,33 @@ pub struct WasmTTSStream {
     last_chunks_merged: u32,
 }
 
+/// Opt-in stream of batched audio and word boundaries. Call free() to cancel.
+#[wasm_bindgen]
+pub struct WasmTimestampedStream {
+    iter: Option<crate::timestamps::TimestampStream>,
+}
+
+#[wasm_bindgen(typescript_custom_section)]
+const TIMESTAMP_TYPES: &str = r#"
+export type WordTimestampEvent =
+  | { kind: "word_start"; word: string; word_index: number; start_time: number }
+  | { kind: "word_end"; word: string; word_index: number; start_time: number; end_time: number };
+export interface TimestampBatch {
+  audio: Float32Array;
+  events: WordTimestampEvent[];
+  start_time: number | null;
+  end_time: number | null;
+  chunks_merged: number;
+  compute_ms: number;
+}
+"#;
+
+#[wasm_bindgen]
+extern "C" {
+    #[wasm_bindgen(typescript_type = "TimestampBatch")]
+    pub type JsTimestampBatch;
+}
+
 #[wasm_bindgen]
 impl WasmTTSModel {
     /// Create a new WASM TTS model
@@ -207,6 +234,27 @@ impl WasmTTSModel {
         })
     }
 
+    /// Start one generation pass with audio and approximate word timestamps.
+    /// Requires calibrated timestamp_heads in the loaded checkpoint's config.
+    #[wasm_bindgen]
+    pub fn start_stream_with_timestamps(
+        &self,
+        text: &str,
+    ) -> Result<WasmTimestampedStream, JsValue> {
+        let model = self
+            .model
+            .as_ref()
+            .ok_or_else(|| JsValue::from_str("Model not loaded. Call load_from_buffer first."))?;
+        let voice = self
+            .voice_state
+            .clone()
+            .unwrap_or_else(crate::voice_state::init_states);
+        let iter = model
+            .generate_audio_with_timestamps_stream(text, &voice)
+            .map_err(|e| JsValue::from_str(&format!("Timestamp generation failed: {e:#}")))?;
+        Ok(WasmTimestampedStream { iter: Some(iter) })
+    }
+
     /// Generate audio and return as base64-encoded WAV
     #[wasm_bindgen]
     pub fn generate_wav_base64(&self, text: &str) -> Result<String, JsValue> {
@@ -318,6 +366,43 @@ impl WasmTTSStream {
             &JsValue::from_f64(self.last_chunks_merged as f64),
         );
         JsValue::from(stats)
+    }
+}
+
+#[wasm_bindgen]
+impl WasmTimestampedStream {
+    /// Return at least min_samples when available, with all intervening word
+    /// events. A final batch may contain only events and empty audio. Only an
+    /// undefined return value signals completion. Times are audio seconds.
+    #[wasm_bindgen]
+    pub fn next_batch(&mut self, min_samples: u32) -> Result<Option<JsTimestampBatch>, JsValue> {
+        let start = Date::now();
+        let Some(iter) = self.iter.as_mut() else {
+            return Ok(None);
+        };
+        let batch = match iter.next_batch(min_samples as usize) {
+            Ok(Some(batch)) => batch,
+            Ok(None) => {
+                self.iter = None;
+                return Ok(None);
+            }
+            Err(error) => {
+                self.iter = None;
+                return Err(JsValue::from_str(&format!(
+                    "Timestamp generation failed: {error:#}"
+                )));
+            }
+        };
+        let metadata =
+            serde_json::to_string(&batch).map_err(|e| JsValue::from_str(&e.to_string()))?;
+        let object = js_sys::JSON::parse(&metadata)?;
+        Reflect::set(
+            &object,
+            &"audio".into(),
+            &Float32Array::from(batch.audio.as_slice()),
+        )?;
+        Reflect::set(&object, &"compute_ms".into(), &(Date::now() - start).into())?;
+        Ok(Some(object.unchecked_into()))
     }
 }
 

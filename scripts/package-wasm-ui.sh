@@ -34,6 +34,7 @@ package_site() {
     require_file "${PKG_SRC}/pocket_tts.js"
     require_file "${PKG_SRC}/pocket_tts_bg.wasm"
     require_file "${PKG_SRC}/models.json"
+    require_file "crates/pocket-tts/THIRD_PARTY_NOTICES.md"
 
     rm -rf "$out_dir"
     mkdir -p "$out_dir"
@@ -66,6 +67,7 @@ PY
 
     mkdir -p "${out_dir}/wasm/pkg"
     cp "${PKG_SRC}"/* "${out_dir}/wasm/pkg/"
+    cp "crates/pocket-tts/THIRD_PARTY_NOTICES.md" "${out_dir}/wasm/pkg/"
     printf '%s\n' "$CNAME_VALUE" > "${out_dir}/CNAME"
     touch "${out_dir}/.nojekyll"
 }

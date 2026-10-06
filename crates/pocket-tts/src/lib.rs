@@ -6,6 +6,7 @@ pub mod modules;
 pub mod pause;
 pub mod quantize;
 pub mod text;
+pub mod timestamps;
 pub mod tts_model;
 pub mod voice_state;
 pub mod weights;

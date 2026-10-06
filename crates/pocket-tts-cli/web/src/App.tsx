@@ -1,9 +1,10 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useTTSEngine, type LatencyMetrics } from "@/hooks/use-tts-stream";
 import { getBootstrapConfig } from "@/lib/bootstrap";
 import { VoiceSelector } from "@/components/tts/voice-selector";
 import { LanguageSelector } from "@/components/tts/language-selector";
 import { BufferVisualizer } from "@/components/tts/buffer-visualizer";
+import { WordReadAlong } from "@/components/tts/word-read-along";
 import {
 	Card,
 	CardContent,
@@ -74,10 +75,14 @@ export default function App() {
 	const [text, setText] = useState("It's small enough to fit in your pocket.");
 	const [selectedLanguage, setSelectedLanguage] = useState("english");
 	const [isReinitializing, setIsReinitializing] = useState(false);
+	const [isPreparingVoice, setIsPreparingVoice] = useState(false);
 	const [selectedVoice, setSelectedVoice] = useState<string | null>("alba");
 	const [customVoice, setCustomVoice] = useState("");
 	const [cloneWavFile, setCloneWavFile] = useState<File | null>(null);
 	const [embeddingFile, setEmbeddingFile] = useState<File | null>(null);
+	const cloneWavInputRef = useRef<HTMLInputElement>(null);
+	const embeddingInputRef = useRef<HTMLInputElement>(null);
+	const [voiceError, setVoiceError] = useState<string | null>(null);
 
 	const [rememberHf, setRememberHf] = useState(() => {
 		return window.localStorage.getItem(HF_REMEMBER_STORAGE_KEY) !== "0";
@@ -110,6 +115,9 @@ export default function App() {
 		error,
 		bufferSize,
 		generationTime,
+		timestampText,
+		wordEvents,
+		playbackTime,
 		latency,
 		playbackStats,
 		wasmLoadStatus,
@@ -162,7 +170,12 @@ export default function App() {
 		setSelectedVoice(voice);
 		if (voice) {
 			setCustomVoice("");
+			setCloneWavFile(null);
+			setEmbeddingFile(null);
+			if (cloneWavInputRef.current) cloneWavInputRef.current.value = "";
+			if (embeddingInputRef.current) embeddingInputRef.current.value = "";
 		}
+		setVoiceError(null);
 	};
 
 	const handleCustomVoiceChange = (voiceSpec: string) => {
@@ -191,13 +204,17 @@ export default function App() {
 		};
 	};
 
-	const handleGenerate = async () => {
+	const handleGenerate = async (timestamps = false) => {
+		setIsPreparingVoice(true);
+		setVoiceError(null);
 		try {
 			const voiceInput = await buildVoicePreparationInput();
 			const voiceSpec = await prepareVoice(voiceInput);
-			await generate(text, voiceSpec);
-		} catch {
-			// Hook already exposes the surfaced error state.
+			await generate(text, voiceSpec, timestamps);
+		} catch (err) {
+			setVoiceError(err instanceof Error ? err.message : String(err));
+		} finally {
+			setIsPreparingVoice(false);
 		}
 	};
 
@@ -206,6 +223,7 @@ export default function App() {
 	};
 
 	const handleInitializeWasm = async () => {
+		setVoiceError(null);
 		try {
 			const [configBytes, weightsBytes, tokenizerBytes] = await Promise.all([
 				readFileBytes(manualConfigFile),
@@ -229,13 +247,17 @@ export default function App() {
 	};
 
 	const handleProbe = async () => {
+		setIsPreparingVoice(true);
+		setVoiceError(null);
 		try {
 			const voiceInput = await buildVoicePreparationInput();
 			const voiceSpec = await prepareVoice(voiceInput);
 			const result = await runTtfaProbe(probeText, voiceSpec);
 			setProbeResult(result);
-		} catch {
-			// Hook handles error display.
+		} catch (err) {
+			setVoiceError(err instanceof Error ? err.message : String(err));
+		} finally {
+			setIsPreparingVoice(false);
 		}
 	};
 
@@ -318,7 +340,7 @@ export default function App() {
 									selectedLanguage={selectedLanguage}
 									onLanguageChange={async (lang, defaultVoice, defaultText) => {
 										setSelectedLanguage(lang);
-										setSelectedVoice(defaultVoice);
+										handleVoiceSelect(defaultVoice);
 										setText(defaultText);
 										// Auto-reinitialize WASM model for new language
 										setIsReinitializing(true);
@@ -330,7 +352,7 @@ export default function App() {
 											setIsReinitializing(false);
 										}
 									}}
-									disabled={!isIdle}
+									disabled={!isIdle || isPreparingVoice || isReinitializing}
 								/>
 							)}
 
@@ -362,11 +384,15 @@ export default function App() {
 									</Label>
 									<Input
 										id="clone-wav"
+										ref={cloneWavInputRef}
 										type="file"
 										accept=".wav"
-										onChange={(e) =>
-											setCloneWavFile(e.target.files?.[0] || null)
-										}
+										onChange={(e) => {
+											setCloneWavFile(e.target.files?.[0] || null);
+											setSelectedVoice(null);
+											setEmbeddingFile(null);
+											if (embeddingInputRef.current) embeddingInputRef.current.value = "";
+										}}
 									/>
 									<p className="text-[10px] text-muted-foreground">
 										Optional 5-10s WAV sample for voice cloning.
@@ -382,12 +408,16 @@ export default function App() {
 									</Label>
 									<Input
 										id="clone-embed"
+										ref={embeddingInputRef}
 										type="file"
 										accept=".safetensors"
 										disabled={!isWasmMode}
-										onChange={(e) =>
-											setEmbeddingFile(e.target.files?.[0] || null)
-										}
+										onChange={(e) => {
+											setEmbeddingFile(e.target.files?.[0] || null);
+											setSelectedVoice(null);
+											setCloneWavFile(null);
+											if (cloneWavInputRef.current) cloneWavInputRef.current.value = "";
+										}}
 									/>
 									<p className="text-[10px] text-muted-foreground">
 										{isWasmMode
@@ -421,6 +451,7 @@ export default function App() {
 											variant={wasmReady ? "outline" : "default"}
 											size="sm"
 											onClick={handleInitializeWasm}
+											disabled={!isIdle || isPreparingVoice || isReinitializing}
 											className="shrink-0"
 										>
 											{wasmReady ? (
@@ -563,6 +594,11 @@ export default function App() {
 								</div>
 							)}
 
+							{timestampText !== null && (
+								<WordReadAlong text={timestampText} events={wordEvents}
+									playbackTime={playbackTime} playing={state === "playing"} />
+							)}
+
 							<BufferVisualizer
 								state={state}
 								bufferSize={bufferSize}
@@ -571,14 +607,14 @@ export default function App() {
 								playbackStats={playbackStats}
 							/>
 
-							{error && (
+							{(error || voiceError) && (
 								<Alert
 									variant="destructive"
 									className="animate-in fade-in zoom-in-95 duration-300"
 								>
 									<AlertCircleIcon className="h-4 w-4" />
 									<AlertTitle>Generation Error</AlertTitle>
-									<AlertDescription>{error}</AlertDescription>
+									<AlertDescription>{voiceError || error}</AlertDescription>
 								</Alert>
 							)}
 						</CardContent>
@@ -587,8 +623,8 @@ export default function App() {
 								{isIdle ? (
 									<Button
 										className="flex-1 h-12 text-base font-semibold transition-all duration-300 shadow-lg shadow-primary/25 hover:shadow-primary/40 group active:scale-[0.98]"
-										onClick={handleGenerate}
-										disabled={isWasmMode && (!wasmReady || isReinitializing)}
+										onClick={() => handleGenerate()}
+										disabled={isPreparingVoice || !text.trim() || (isWasmMode && (!wasmReady || isReinitializing))}
 									>
 										<PlayIcon
 											className="w-4 h-4 transition-transform group-hover:scale-110"
@@ -622,6 +658,19 @@ export default function App() {
 									<DownloadIcon className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />
 								</Button>
 							</div>
+							{isWasmMode && (
+								<div className="w-full space-y-2">
+									<Button variant="outline" className="w-full h-11"
+										onClick={() => handleGenerate(true)}
+										disabled={!isIdle || isPreparingVoice || !wasmReady || isReinitializing || !text.trim()}>
+										<FlaskConical className="w-4 h-4" data-icon="inline-start" />
+										Generate + highlight words
+									</Button>
+									<p className="text-xs text-muted-foreground text-center">
+										Test timestamped streaming. Start with English; uncalibrated models report an error.
+									</p>
+								</div>
+							)}
 						</CardFooter>
 					</Card>
 
@@ -646,7 +695,7 @@ export default function App() {
 								<Button
 									variant="outline"
 									onClick={handleProbe}
-									disabled={isWasmMode && (!wasmReady || isReinitializing)}
+									disabled={!isIdle || isPreparingVoice || (isWasmMode && (!wasmReady || isReinitializing))}
 								>
 									Run TTFA Probe
 								</Button>

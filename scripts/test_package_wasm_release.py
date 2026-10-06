@@ -26,9 +26,11 @@ class PackageReleaseTest(unittest.TestCase):
             "pocket_tts.d.ts": b"export default function init(): Promise<void>;",
             "pocket_tts_bg.wasm.d.ts": b"export const memory: WebAssembly.Memory;",
             "models.json": b'{"schemaVersion":1,"sourceRevision":"fixture"}',
+            "THIRD_PARTY_NOTICES.md": b"Timestamp fork attribution and MIT permission notice.",
         }
         for name, data in self.files.items():
-            (self.pkg / name).write_bytes(data)
+            destination = self.pkg.parent if name == "THIRD_PARTY_NOTICES.md" else self.pkg
+            (destination / name).write_bytes(data)
         (self.pkg / "stale-file.txt").write_text("must not ship")
 
     def package(self, tag="v3.3.0"):

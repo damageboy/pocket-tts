@@ -24,7 +24,8 @@ done
 ARCHIVE="pocket-tts-${TAG}-wasm-web.tar.gz"
 mkdir -p "$OUT_DIR"
 # Avoid macOS AppleDouble metadata files in otherwise portable archives.
-COPYFILE_DISABLE=1 tar -czf "${OUT_DIR}/${ARCHIVE}" -C "$PKG_SRC" "${FILES[@]}"
+COPYFILE_DISABLE=1 tar -czf "${OUT_DIR}/${ARCHIVE}" -C "$PKG_SRC" "${FILES[@]}" \
+    -C "${REPO_ROOT}/crates/pocket-tts" THIRD_PARTY_NOTICES.md
 (
     cd "$OUT_DIR"
     shasum -a 256 "$ARCHIVE" > "${ARCHIVE}.sha256"

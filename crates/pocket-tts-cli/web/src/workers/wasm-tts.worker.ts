@@ -1,6 +1,7 @@
 /// <reference lib="webworker" />
 
 import type {
+	TimestampBatch,
 	WasmWorkerEvent,
 	WasmWorkerRequest,
 	WasmWorkerStatus,
@@ -10,6 +11,7 @@ import type {
 declare const self: DedicatedWorkerGlobalScope;
 
 import { configAssets, presetVoiceUrl, selectConfig } from "./model-config";
+import { FALLBACK_VOICES } from "../lib/model-catalog";
 
 const rawConfigs = import.meta.glob<string>("../../../../pocket-tts/config/*.yaml", {
 	query: "?raw", import: "default", eager: true,
@@ -20,35 +22,7 @@ const configs = Object.fromEntries(Object.entries(rawConfigs).map(([path, yaml])
 let currentLanguage = "english";
 let stockVoicesCompatible = true;
 
-const PRESET_VOICES = [
-	"alba",
-	"anna",
-	"azelma",
-	"bill_boerst",
-	"caro_davy",
-	"charles",
-	"cosette",
-	"daan",
-	"eponine",
-	"estelle",
-	"eve",
-	"fantine",
-	"george",
-	"giovanni",
-	"jane",
-	"javert",
-	"jean",
-	"juergen",
-	"lola",
-	"marius",
-	"mary",
-	"michael",
-	"paul",
-	"peter_yearsley",
-	"rafael",
-	"stuart_bell",
-	"vera",
-] as const;
+const PRESET_VOICES = FALLBACK_VOICES.map((voice) => voice.name);
 
 const encoder = new TextEncoder();
 
@@ -61,6 +35,12 @@ interface WasmChunkStats {
 interface WasmStreamLike {
 	next_chunk_min_samples(minSamples: number): Float32Array | null | undefined;
 	last_chunk_stats(): WasmChunkStats;
+	free(): void;
+}
+
+interface WasmTimestampedStreamLike {
+	next_batch(minSamples: number): TimestampBatch | null | undefined;
+	free(): void;
 }
 
 interface WasmModelLike {
@@ -72,6 +52,7 @@ interface WasmModelLike {
 	): void;
 	is_ready(): boolean;
 	start_stream(text: string): WasmStreamLike;
+	start_stream_with_timestamps(text: string): WasmTimestampedStreamLike;
 	load_voice_from_buffer(wavBytes: Uint8Array): void;
 	load_voice_from_safetensors(bytes: Uint8Array): void;
 	readonly sample_rate: number;
@@ -297,53 +278,73 @@ const handleStartStream = async (
 	stopRequested = false;
 	const streamToken = ++activeStreamToken;
 
-	const stream = readyModel.start_stream(message.text);
+	const stream = message.timestamps
+		? readyModel.start_stream_with_timestamps(message.text)
+		: readyModel.start_stream(message.text);
 	let firstChunkSent = false;
 	let chunkCount = 0;
 
-	while (!stopRequested && streamToken === activeStreamToken) {
-		const startChunkSamples = Math.max(320, Math.floor(sampleRate * 0.032));
-		const steadyChunkSamples = Math.max(1024, Math.floor(sampleRate * 0.11));
-		const targetSamples =
-			chunkCount < 3 ? startChunkSamples : steadyChunkSamples;
+	try {
+		while (!stopRequested && streamToken === activeStreamToken) {
+			const startChunkSamples = Math.max(320, Math.floor(sampleRate * 0.032));
+			const steadyChunkSamples = Math.max(1024, Math.floor(sampleRate * 0.11));
+			const targetSamples =
+				chunkCount < 3 ? startChunkSamples : steadyChunkSamples;
 
-		const chunk = stream.next_chunk_min_samples(targetSamples);
-		if (chunk == null) {
-			break;
+			let chunk: Float32Array;
+			let stats: WasmChunkStats;
+			if ("next_batch" in stream) {
+				const batch = stream.next_batch(targetSamples);
+				if (batch == null) break;
+				if (batch.events.length > 0) {
+					postEvent({ kind: "stream_words", requestId: message.requestId, events: batch.events });
+				}
+				// The final batch can carry WordEnd without any audio to transfer.
+				if (batch.audio.length === 0) continue;
+				chunk = batch.audio;
+				stats = batch;
+			} else {
+				const audio = stream.next_chunk_min_samples(targetSamples);
+				if (audio == null) break;
+				chunk = audio;
+				stats = stream.last_chunk_stats();
+			}
+
+			if (!firstChunkSent) {
+				firstChunkSent = true;
+				postEvent({ kind: "stream_first_chunk", requestId: message.requestId });
+			}
+
+			const computeMs =
+				typeof stats.compute_ms === "number" ? stats.compute_ms : null;
+			const mergedChunks =
+				typeof stats.chunks_merged === "number" ? stats.chunks_merged : null;
+
+			postEvent(
+				{
+					kind: "stream_chunk",
+					requestId: message.requestId,
+					chunk,
+					computeMs,
+					mergedChunks,
+				},
+				[chunk.buffer],
+			);
+
+			chunkCount += 1;
+			if (chunkCount % 6 === 0) {
+				await sleep(0);
+			}
 		}
-
-		if (!firstChunkSent) {
-			firstChunkSent = true;
-			postEvent({ kind: "stream_first_chunk" });
-		}
-
-		const stats = stream.last_chunk_stats();
-		const computeMs =
-			typeof stats.compute_ms === "number" ? stats.compute_ms : null;
-		const mergedChunks =
-			typeof stats.chunks_merged === "number" ? stats.chunks_merged : null;
-
-		postEvent(
-			{
-				kind: "stream_chunk",
-				chunk,
-				computeMs,
-				mergedChunks,
-			},
-			[chunk.buffer],
-		);
-
-		chunkCount += 1;
-		if (chunkCount % 6 === 0) {
-			await sleep(0);
-		}
+	} finally {
+		stream.free();
 	}
 
 	if (stopRequested || streamToken !== activeStreamToken) {
 		throw new Error("abort");
 	}
 
-	postEvent({ kind: "stream_done" });
+	postEvent({ kind: "stream_done", requestId: message.requestId });
 	postOk(message.requestId);
 };
 
@@ -383,7 +384,7 @@ self.onmessage = (event: MessageEvent<WasmWorkerRequest>) => {
 			}
 			if (message.kind === "start_stream") {
 				const text = err instanceof Error ? err.message : String(err);
-				postEvent({ kind: "stream_error", error: text });
+				postEvent({ kind: "stream_error", requestId: message.requestId, error: text });
 			}
 			postErr(message.requestId, err);
 		}

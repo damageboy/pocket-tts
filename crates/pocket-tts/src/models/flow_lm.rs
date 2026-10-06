@@ -120,6 +120,30 @@ impl FlowLMModel {
         eos_threshold: f32,
         step: usize,
     ) -> Result<(Tensor, bool)> {
+        self.forward_with_capture(
+            sequence,
+            text_embeddings,
+            model_state,
+            time_embeddings,
+            temp,
+            eos_threshold,
+            step,
+            None,
+        )
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    pub(crate) fn forward_with_capture(
+        &self,
+        sequence: &Tensor,
+        text_embeddings: &Tensor,
+        model_state: &mut ModelState,
+        time_embeddings: &Tensor,
+        temp: f32,
+        eos_threshold: f32,
+        step: usize,
+        capture: Option<&mut crate::timestamps::attention::AttentionCapture>,
+    ) -> Result<(Tensor, bool)> {
         self.forward_impl(
             sequence,
             text_embeddings,
@@ -127,6 +151,7 @@ impl FlowLMModel {
             time_embeddings,
             eos_threshold,
             step,
+            capture,
             |last_frame| {
                 sample_noise(
                     last_frame.device(),
@@ -166,6 +191,7 @@ impl FlowLMModel {
             time_embeddings,
             eos_threshold,
             step,
+            None,
             |_| Ok(noise.clone()),
         )
     }
@@ -178,7 +204,8 @@ impl FlowLMModel {
         model_state: &mut ModelState,
         time_embeddings: &Tensor,
         eos_threshold: f32,
-        step: usize,
+        _step: usize,
+        capture: Option<&mut crate::timestamps::attention::AttentionCapture>,
         make_noise: impl FnOnce(&Tensor) -> Result<Tensor>,
     ) -> Result<(Tensor, bool)> {
         if time_embeddings.dim(0)? == 0 {
@@ -200,12 +227,15 @@ impl FlowLMModel {
         // Cat text embeddings and sequence embeddings only if text_embeddings is not empty
         let transformer_out_pre_norm = if s_len > 0 {
             let input = Tensor::cat(&[text_embeddings, &x], 1)?;
-            let mut out = self.transformer.forward(&input, model_state, step)?;
+            let mut out = self
+                .transformer
+                .forward_with_capture(&input, model_state, capture)?;
             // Remove prefix (text embeddings length)
             out = out.narrow(1, s_len, out.dims()[1] - s_len)?;
             out
         } else {
-            self.transformer.forward(&x, model_state, step)?
+            self.transformer
+                .forward_with_capture(&x, model_state, capture)?
         };
 
         let transformer_out = self.out_norm.forward(&transformer_out_pre_norm)?;

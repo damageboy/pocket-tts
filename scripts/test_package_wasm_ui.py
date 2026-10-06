@@ -25,6 +25,8 @@ class PackageVersionTest(unittest.TestCase):
             (pkg / name).write_bytes(b"fixture")
         self.manifest = b'{"schemaVersion":1,"sourceRevision":"ui-fixture"}'
         (pkg / "models.json").write_bytes(self.manifest)
+        self.notice = b"Timestamp fork attribution and MIT permission notice."
+        (pkg.parent / "THIRD_PARTY_NOTICES.md").write_bytes(self.notice)
         self.git("init", "-q")
         self.git("config", "user.name", "Test")
         self.git("config", "user.email", "test@example.invalid")
@@ -47,6 +49,7 @@ class PackageVersionTest(unittest.TestCase):
     def test_manifest_is_preserved_and_required(self):
         self.packaged_version()
         self.assertEqual((self.repo / "site/wasm/pkg/models.json").read_bytes(), self.manifest)
+        self.assertEqual((self.repo / "site/wasm/pkg/THIRD_PARTY_NOTICES.md").read_bytes(), self.notice)
         (self.repo / "crates/pocket-tts/pkg/models.json").unlink()
         result = subprocess.run(["bash", "scripts/package-wasm-ui.sh", "site"],
                                 cwd=self.repo, capture_output=True, text=True)

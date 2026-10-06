@@ -67,6 +67,7 @@ New-Item -ItemType Directory -Path $outDir -Force | Out-Null
 
 Write-Host "Running wasm-bindgen..."
 & wasm-bindgen --target web --out-dir $outDir $wasmPath
+Copy-Item "crates/pocket-tts/THIRD_PARTY_NOTICES.md" $outDir
 
 $bgWasm = Join-Path $outDir "pocket_tts_bg.wasm"
 if (Get-Command "wasm-opt" -ErrorAction SilentlyContinue) {

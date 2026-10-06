@@ -104,8 +104,8 @@ For example, the asset for `v3.3.0` is named `pocket-tts-v3.3.0-wasm-web.tar.gz`
 Browser consumers do not need Rust or a separate build for each operating system.
 
 The archive contains `pocket_tts.js`, `pocket_tts_bg.wasm`, their TypeScript
-declarations, and `models.json`. Keep these files from the same archive together;
-they are generated from the release tag. Model weights, tokenizers,
+declarations, `models.json`, and `THIRD_PARTY_NOTICES.md`. Keep these files from
+the same archive together; they are generated from the release tag. Model weights, tokenizers,
 voice embeddings, and the demo UI are not included.
 
 ```bash
@@ -125,7 +125,77 @@ const model = new WasmTTSModel();
 // Load model data before generating speech.
 ```
 
-#### Model catalog consumer contract (schema version 1)
+### Opt-in streaming word timestamps (Rust and WASM)
+
+The shared core ports the attention-based alignment from
+[dpm63/pocket-tts-timestamped](https://github.com/dpm63/pocket-tts-timestamped),
+under its MIT license. See [third-party notices](crates/pocket-tts/THIRD_PARTY_NOTICES.md)
+for the pinned source revision and complete permission notice. Preserve that
+notice when redistributing derived software; WASM build/package scripts include it.
+Model and voice licenses remain separate.
+
+This is one generation pass, with optional attention capture—not an ASR pass or
+a second synthesizer. The existing audio-only APIs are unchanged. In Rust, with
+a loaded `model` and matching `voice_state`:
+
+```rust
+use pocket_tts::timestamps::TimestampEvent;
+
+let stream = model.generate_audio_with_timestamps_stream(text, &voice_state)?;
+for event in stream {
+    match event? {
+        TimestampEvent::AudioChunk(chunk) => { /* enqueue chunk.audio */ }
+        TimestampEvent::WordStart(word) => {
+            println!("{}: {} starts at {}", word.word_index, word.word, word.start_time);
+        }
+        TimestampEvent::WordEnd(word) => {
+            println!("{} ends at {}", word.word, word.end_time);
+        }
+    }
+}
+```
+
+The owned Rust stream can also `next_batch(min_samples)` to combine mono PCM
+and word events. Dropping it cancels generation. The equivalent WASM API is:
+
+```javascript
+// model has already loaded matching config, weights, tokenizer and voice.
+const stream = model.start_stream_with_timestamps(text);
+try {
+  for (;;) {
+    const batch = stream.next_batch(4096);
+    if (batch == null) break;
+    // batch.audio: Float32Array; batch.start_time/end_time: audio seconds.
+    // batch.events: { kind: "word_start" | "word_end", word, word_index,
+    //                 start_time, end_time? }[]
+    // Enqueue audio and schedule word updates against the playback sample clock.
+    // An empty audio array can carry the final WordEnd: do not stop on it.
+  }
+} finally {
+  stream.free(); // also use this when cancelling
+}
+```
+
+The browser worker accepts `timestamps: true` on `start_stream` requests and
+emits `stream_words` alongside existing audio messages. This does not add word
+highlighting to the demo UI or change the HTTP audio-stream format.
+
+- Times use the generated audio sample clock, not event arrival/wall time, and
+  remain continuous across text segments. Account for playback buffering.
+- Boundaries are approximate, normally at **80 ms frame resolution**. Words may
+  be skipped when alignment or source-text mapping is ambiguous; word indices
+  can have gaps. This is not a guarantee of exact acoustic boundaries.
+- Like `generate_stream`, the alternate API strips explicit pause markers;
+  it does not implement `generate_stream_long`'s inserted-silence behavior.
+- Calibrated heads are configured only for verified matching checkpoints:
+  `english`, `english_2026-01`, `english_2026-04`, `english_2026-09`,
+  `english_2026-04_24l`, `english_2026-09_24l`, `dutch_24l`, `german_24l`,
+  `portuguese_24l`, and `spanish_24l`. Other bundled configs pin different
+  weights from the fork and reject timestamp requests. Ordinary synthesis works
+  without `timestamp_heads`. Custom selections must be calibrated for the actual
+  weights, not just chosen to fit the layer/head dimensions.
+
+### Model catalog consumer contract (schema version 1)
 
 `models.json` is also served beside the bindings at `/wasm/pkg/models.json` in
 the packaged UI. Use it instead of maintaining model lists, architecture tables,

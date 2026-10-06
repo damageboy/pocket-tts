@@ -108,6 +108,17 @@ impl StreamingMultiheadAttention {
         current_pos: usize,
         current_len: usize,
     ) -> Result<Tensor> {
+        self.forward_with_capture(query, model_state, current_pos, current_len, None)
+    }
+
+    pub(crate) fn forward_with_capture(
+        &self,
+        query: &Tensor,
+        model_state: &mut ModelState,
+        current_pos: usize,
+        current_len: usize,
+        capture: Option<(usize, &mut crate::timestamps::attention::AttentionCapture)>,
+    ) -> Result<Tensor> {
         let (b, t, _) = query.dims3()?;
         let d = self.embed_dim / self.num_heads;
         let window_size = self.context;
@@ -227,7 +238,15 @@ impl StreamingMultiheadAttention {
             let kc = k_buf.narrow(2, 0, cache_len)?;
             let vc = v_buf.narrow(2, 0, cache_len)?;
             let scale = 1.0 / (d as f64).sqrt();
-            crate::modules::sdpa::sdpa(&q, &kc, &vc, scale, true, self.context)?
+            crate::modules::sdpa::sdpa_with_capture(
+                &q,
+                &kc,
+                &vc,
+                scale,
+                true,
+                self.context,
+                capture,
+            )?
         };
 
         if let Some(window_size) = self.context {

@@ -55,6 +55,7 @@ mkdir -p "$OUT_DIR"
 
 echo "Running wasm-bindgen..."
 wasm-bindgen --target web --out-dir "$OUT_DIR" "$WASM_PATH"
+cp crates/pocket-tts/THIRD_PARTY_NOTICES.md "$OUT_DIR/"
 
 BG_WASM="${OUT_DIR}/pocket_tts_bg.wasm"
 if command -v wasm-opt >/dev/null 2>&1; then

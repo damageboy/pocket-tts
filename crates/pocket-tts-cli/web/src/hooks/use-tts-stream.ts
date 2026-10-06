@@ -1,43 +1,18 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { getBootstrapConfig, type UiMode } from "@/lib/bootstrap";
+import { FALLBACK_VOICES } from "@/lib/model-catalog";
 import type {
 	WasmWorkerEvent,
 	WasmWorkerRequest,
 	WasmWorkerStatus,
+	WordTimestampEvent,
 } from "@/workers/wasm-tts-protocol";
 
 const SAMPLE_RATE = 24000;
 const DEFAULT_WASM_START_THRESHOLD_SEC = 0.22;
 const DEFAULT_WASM_RESUME_THRESHOLD_SEC = 0.34;
 
-const PRESET_VOICES = [
-	"alba",
-	"anna",
-	"azelma",
-	"bill_boerst",
-	"caro_davy",
-	"charles",
-	"cosette",
-	"eponine",
-	"estelle",
-	"eve",
-	"fantine",
-	"george",
-	"giovanni",
-	"jane",
-	"javert",
-	"jean",
-	"juergen",
-	"lola",
-	"marius",
-	"mary",
-	"michael",
-	"paul",
-	"peter_yearsley",
-	"rafael",
-	"stuart_bell",
-	"vera",
-] as const;
+const PRESET_VOICES = FALLBACK_VOICES.map((voice) => voice.name);
 
 // Config YAML is now generated dynamically by the worker based on language.
 
@@ -53,6 +28,7 @@ class PCMProcessor extends AudioWorkletProcessor {
     this.firstAudioSent = false;
     this.tick = 0;
     this.underruns = 0;
+    this.playedSamples = 0;
 
     const startThreshold = options && options.processorOptions ? options.processorOptions.startThreshold : undefined;
     const resumeThreshold = options && options.processorOptions ? options.processorOptions.resumeThreshold : undefined;
@@ -84,6 +60,7 @@ class PCMProcessor extends AudioWorkletProcessor {
         this.ended = false;
         this.firstAudioSent = false;
         this.underruns = 0;
+        this.playedSamples = 0;
       }
     };
   }
@@ -121,14 +98,11 @@ class PCMProcessor extends AudioWorkletProcessor {
     }
 
     if (!this.hasStarted) {
-      if (buffered < this.startThreshold) {
+      if (buffered < this.startThreshold && !this.ended) {
         this.fillSilence(channel);
         if (!this.isBuffering) {
           this.isBuffering = true;
           this.port.postMessage({ type: 'state', state: 'buffering' });
-        }
-        if (this.ended && buffered === 0) {
-          return false;
         }
         return true;
       }
@@ -163,7 +137,8 @@ class PCMProcessor extends AudioWorkletProcessor {
       }
     }
 
-    if (idx === channel.length && this.isBuffering && this.bufferedSamples() >= this.resumeThreshold) {
+    // Report what was rendered even when a resumed chunk is below the target buffer.
+    if (idx > 0 && this.isBuffering) {
       this.isBuffering = false;
       this.port.postMessage({ type: 'state', state: 'playing' });
     }
@@ -178,7 +153,13 @@ class PCMProcessor extends AudioWorkletProcessor {
       }
     }
 
-    if (this.ended && this.bufferedSamples() === 0) {
+    // Only count source PCM, not silence inserted while waiting for generation.
+    this.playedSamples += idx;
+    const finished = this.ended && this.bufferedSamples() === 0;
+    if (this.tick % 4 === 0 || finished) {
+      this.port.postMessage({ type: 'playback', samples: this.playedSamples, finished });
+    }
+    if (finished) {
       return false;
     }
 
@@ -333,12 +314,14 @@ export interface WasmInitInput {
 interface GenerationInput {
 	text: string;
 	voiceSpec?: string;
+	timestamps?: boolean;
 }
 
 interface StreamHandlers {
 	onFirstChunk: () => void;
 	onChunk: (samples: Float32Array, pcmChunk: Uint8Array) => void;
 	onDone: () => void;
+	onWords?: (events: WordTimestampEvent[]) => void;
 	onWorkerStats?: (stats: {
 		computeMs: number | null;
 		mergedChunks: number | null;
@@ -481,6 +464,7 @@ class WasmAdapter implements RuntimeAdapter {
 	stop() {
 		const stopMessage: WasmWorkerRequest = { kind: "stop" };
 		this.worker.postMessage(stopMessage);
+		this.streamHandlers = null;
 		if (this.activeStreamRequestId != null) {
 			const pending = this.pending.get(this.activeStreamRequestId);
 			if (pending) {
@@ -591,9 +575,10 @@ class WasmAdapter implements RuntimeAdapter {
 			await this.sendRpc({
 				kind: "start_stream",
 				text: input.text,
+				timestamps: input.timestamps,
 			});
 		} finally {
-			this.streamHandlers = null;
+			if (this.streamHandlers === handlers) this.streamHandlers = null;
 		}
 	}
 
@@ -624,6 +609,9 @@ class WasmAdapter implements RuntimeAdapter {
 			return;
 		}
 
+		// A stopped worker may still have queued chunks/events from the old run.
+		if (data.kind.startsWith("stream_") && data.requestId !== this.activeStreamRequestId) return;
+
 		if (data.kind === "stream_first_chunk") {
 			this.streamHandlers?.onFirstChunk();
 			return;
@@ -641,6 +629,11 @@ class WasmAdapter implements RuntimeAdapter {
 
 		if (data.kind === "stream_done") {
 			this.streamHandlers?.onDone();
+			return;
+		}
+
+		if (data.kind === "stream_words") {
+			this.streamHandlers?.onWords?.(data.events);
 			return;
 		}
 
@@ -691,6 +684,9 @@ export function useTTSEngine() {
 	const [error, setError] = useState<string | null>(null);
 	const [bufferSize, setBufferSize] = useState(0);
 	const [generationTime, setGenerationTime] = useState(0);
+	const [timestampText, setTimestampText] = useState<string | null>(null);
+	const [wordEvents, setWordEvents] = useState<WordTimestampEvent[]>([]);
+	const [playbackTime, setPlaybackTime] = useState(0);
 	const [latency, setLatency] = useState<LatencyMetrics>({
 		ttfcMs: null,
 		ttfaMs: null,
@@ -718,6 +714,7 @@ export function useTTSEngine() {
 
 	const audioCtxRef = useRef<AudioContext | null>(null);
 	const workletNodeRef = useRef<AudioWorkletNode | null>(null);
+	const generationRef = useRef(0);
 	const currentPcmChunksRef = useRef<Uint8Array[]>([]);
 	const requestStartRef = useRef<number | null>(null);
 	const preparedVoiceSignatureRef = useRef<string>("");
@@ -730,19 +727,23 @@ export function useTTSEngine() {
 	const wasmStartThresholdSecRef = useRef(DEFAULT_WASM_START_THRESHOLD_SEC);
 	const wasmResumeThresholdSecRef = useRef(DEFAULT_WASM_RESUME_THRESHOLD_SEC);
 
-	const adapterRef = useRef<RuntimeAdapter>(
-		mode === "wasm-experimental"
-			? new WasmAdapter(bootstrap.wasmBase)
-			: new ServerAdapter(bootstrap.apiBase),
-	);
+	const adapterRef = useRef<RuntimeAdapter | null>(null);
 
 	useEffect(() => {
-		const adapter = adapterRef.current;
+		// Own the worker in the effect so clock renders and StrictMode don't leak it.
+		const adapter: RuntimeAdapter = mode === "wasm-experimental"
+			? new WasmAdapter(bootstrap.wasmBase)
+			: new ServerAdapter(bootstrap.apiBase);
+		adapterRef.current = adapter;
 		return () => {
 			adapter.stop();
 			adapter.dispose?.();
+			adapterRef.current = null;
+			workletNodeRef.current?.disconnect();
+			void audioCtxRef.current?.close();
+			audioCtxRef.current = null;
 		};
-	}, []);
+	}, [bootstrap.apiBase, bootstrap.wasmBase, mode]);
 
 	const setLatencyTracked = useCallback(
 		(updater: LatencyMetrics | ((prev: LatencyMetrics) => LatencyMetrics)) => {
@@ -799,9 +800,11 @@ export function useTTSEngine() {
 	);
 
 	const stop = useCallback(() => {
-		adapterRef.current.stop();
+		generationRef.current += 1;
+		adapterRef.current?.stop();
 
 		if (workletNodeRef.current) {
+			workletNodeRef.current.port.onmessage = null;
 			workletNodeRef.current.port.postMessage({ type: "reset" });
 			workletNodeRef.current.disconnect();
 			workletNodeRef.current = null;
@@ -865,6 +868,7 @@ export function useTTSEngine() {
 			}
 
 			if (workletNodeRef.current) {
+				workletNodeRef.current.port.onmessage = null;
 				workletNodeRef.current.disconnect();
 			}
 
@@ -885,8 +889,16 @@ export function useTTSEngine() {
 					length?: number;
 					state?: string;
 					count?: number;
+					samples?: number;
+					finished?: boolean;
 				};
-				if (data.type === "buffer") {
+				if (data.type === "playback") {
+					setPlaybackTime((data.samples || 0) / desiredRate);
+					if (data.finished) {
+						setBufferSize(0);
+						setState("finished");
+					}
+				} else if (data.type === "buffer") {
 					setBufferSize(data.length || 0);
 				} else if (data.type === "state") {
 					if (data.state === "buffering") {
@@ -930,6 +942,8 @@ export function useTTSEngine() {
 			setError(null);
 
 			try {
+				stop();
+				setTimestampText(null);
 				await adapter.init(input, setWasmLoadStatus);
 				preparedVoiceSignatureRef.current = "";
 			} catch (err) {
@@ -945,7 +959,7 @@ export function useTTSEngine() {
 				throw err;
 			}
 		},
-		[mode],
+		[mode, stop],
 	);
 
 	const prepareVoice = useCallback(
@@ -980,7 +994,8 @@ export function useTTSEngine() {
 				input.hfRepo,
 			].join("|");
 
-			if (preparedVoiceSignatureRef.current === voiceSig) {
+			// Equal file sizes do not imply equal uploaded voices. Only reuse presets.
+			if (!input.cloneWavBytes && !input.embeddingBytes && preparedVoiceSignatureRef.current === voiceSig) {
 				return undefined;
 			}
 
@@ -1014,12 +1029,17 @@ export function useTTSEngine() {
 	);
 
 	const generate = useCallback(
-		async (text: string, voiceSpec?: string) => {
+		async (text: string, voiceSpec?: string, timestamps = false) => {
 			const normalizedText = text.trim();
 			if (!normalizedText) {
 				throw new Error("Enter text before generating audio.");
 			}
 
+			stop();
+			const generation = generationRef.current;
+			setTimestampText(timestamps ? normalizedText : null);
+			setWordEvents([]);
+			setPlaybackTime(0);
 			setError(null);
 			setState("connecting");
 			setBufferSize(0);
@@ -1032,6 +1052,7 @@ export function useTTSEngine() {
 			requestStartRef.current = requestStart;
 
 			const adapter = adapterRef.current;
+			if (!adapter) throw new Error("Audio engine is not available.");
 			const sampleRate = adapter.getSampleRate();
 			const startThresholdSec =
 				mode === "wasm-experimental" ? wasmStartThresholdSecRef.current : 2.8;
@@ -1048,11 +1069,13 @@ export function useTTSEngine() {
 
 			try {
 				await initAudio(sampleRate, startThresholdSec, resumeThresholdSec);
+				if (generation !== generationRef.current) return;
 
 				setState("buffering");
 				await adapter.generateStream(
-					{ text: normalizedText, voiceSpec },
+					{ text: normalizedText, voiceSpec, timestamps },
 					{
+						onWords: (events) => setWordEvents((previous) => [...previous, ...events]),
 						onFirstChunk: () => {
 							if (requestStartRef.current != null) {
 								const ttfc = performance.now() - requestStartRef.current;
@@ -1078,6 +1101,7 @@ export function useTTSEngine() {
 						},
 					},
 				);
+				if (generation !== generationRef.current) return;
 
 				const totalMs = performance.now() - requestStart;
 				setGenerationTime(totalMs / 1000);
@@ -1090,8 +1114,10 @@ export function useTTSEngine() {
 					);
 				}
 
-				setState("finished");
+				// The worklet marks finished only after the queued audio has played.
 			} catch (err) {
+				if (generation !== generationRef.current) return;
+				stop();
 				const message = err instanceof Error ? err.message : String(err);
 				if (message.includes("abort") || message.includes("Abort")) {
 					setState("idle");
@@ -1102,7 +1128,7 @@ export function useTTSEngine() {
 				throw err;
 			}
 		},
-		[initAudio, mode, setLatencyTracked, tuneWasmThresholds],
+		[initAudio, mode, setLatencyTracked, stop, tuneWasmThresholds],
 	);
 
 	const downloadWav = useCallback(() => {
@@ -1112,7 +1138,7 @@ export function useTTSEngine() {
 
 		const blob = createWavBlob(
 			currentPcmChunksRef.current,
-			adapterRef.current.getSampleRate(),
+			adapterRef.current?.getSampleRate() ?? SAMPLE_RATE,
 		);
 		const url = URL.createObjectURL(blob);
 		const a = document.createElement("a");
@@ -1139,6 +1165,9 @@ export function useTTSEngine() {
 			error,
 			bufferSize,
 			generationTime,
+			timestampText,
+			wordEvents,
+			playbackTime,
 			latency,
 			playbackStats,
 			wasmLoadStatus,
@@ -1156,6 +1185,9 @@ export function useTTSEngine() {
 			error,
 			bufferSize,
 			generationTime,
+			timestampText,
+			wordEvents,
+			playbackTime,
 			latency,
 			playbackStats,
 			wasmLoadStatus,

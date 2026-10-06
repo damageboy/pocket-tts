@@ -1,5 +1,18 @@
 export type WasmAssetSource = "local" | "hf" | "manual" | null;
 
+export type WordTimestampEvent =
+	| { kind: "word_start"; word: string; word_index: number; start_time: number }
+	| { kind: "word_end"; word: string; word_index: number; start_time: number; end_time: number };
+
+export interface TimestampBatch {
+	audio: Float32Array;
+	events: WordTimestampEvent[];
+	start_time: number | null;
+	end_time: number | null;
+	chunks_merged: number;
+	compute_ms: number;
+}
+
 export type WasmLoadPhase =
 	| "idle"
 	| "initializing-runtime"
@@ -58,6 +71,7 @@ export type WasmWorkerRequest =
 			kind: "start_stream";
 			requestId: number;
 			text: string;
+			timestamps?: boolean;
 	  }
 	| {
 			kind: "stop";
@@ -82,17 +96,26 @@ export type WasmWorkerEvent =
 	  }
 	| {
 			kind: "stream_first_chunk";
+			requestId: number;
 	  }
 	| {
 			kind: "stream_chunk";
+			requestId: number;
 			chunk: Float32Array;
 			computeMs: number | null;
 			mergedChunks: number | null;
 	  }
 	| {
+			kind: "stream_words";
+			requestId: number;
+			events: WordTimestampEvent[];
+	  }
+	| {
 			kind: "stream_done";
+			requestId: number;
 	  }
 	| {
 			kind: "stream_error";
+			requestId: number;
 			error: string;
 	  };

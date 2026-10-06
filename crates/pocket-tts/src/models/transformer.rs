@@ -70,11 +70,26 @@ impl StreamingTransformerLayer {
         current_pos: usize,
         current_len: usize,
     ) -> Result<Tensor> {
+        self.forward_with_capture(x, model_state, current_pos, current_len, None)
+    }
+
+    fn forward_with_capture(
+        &self,
+        x: &Tensor,
+        model_state: &mut ModelState,
+        current_pos: usize,
+        current_len: usize,
+        capture: Option<(usize, &mut crate::timestamps::attention::AttentionCapture)>,
+    ) -> Result<Tensor> {
         let x_orig = x.clone();
         let h = self.norm1.forward(x)?;
-        let mut update = self
-            .self_attn
-            .forward(&h, model_state, current_pos, current_len)?;
+        let mut update = self.self_attn.forward_with_capture(
+            &h,
+            model_state,
+            current_pos,
+            current_len,
+            capture,
+        )?;
         if let Some(ls) = &self.layer_scale_1 {
             update = ls.forward(&update)?;
         }
@@ -139,6 +154,15 @@ impl StreamingTransformer {
         model_state: &mut ModelState,
         _step: usize,
     ) -> Result<Tensor> {
+        self.forward_with_capture(x, model_state, None)
+    }
+
+    pub(crate) fn forward_with_capture(
+        &self,
+        x: &Tensor,
+        model_state: &mut ModelState,
+        mut capture: Option<&mut crate::timestamps::attention::AttentionCapture>,
+    ) -> Result<Tensor> {
         let mut x = x.clone();
         // Fetch current_pos once from the first attention layer's state to avoid redundant to_scalar calls.
         let first_layer_name = format!("{}.layers.0.self_attn", self.name);
@@ -146,8 +170,14 @@ impl StreamingTransformer {
         let current_pos = cursor.pos;
         let current_len = cursor.len;
 
-        for layer in &self.layers {
-            x = layer.forward(&x, model_state, current_pos, current_len)?;
+        for (index, layer) in self.layers.iter().enumerate() {
+            x = layer.forward_with_capture(
+                &x,
+                model_state,
+                current_pos,
+                current_len,
+                capture.as_deref_mut().map(|c| (index, c)),
+            )?;
         }
         Ok(x)
     }
