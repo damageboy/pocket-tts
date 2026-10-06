@@ -1,12 +1,13 @@
 # Stage 1: Build Web UI
 FROM oven/bun:1 AS frontend-builder
-WORKDIR /app
+WORKDIR /app/crates/pocket-tts-cli/web
+COPY crates/pocket-tts/config /app/crates/pocket-tts/config
 COPY crates/pocket-tts-cli/web ./
 RUN bun install
 RUN bun run build
 
 # Stage 2: Build Rust
-FROM rust:1.92-bullseye AS builder
+FROM rust:1.92-bookworm AS builder
 
 # Install build dependencies
 RUN apt-get update && apt-get install -y \
@@ -19,34 +20,28 @@ WORKDIR /build
 COPY ./ ./
 
 # Copy built frontend assets from previous stage
-COPY --from=frontend-builder /app/dist ./crates/pocket-tts-cli/web/dist
+COPY --from=frontend-builder /app/crates/pocket-tts-cli/web/dist ./crates/pocket-tts-cli/web/dist
 
-# Build the project in release mode
-RUN cargo build --release
+# Build only the executable shipped in this image, not the Python bindings.
+RUN cargo build --release --locked -p pocket-tts-cli
 
 # =============================================================================
 # Runtime
 # =============================================================================
-FROM debian:bullseye-slim
+FROM debian:bookworm-slim
 
 RUN apt-get update && apt-get install -y \
     ca-certificates \
-    libssl1.1 \
+    libssl3 \
     && rm -rf /var/lib/apt/lists/*
 
 COPY --from=builder /build/target/release/pocket-tts-cli /usr/local/bin/pocket-tts
 COPY --from=builder /build/crates/pocket-tts/config /app/config
 
-# Patch configs to use the public (no-auth) model path as the default.
-# This makes each language use weights_path_without_voice_cloning instead of weights_path.
-RUN for cfg in /app/config/*.yaml; do \
-        sed -i 's|^weights_path: hf://kyutai/pocket-tts/|#weights_path: hf://kyutai/pocket-tts/|' "$cfg" && \
-        sed -i 's|^weights_path_without_voice_cloning:|weights_path:|' "$cfg"; \
-    done
-
 WORKDIR /app
 
-# Pre-cache the default English model and alba voice during build
+# Pre-cache English and alba; the loader falls back to public preset-only weights
+# without changing the configs or incorrectly enabling voice-cloning capability.
 RUN pocket-tts generate --language english --text "Initialize cache" && rm -f output.wav
 
 EXPOSE 8000
