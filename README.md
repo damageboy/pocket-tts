@@ -1,5 +1,12 @@
 # Pocket TTS (Rust/Candle)
 
+[![Version](https://img.shields.io/github/v/tag/damageboy/pocket-tts?filter=%21upstream-%2A&sort=semver&label=version)](https://github.com/damageboy/pocket-tts/tags)
+[![WASM build](https://img.shields.io/github/actions/workflow/status/damageboy/pocket-tts/wasm-ui.yml?branch=main&label=WASM%20build&logo=webassembly)](https://github.com/damageboy/pocket-tts/actions/workflows/wasm-ui.yml?query=branch%3Amain)
+[![Native CI](https://img.shields.io/github/actions/workflow/status/damageboy/pocket-tts/ci.yml?branch=main&label=native%20CI&logo=rust)](https://github.com/damageboy/pocket-tts/actions/workflows/ci.yml?query=branch%3Amain)
+[![Docker build](https://img.shields.io/github/actions/workflow/status/damageboy/pocket-tts/docker.yml?branch=main&label=Docker%20build&logo=docker)](https://github.com/damageboy/pocket-tts/actions/workflows/docker.yml?query=branch%3Amain)
+[![Try Pocket TTS online](https://img.shields.io/badge/demo-pocket--tts.houmus.org-blue?logo=webassembly)](https://pocket-tts.houmus.org)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+
 A native Rust port of [Kyutai's Pocket TTS](https://github.com/kyutai-labs/pocket-tts) using [Candle](https://github.com/huggingface/candle) for tensor operations.
 
 Text-to-speech that runs entirely on CPU—no Python, no GPU required.
