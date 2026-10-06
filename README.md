@@ -125,10 +125,13 @@ const model = new WasmTTSModel();
 // Load model data before generating speech.
 ```
 
-Maintainers: pushing a `v*` release tag runs the existing WASM build and tests,
-then attaches the archive and checksum through the publish workflow. Manual
-publish runs must select a release tag, not a branch. Existing releases are not
-backfilled automatically.
+Maintainers: pushing a new `v*` release tag automatically starts the **Release WASM**
+workflow, which builds and tests that exact tag, creates the GitHub Release, and
+attaches the archive and checksum. No manual upload or agent session is needed.
+This runs independently of crates.io publishing and does not require a crates.io
+token. Tags must point to commits containing the release workflow; existing tags
+are not backfilled automatically. Manual recovery runs must select a release tag,
+not a branch.
 
 ### Experimental WASM UI
 

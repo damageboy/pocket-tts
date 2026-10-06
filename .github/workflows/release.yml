@@ -1,0 +1,60 @@
+name: Release WASM
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  wasm:
+    name: Build release WASM
+    if: startsWith(github.ref, 'refs/tags/v')
+    uses: ./.github/workflows/wasm-ui.yml
+    with:
+      release: true
+    permissions:
+      contents: read
+      # Required by the reusable workflow's Pages job, which release mode skips.
+      pages: write
+      id-token: write
+
+  release:
+    name: Publish GitHub Release
+    needs: wasm
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download WASM release package
+        uses: actions/download-artifact@v4
+        with:
+          name: wasm-web
+          path: dist/wasm-release
+      - name: Verify WASM release checksum
+        working-directory: dist/wasm-release
+        run: shasum -a 256 -c *.sha256
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            assets/*.wav
+            assets/*.safetensors
+            dist/wasm-release/*.tar.gz
+            dist/wasm-release/*.sha256
+          generate_release_notes: true
+          body: |
+            Automated release for `${{ github.ref_name }}`.
+
+            Browser consumers can download `pocket-tts-${{ github.ref_name }}-wasm-web.tar.gz`
+            and its SHA-256 checksum. The archive contains matching JavaScript/WASM
+            bindings and TypeScript declarations; no Rust installation is required.
+
+            Model weights, tokenizers, voice embeddings, and the demo UI are not included.
+            Applications must load model resources separately.
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
