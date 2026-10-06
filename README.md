@@ -95,6 +95,41 @@ cargo run --release -p pocket-tts-cli -- serve
 # Navigate to http://localhost:8000
 ```
 
+### Prebuilt browser WASM package
+
+Tagged releases built with the WASM release workflow include
+`pocket-tts-<tag>-wasm-web.tar.gz` and a matching `.tar.gz.sha256` file on the
+[GitHub Releases page](https://github.com/damageboy/pocket-tts/releases).
+For example, the asset for `v3.3.0` is named `pocket-tts-v3.3.0-wasm-web.tar.gz`.
+Browser consumers do not need Rust or a separate build for each operating system.
+
+The archive contains `pocket_tts.js`, `pocket_tts_bg.wasm`, and their TypeScript
+declarations. Keep the JavaScript and WASM from the same archive together; they
+are generated as a matching pair from the release tag. Model weights, tokenizers,
+voice embeddings, and the demo UI are not included.
+
+```bash
+# After downloading both files (replace v3.3.0 with your release tag):
+shasum -a 256 -c pocket-tts-v3.3.0-wasm-web.tar.gz.sha256
+mkdir -p wasm/pkg
+tar -xzf pocket-tts-v3.3.0-wasm-web.tar.gz -C wasm/pkg
+```
+
+Serve the files over HTTP(S) and import the bindings as an ES module:
+
+```javascript
+import init, { WasmTTSModel } from './wasm/pkg/pocket_tts.js';
+
+await init();
+const model = new WasmTTSModel();
+// Load model data before generating speech.
+```
+
+Maintainers: pushing a `v*` release tag runs the existing WASM build and tests,
+then attaches the archive and checksum through the publish workflow. Manual
+publish runs must select a release tag, not a branch. Existing releases are not
+backfilled automatically.
+
 ### Experimental WASM UI
 
 The project has one React web app with two serving modes:

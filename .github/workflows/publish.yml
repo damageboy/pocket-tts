@@ -7,14 +7,37 @@ on:
   workflow_dispatch:
 
 jobs:
+  wasm:
+    name: Build release WASM
+    if: startsWith(github.ref, 'refs/tags/v')
+    uses: ./.github/workflows/wasm-ui.yml
+    with:
+      release: true
+    permissions:
+      contents: read
+      # Required by the reusable workflow's Pages job, which release mode skips.
+      pages: write
+      id-token: write
+
   publish:
     name: Publish
+    needs: wasm
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     env:
       CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
       HF_TOKEN: ${{ secrets.HF_TOKEN }}
     steps:
       - uses: actions/checkout@v4
+      - name: Download WASM release package
+        uses: actions/download-artifact@v4
+        with:
+          name: wasm-web
+          path: dist/wasm-release
+      - name: Verify WASM release checksum
+        working-directory: dist/wasm-release
+        run: shasum -a 256 -c *.sha256
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
       - name: Setup Bun
@@ -37,9 +60,15 @@ jobs:
           files: |
             assets/*.wav
             assets/*.safetensors
+            dist/wasm-release/*.tar.gz
+            dist/wasm-release/*.sha256
           generate_release_notes: true
           body: |
             Automated release for `${{ github.ref_name }}`.
+
+            Browser consumers can download `pocket-tts-${{ github.ref_name }}-wasm-web.tar.gz`
+            and its SHA-256 checksum. The archive contains matching JavaScript/WASM
+            bindings and TypeScript declarations; no Rust installation is required.
 
             > [!IMPORTANT]
             > Large model weights are downloaded automatically on first run via Hugging Face.

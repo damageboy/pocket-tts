@@ -6,6 +6,12 @@ on:
   pull_request:
     branches: [main]
   workflow_dispatch:
+  workflow_call:
+    inputs:
+      release:
+        description: Package a tagged release without deploying to Pages
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -21,6 +27,9 @@ jobs:
 
       - name: Test site version stamping
         run: python3 scripts/test_package_wasm_ui.py
+
+      - name: Test release packaging
+        run: python3 scripts/test_package_wasm_release.py
 
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
@@ -70,6 +79,26 @@ jobs:
       - name: Smoke-test packaged WASM initialization
         run: node scripts/test-wasm-init.mjs dist/wasm-ui/wasm/pkg
 
+      - name: Package and smoke-test release archive
+        if: inputs.release
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          bash scripts/package-wasm-release.sh "$RELEASE_TAG"
+          (cd dist/wasm-release && shasum -a 256 -c *.sha256)
+          unpacked="$(mktemp -d)"
+          trap 'rm -rf "$unpacked"' EXIT
+          tar -xzf "dist/wasm-release/pocket-tts-${RELEASE_TAG}-wasm-web.tar.gz" -C "$unpacked"
+          node scripts/test-wasm-init.mjs "$unpacked"
+
+      - name: Upload release package
+        if: inputs.release
+        uses: actions/upload-artifact@v4
+        with:
+          name: wasm-web
+          path: dist/wasm-release/*
+          if-no-files-found: error
+
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
@@ -78,14 +107,14 @@ jobs:
           if-no-files-found: error
 
       - name: Upload Pages artifact
-        if: github.event_name != 'pull_request'
+        if: github.event_name != 'pull_request' && !inputs.release
         uses: actions/upload-pages-artifact@v3
         with:
           path: dist/wasm-ui
 
   deploy:
     name: Deploy WASM UI to GitHub Pages
-    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && !inputs.release
     needs: build
     runs-on: ubuntu-latest
     concurrency:
