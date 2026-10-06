@@ -24,6 +24,11 @@ Set-Location $repoRoot
 
 Require-Command -Name "cargo"
 Require-Command -Name "wasm-bindgen" -InstallHint "cargo install wasm-bindgen-cli"
+Require-Command -Name "bun" -InstallHint "https://bun.sh"
+
+# Validate the catalog before starting the expensive Rust build.
+& bun scripts/generate-model-catalog.ts crates/pocket-tts/pkg/models.json
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
 Write-Host "Building pocket-tts for wasm32-unknown-unknown (release)..."
 & cargo build -p pocket-tts --release --target wasm32-unknown-unknown --features wasm
@@ -76,3 +81,4 @@ Write-Host "WASM build complete."
 Write-Host "Artifacts:"
 Write-Host "  - crates/pocket-tts/pkg/pocket_tts.js"
 Write-Host "  - crates/pocket-tts/pkg/pocket_tts_bg.wasm"
+Write-Host "  - crates/pocket-tts/pkg/models.json"

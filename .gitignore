@@ -70,6 +70,7 @@ target/
 **/target/
 docs/book/
 docs/build/
+/crates/pocket-tts/pkg/models.json
 
 # Audio / Models
 /weights

@@ -33,6 +33,7 @@ package_site() {
     require_file "${WEB_DIST}/index.html"
     require_file "${PKG_SRC}/pocket_tts.js"
     require_file "${PKG_SRC}/pocket_tts_bg.wasm"
+    require_file "${PKG_SRC}/models.json"
 
     rm -rf "$out_dir"
     mkdir -p "$out_dir"
@@ -76,6 +77,7 @@ if [[ "$CHECK_MODE" -eq 1 ]]; then
     require_file "${TMP_DIR}/site/index.html"
     require_file "${TMP_DIR}/site/wasm/pkg/pocket_tts.js"
     require_file "${TMP_DIR}/site/wasm/pkg/pocket_tts_bg.wasm"
+    require_file "${TMP_DIR}/site/wasm/pkg/models.json"
     require_file "${TMP_DIR}/site/CNAME"
     grep -q "window.__POCKET_TTS_BOOTSTRAP__" "${TMP_DIR}/site/index.html"
     grep -q '"ui_mode": "wasm-experimental"' "${TMP_DIR}/site/index.html"

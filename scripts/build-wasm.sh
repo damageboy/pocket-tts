@@ -19,6 +19,10 @@ cd "$REPO_ROOT"
 
 require_command cargo
 require_command wasm-bindgen "cargo install wasm-bindgen-cli"
+require_command bun "https://bun.sh"
+
+# Validate the catalog before starting the expensive Rust build.
+bun scripts/generate-model-catalog.ts crates/pocket-tts/pkg/models.json
 
 echo "Building pocket-tts for wasm32-unknown-unknown (release)..."
 cargo build -p pocket-tts --release --target wasm32-unknown-unknown --features wasm
@@ -65,3 +69,4 @@ echo "WASM build complete."
 echo "Artifacts:"
 echo "  - crates/pocket-tts/pkg/pocket_tts.js"
 echo "  - crates/pocket-tts/pkg/pocket_tts_bg.wasm"
+echo "  - crates/pocket-tts/pkg/models.json"

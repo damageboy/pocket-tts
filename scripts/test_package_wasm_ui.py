@@ -23,6 +23,8 @@ class PackageVersionTest(unittest.TestCase):
         pkg.mkdir(parents=True)
         for name in ["pocket_tts.js", "pocket_tts_bg.wasm"]:
             (pkg / name).write_bytes(b"fixture")
+        self.manifest = b'{"schemaVersion":1,"sourceRevision":"ui-fixture"}'
+        (pkg / "models.json").write_bytes(self.manifest)
         self.git("init", "-q")
         self.git("config", "user.name", "Test")
         self.git("config", "user.email", "test@example.invalid")
@@ -41,6 +43,15 @@ class PackageVersionTest(unittest.TestCase):
 
     def test_untagged_commit_uses_short_sha(self):
         self.assertEqual(self.packaged_version(), "git-" + self.git("rev-parse", "--short=12", "HEAD"))
+
+    def test_manifest_is_preserved_and_required(self):
+        self.packaged_version()
+        self.assertEqual((self.repo / "site/wasm/pkg/models.json").read_bytes(), self.manifest)
+        (self.repo / "crates/pocket-tts/pkg/models.json").unlink()
+        result = subprocess.run(["bash", "scripts/package-wasm-ui.sh", "site"],
+                                cwd=self.repo, capture_output=True, text=True)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("models.json", result.stderr)
 
     def test_exact_lightweight_tag_then_descendant_commit(self):
         self.git("tag", "v3.3.0")

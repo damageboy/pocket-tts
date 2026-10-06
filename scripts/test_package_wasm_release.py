@@ -25,6 +25,7 @@ class PackageReleaseTest(unittest.TestCase):
             "pocket_tts_bg.wasm": b"\x00asm\x01\x00\x00\x00",
             "pocket_tts.d.ts": b"export default function init(): Promise<void>;",
             "pocket_tts_bg.wasm.d.ts": b"export const memory: WebAssembly.Memory;",
+            "models.json": b'{"schemaVersion":1,"sourceRevision":"fixture"}',
         }
         for name, data in self.files.items():
             (self.pkg / name).write_bytes(data)
@@ -48,7 +49,7 @@ class PackageReleaseTest(unittest.TestCase):
         self.assertEqual(checksum, [hashlib.sha256(archive.read_bytes()).hexdigest(), archive.name])
 
     def test_missing_wasm_or_js_fails_without_an_archive(self):
-        for name in ["pocket_tts.js", "pocket_tts_bg.wasm"]:
+        for name in ["pocket_tts.js", "pocket_tts_bg.wasm", "models.json"]:
             with self.subTest(name=name):
                 (self.pkg / name).unlink()
                 result = self.package()

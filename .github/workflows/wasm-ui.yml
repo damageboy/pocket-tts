@@ -44,6 +44,9 @@ jobs:
       - name: Setup Bun
         uses: oven-sh/setup-bun@v1
 
+      - name: Test model catalog and config URLs
+        run: bun test scripts/generate-model-catalog.test.ts crates/pocket-tts-cli/web/src/workers/model-config.test.ts
+
       - name: Bun cache
         uses: actions/cache@v4
         with:

@@ -3,54 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
-
-interface VoiceEntry {
-	name: string;
-	gender: string;
-	style: string;
-	language: string;
-}
-
-// Fallback used when API is unavailable (e.g. WASM-only mode)
-const FALLBACK_VOICES: VoiceEntry[] = [
-	{ name: "alba", gender: "m", style: "reading", language: "english" },
-	{ name: "anna", gender: "f", style: "conversation", language: "english" },
-	{ name: "azelma", gender: "f", style: "reading", language: "english" },
-	{ name: "bill_boerst", gender: "m", style: "reading", language: "english" },
-	{ name: "caro_davy", gender: "f", style: "reading", language: "english" },
-	{ name: "charles", gender: "m", style: "conversation", language: "english" },
-	{ name: "cosette", gender: "f", style: "expressive", language: "english" },
-	{ name: "daan", gender: "m", style: "reading", language: "dutch" },
-	{ name: "eponine", gender: "f", style: "reading", language: "english" },
-	{ name: "estelle", gender: "f", style: "conversation", language: "french" },
-	{ name: "eve", gender: "f", style: "conversation", language: "english" },
-	{ name: "fantine", gender: "f", style: "reading", language: "english" },
-	{ name: "george", gender: "m", style: "conversation", language: "english" },
-	{ name: "giovanni", gender: "m", style: "conversation", language: "italian" },
-	{ name: "jane", gender: "f", style: "conversation", language: "english" },
-	{ name: "javert", gender: "m", style: "conversation", language: "english" },
-	{ name: "jean", gender: "m", style: "conversation", language: "english" },
-	{ name: "juergen", gender: "m", style: "conversation", language: "german" },
-	{ name: "lola", gender: "f", style: "conversation", language: "spanish" },
-	{ name: "marius", gender: "m", style: "conversation", language: "english" },
-	{ name: "mary", gender: "f", style: "conversation", language: "english" },
-	{ name: "michael", gender: "m", style: "conversation", language: "english" },
-	{ name: "paul", gender: "m", style: "conversation", language: "english" },
-	{
-		name: "peter_yearsley",
-		gender: "m",
-		style: "reading",
-		language: "english",
-	},
-	{
-		name: "rafael",
-		gender: "m",
-		style: "conversation",
-		language: "portuguese",
-	},
-	{ name: "stuart_bell", gender: "m", style: "reading", language: "english" },
-	{ name: "vera", gender: "f", style: "conversation", language: "english" },
-];
+import { FALLBACK_VOICES, type VoiceEntry } from "@/lib/model-catalog";
 
 interface VoiceSelectorProps {
 	selectedVoice: string | null;

@@ -13,7 +13,7 @@ if [[ ! "$TAG" =~ ^v[0-9][a-zA-Z0-9._+-]*$ ]]; then
 fi
 
 PKG_SRC="crates/pocket-tts/pkg"
-FILES=(pocket_tts.js pocket_tts_bg.wasm pocket_tts.d.ts pocket_tts_bg.wasm.d.ts)
+FILES=(pocket_tts.js pocket_tts_bg.wasm pocket_tts.d.ts pocket_tts_bg.wasm.d.ts models.json)
 for file in "${FILES[@]}"; do
     if [[ ! -s "${PKG_SRC}/${file}" ]]; then
         echo "Error: required file missing or empty: ${PKG_SRC}/${file}" >&2

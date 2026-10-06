@@ -103,9 +103,9 @@ Tagged releases built with the WASM release workflow include
 For example, the asset for `v3.3.0` is named `pocket-tts-v3.3.0-wasm-web.tar.gz`.
 Browser consumers do not need Rust or a separate build for each operating system.
 
-The archive contains `pocket_tts.js`, `pocket_tts_bg.wasm`, and their TypeScript
-declarations. Keep the JavaScript and WASM from the same archive together; they
-are generated as a matching pair from the release tag. Model weights, tokenizers,
+The archive contains `pocket_tts.js`, `pocket_tts_bg.wasm`, their TypeScript
+declarations, and `models.json`. Keep these files from the same archive together;
+they are generated from the release tag. Model weights, tokenizers,
 voice embeddings, and the demo UI are not included.
 
 ```bash
@@ -124,6 +124,39 @@ await init();
 const model = new WasmTTSModel();
 // Load model data before generating speech.
 ```
+
+#### Model catalog consumer contract (schema version 1)
+
+`models.json` is also served beside the bindings at `/wasm/pkg/models.json` in
+the packaged UI. Use it instead of maintaining model lists, architecture tables,
+or HuggingFace revisions in a consumer. It contains:
+
+- `schemaVersion: 1`, `sourceRevision` (full Git HEAD SHA), `defaultModel: "english"`.
+- `voices: [{ id, language, gender, style }]`, preserving frontend voice metadata.
+- `models: [{ id, language, description, defaultVoice, layers, status, configYaml,
+  weightsUrl, tokenizerUrl, voices }]`. `language` is the base language (e.g.
+  `english` for `english_2026-09_24l`); `voices` maps supported voice IDs to pinned
+  HTTPS embedding URLs scoped to that exact model ID, not its base language.
+
+Check `schemaVersion` before use. Select a model by `id` (or `defaultModel`),
+download its `weightsUrl` (public, non-cloning), `tokenizerUrl`, and
+`voices[voiceId]` (or `voices[defaultVoice]`). Pass `configYaml` verbatim to WASM;
+do not reconstruct it from `layers` or rewrite its pinned scalars. The YAML is
+the authoritative architecture, including dated legacy variants.
+
+Maintainers: both WASM build scripts require Bun and generate the catalog in
+`crates/pocket-tts/pkg`. Regenerate independently without rebuilding Rust:
+
+```bash
+bun scripts/generate-model-catalog.ts crates/pocket-tts/pkg/models.json
+bun test scripts/generate-model-catalog.test.ts crates/pocket-tts-cli/web/src/workers/model-config.test.ts
+```
+
+Generation shares metadata with the fallback selectors and URL helpers with the
+worker; no HF pins are duplicated. It fails on config/catalog coverage drift,
+duplicate IDs, FlowLM layer drift, or invalid default voices/download scalars.
+Catalog additions must include matching YAML and voice metadata. Local generation
+uses the working tree and records HEAD, so a dirty tree is not a release identity.
 
 Maintainers: pushing a new `v*` release tag automatically starts the **Release WASM**
 workflow, which builds and tests that exact tag, creates the GitHub Release, and
@@ -155,6 +188,7 @@ Manual fallback:
 ```bash
 cargo build -p pocket-tts --release --target wasm32-unknown-unknown --features wasm
 wasm-bindgen --target web --out-dir crates/pocket-tts/pkg target/wasm32-unknown-unknown/release/pocket_tts.wasm
+bun scripts/generate-model-catalog.ts crates/pocket-tts/pkg/models.json
 ```
 
 #### 2. Launch experimental UI mode
