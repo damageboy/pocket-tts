@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTTSEngine, type LatencyMetrics } from "@/hooks/use-tts-stream";
+import { getBootstrapConfig } from "@/lib/bootstrap";
 import { VoiceSelector } from "@/components/tts/voice-selector";
 import { LanguageSelector } from "@/components/tts/language-selector";
 import { BufferVisualizer } from "@/components/tts/buffer-visualizer";
@@ -69,6 +70,7 @@ const isLatencyPass = (latency: LatencyMetrics | null) => {
 };
 
 export default function App() {
+	const { buildVersion } = useMemo(getBootstrapConfig, []);
 	const [text, setText] = useState("It's small enough to fit in your pocket.");
 	const [selectedLanguage, setSelectedLanguage] = useState("english");
 	const [isReinitializing, setIsReinitializing] = useState(false);
@@ -242,23 +244,22 @@ export default function App() {
 			<div className="fixed inset-0 overflow-hidden -z-10 bg-[radial-gradient(circle_at_top_left,var(--color-primary)_0%,transparent_30%),radial-gradient(circle_at_bottom_right,oklch(0.5_0.1_260)_0%,transparent_30%)] opacity-[0.05]" />
 
 			<main className="w-full max-w-3xl animate-in fade-in slide-in-from-bottom-4 duration-1000">
-				<div className="flex items-center justify-between mb-8">
-					<div className="flex items-center gap-3">
-						<div className="p-2.5 bg-primary/10 rounded-xl border border-primary/20 shadow-inner">
+				<div className="flex items-center justify-between gap-3 mb-8">
+					<div className="flex min-w-0 items-center gap-3">
+						<div className="shrink-0 p-2.5 bg-primary/10 rounded-xl border border-primary/20 shadow-inner">
 							<Volume2Icon className="w-6 h-6 text-primary" />
 						</div>
-						<div>
-							<h1 className="text-2xl font-bold tracking-tight text-foreground/90 flex items-center gap-2">
-								Pocket TTS
+						<div className="min-w-0">
+							<div className="flex flex-wrap items-center gap-2">
+								<h1 className="shrink-0 text-2xl font-bold tracking-tight text-foreground/90">
+									Pocket TTS
+								</h1>
 								<Badge
 									variant="outline"
 									className="text-[10px] py-0 font-medium border-primary/20 text-primary/70"
 								>
 									CANDLE PORT
 								</Badge>
-							</h1>
-							<p className="text-xs text-muted-foreground font-medium flex items-center gap-2">
-								Blazingly fast CPU Text-to-Speech
 								{isWasmMode && (
 									<Badge
 										variant="outline"
@@ -267,6 +268,14 @@ export default function App() {
 										Experimental WASM
 									</Badge>
 								)}
+								{buildVersion && (
+									<Badge variant="outline" className="font-mono text-xs">
+										Build {buildVersion}
+									</Badge>
+								)}
+							</div>
+							<p className="text-xs text-muted-foreground font-medium">
+								Blazingly fast CPU Text-to-Speech
 							</p>
 						</div>
 					</div>
@@ -274,7 +283,7 @@ export default function App() {
 						href="https://github.com/babybirdprd/pocket-tts-candle"
 						target="_blank"
 						rel="noreferrer"
-						className="inline-flex items-center justify-center size-9 rounded-full hover:bg-muted/50 transition-colors"
+						className="inline-flex shrink-0 items-center justify-center size-9 rounded-full hover:bg-muted/50 transition-colors"
 					>
 						<GithubIcon className="w-4 h-4" />
 					</a>

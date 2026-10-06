@@ -15,6 +15,9 @@ OUT_DIR="${1:-dist/wasm-ui}"
 CNAME_VALUE="${POCKET_TTS_WASM_CNAME:-pocket-tts.houmus.org}"
 WEB_DIST="crates/pocket-tts-cli/web/dist"
 PKG_SRC="crates/pocket-tts/pkg"
+if ! BUILD_VERSION="$(git describe --tags --exact-match HEAD 2>/dev/null)"; then
+    BUILD_VERSION="git-$(git rev-parse --short=12 HEAD)"
+fi
 
 require_file() {
     local path="$1"
@@ -37,7 +40,7 @@ package_site() {
     # Match `pocket-tts serve --ui wasm-experimental`: serve the built CLI React UI
     # and inject the same bootstrap mode the Axum server injects at runtime.
     cp -R "${WEB_DIST}/." "$out_dir/"
-    python3 - "$out_dir/index.html" <<'PY'
+    python3 - "$out_dir/index.html" "$BUILD_VERSION" <<'PY'
 from pathlib import Path
 import json
 import sys
@@ -48,8 +51,10 @@ bootstrap = {
     "ui_mode": "wasm-experimental",
     "api_base": "",
     "wasm_base": "/wasm/pkg",
+    "build_version": sys.argv[2],
 }
-script = f"<script>window.__POCKET_TTS_BOOTSTRAP__ = {json.dumps(bootstrap)};</script>"
+payload = json.dumps(bootstrap).replace("<", "\\u003c")
+script = f"<script>window.__POCKET_TTS_BOOTSTRAP__ = {payload};</script>"
 if "window.__POCKET_TTS_BOOTSTRAP__" not in html:
     if "</head>" in html:
         html = html.replace("</head>", f"{script}</head>", 1)

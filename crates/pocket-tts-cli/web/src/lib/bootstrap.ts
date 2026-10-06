@@ -4,15 +4,18 @@ export interface BootstrapConfig {
   uiMode: UiMode;
   apiBase: string;
   wasmBase: string;
+  buildVersion?: string;
 }
 
 type RawBootstrap = {
   uiMode?: string;
   apiBase?: string;
   wasmBase?: string;
+  buildVersion?: string;
   ui_mode?: string;
   api_base?: string;
   wasm_base?: string;
+  build_version?: string;
 };
 
 declare global {
@@ -36,5 +39,6 @@ export const getBootstrapConfig = (): BootstrapConfig => {
     uiMode: mode,
     apiBase,
     wasmBase,
+    buildVersion: raw?.buildVersion || raw?.build_version,
   };
 };
