@@ -22,8 +22,8 @@ COPY ./ ./
 # Copy built frontend assets from previous stage
 COPY --from=frontend-builder /app/crates/pocket-tts-cli/web/dist ./crates/pocket-tts-cli/web/dist
 
-# Build only the executable shipped in this image, not the Python bindings.
-RUN cargo build --release --locked -p pocket-tts-cli
+# The server image does not need a local audio device or ALSA dependencies.
+RUN cargo build --release --locked -p pocket-tts-cli --no-default-features --features web-ui
 
 # =============================================================================
 # Runtime

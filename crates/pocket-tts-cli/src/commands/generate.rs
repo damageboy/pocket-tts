@@ -28,9 +28,9 @@ pub struct GenerateArgs {
     #[arg(short, long)]
     pub voice: Option<String>,
 
-    /// Output audio file path
-    #[arg(short, long, default_value = "output.wav")]
-    pub output: PathBuf,
+    /// Output WAV path (default: output.wav, or no file with --play)
+    #[arg(short, long)]
+    pub output: Option<PathBuf>,
 
     /// Language for the TTS model (e.g., "english", "french_24l", "german").
     /// Incompatible with --config. Default is "english".
@@ -71,6 +71,14 @@ pub struct GenerateArgs {
     #[arg(long)]
     pub stream: bool,
 
+    /// Play streaming audio on the default device, with terminal word tracking
+    #[arg(long, conflicts_with = "stream")]
+    pub play: bool,
+
+    /// Play without word tracking (also supports models without timestamp heads)
+    #[arg(long, requires = "play")]
+    pub no_highlight: bool,
+
     /// Use simulated int8 quantization for inference
     #[arg(long)]
     pub quantized: bool,
@@ -99,7 +107,12 @@ macro_rules! info {
 
 pub fn run(args: GenerateArgs) -> Result<()> {
     let total_start = Instant::now();
-    let quiet = args.quiet || args.stream;
+    let quiet = args.quiet || args.stream || args.play;
+
+    #[cfg(not(feature = "playback"))]
+    if args.play {
+        pocket_tts::anyhow::bail!("Playback feature not enabled. Rebuild with --features playback");
+    }
 
     // Print banner
     if !quiet {
@@ -198,6 +211,15 @@ pub fn run(args: GenerateArgs) -> Result<()> {
     // Generate
     let generation = if args.stream {
         run_streaming(&model, &text, &voice_state)
+    } else if args.play {
+        #[cfg(feature = "playback")]
+        {
+            super::playback::run(&model, &args, &text, &voice_state)
+        }
+        #[cfg(not(feature = "playback"))]
+        {
+            unreachable!("playback feature checked before loading model")
+        }
     } else {
         run_to_file(&model, &args, &text, &voice_state, quiet)
     }?;
@@ -210,12 +232,12 @@ pub fn run(args: GenerateArgs) -> Result<()> {
 }
 
 #[derive(Debug, Clone, Copy)]
-struct GenerationTimings {
-    inference: Duration,
-    concat: Duration,
-    wav_write: Duration,
-    audio_duration_sec: f32,
-    chunks: usize,
+pub(super) struct GenerationTimings {
+    pub(super) inference: Duration,
+    pub(super) concat: Duration,
+    pub(super) wav_write: Duration,
+    pub(super) audio_duration_sec: f32,
+    pub(super) chunks: usize,
 }
 
 /// Run streaming generation to stdout
@@ -263,6 +285,10 @@ fn run_to_file(
     quiet: bool,
 ) -> Result<GenerationTimings> {
     use pocket_tts::candle_core::Tensor;
+    let output = args
+        .output
+        .as_deref()
+        .unwrap_or(std::path::Path::new("output.wav"));
 
     info!(
         quiet,
@@ -330,10 +356,10 @@ fn run_to_file(
         quiet,
         "{} Saving to: {}",
         "▶".cyan(),
-        args.output.display().yellow()
+        output.display().yellow()
     );
     let wav_write_start = Instant::now();
-    pocket_tts::audio::write_wav(&args.output, &audio, model.sample_rate as u32)?;
+    pocket_tts::audio::write_wav(output, &audio, model.sample_rate as u32)?;
     let wav_write = wav_write_start.elapsed();
 
     // Success message
@@ -348,12 +374,12 @@ fn run_to_file(
             "    Duration: {:.2}s ({} samples @ {}Hz)",
             duration_sec, num_samples, model.sample_rate
         );
-        println!("    Output:   {}", args.output.display().cyan());
+        println!("    Output:   {}", output.display().cyan());
         println!();
         println!(
             "  {} {}",
             "💡".dimmed(),
-            format!("Play with: ffplay -autoexit {:?}", args.output).dimmed()
+            format!("Play with: ffplay -autoexit {:?}", output).dimmed()
         );
     }
 
@@ -432,6 +458,23 @@ mod tests {
     use super::*;
     use clap::{CommandFactory, Parser};
     use std::time::Duration;
+
+    #[test]
+    fn playback_accepts_optional_save_and_audio_only_mode() {
+        for flags in [
+            vec!["pocket-tts", "--play"],
+            vec!["pocket-tts", "--play", "--output", "speech.wav"],
+            vec!["pocket-tts", "--play", "--no-highlight"],
+        ] {
+            assert!(GenerateArgs::try_parse_from(&flags).is_ok(), "{flags:?}");
+        }
+    }
+
+    #[test]
+    fn playback_rejects_pcm_stdout_and_orphan_highlight_flag() {
+        assert!(GenerateArgs::try_parse_from(["pocket-tts", "--play", "--stream"]).is_err());
+        assert!(GenerateArgs::try_parse_from(["pocket-tts", "--no-highlight"]).is_err());
+    }
 
     #[test]
     fn sampler_decode_steps_accepts_both_spellings() {

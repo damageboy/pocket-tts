@@ -22,7 +22,8 @@ name = "pocket_tts_cli"
 path = "src/lib.rs"
 
 [features]
-default = ["web-ui"]
+default = ["web-ui", "playback"]
+playback = ["dep:rodio", "dep:crossterm", "dep:ctrlc", "dep:regex", "dep:unicode-width", "dep:unicode-segmentation"]
 external-cli-tests = []
 web-ui = [
   "rust-embed",
@@ -52,13 +53,19 @@ tower-http = { workspace = true, features = ["fs", "trace", "cors"] }
 tracing = { workspace = true }
 tracing-subscriber = { workspace = true, features = ["env-filter"] }
 owo-colors = "4.3"
+rodio = { version = "0.22.2", default-features = false, features = ["playback"], optional = true }
+crossterm = { version = "0.29", default-features = false, optional = true }
+ctrlc = { version = "3.5", optional = true }
+regex = { version = "1", optional = true }
+unicode-width = { version = "0.2", optional = true }
+unicode-segmentation = { version = "1", optional = true }
+hound = "3.5"
 rust-embed = { version = "8", optional = true }
 mime_guess = { version = "2", optional = true }
 percent-encoding = { version = "2.3", optional = true }
 
 [dev-dependencies]
 assert_cmd = "2.2"
-hound = "3.5"
 tokio = { workspace = true, features = ["full", "test-util"] }
 tower = { workspace = true, features = ["util"] }
 

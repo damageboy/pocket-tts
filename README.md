@@ -334,7 +334,7 @@ accept the gated model terms on Hugging Face and provide an authorized `HF_TOKEN
 
 ### `generate` command
 
-Generate audio from text and save to a WAV file.
+Generate audio from text and save to a WAV file, or play it as it is generated.
 
 ```
 pocket-tts generate [OPTIONS]
@@ -342,7 +342,7 @@ pocket-tts generate [OPTIONS]
 Options:
   -t, --text <TEXT>              Text to synthesize [default: greeting]
   -v, --voice <VOICE>            Voice: predefined name, .wav file, or .safetensors
-  -o, --output <PATH>            Output file [default: output.wav]
+  -o, --output <PATH>            Output file [default: output.wav; none with --play]
       --language <LANGUAGE>      Model language [default: english]
       --config <CONFIG>          Config name or YAML path (instead of --language)
       --temperature <FLOAT>      Model recommendation, otherwise 0.3
@@ -350,11 +350,45 @@ Options:
       --frames-after-eos <INT>   Override model/text-dependent EOS tail
       --eos-threshold <FLOAT>    EOS threshold [default: -4.0]
       --stream                   Stream raw PCM to stdout
+      --play                     Play on the default audio device with word tracking
+      --no-highlight             Audio-only playback (requires --play)
   -q, --quiet                    Suppress output
       --use-metal                Use Metal acceleration (macOS)
 ```
 
 Use `pocket-tts-cli voice-list` for all 27 predefined voices and their languages.
+
+#### Live playback and terminal read-along
+
+```bash
+cargo run --release -p pocket-tts-cli -- generate --play \
+  --text "The quick brown fox jumps over the lazy dog."
+
+# Also save the same generated audio (no second synthesis pass).
+cargo run --release -p pocket-tts-cli -- generate --play --output speech.wav \
+  --text "Hello from Pocket TTS."
+```
+
+Playback uses the default system output device (CoreAudio on macOS). An interactive
+terminal shows the text, highlights the current word, and displays its zero-based
+source index and timestamp range. Long text follows the current word within a
+scrolling viewport. Ctrl-C stops playback and restores the terminal. Redirected
+output uses plain text; `--quiet` hides the read-along without disabling playback.
+`--play` conflicts with `--stream`, which remains raw PCM on stdout.
+
+The read-along follows consumed PCM, not generation speed or wall time; buffering
+silence does not advance it. Alignment is approximate (usually 80 ms boundaries),
+and output-device buffering adds latency, especially over Bluetooth. A short
+silent tail lets the output buffer drain; this is not a hardware playback-time
+acknowledgment. Uncertain words may stay unhighlighted. The timestamped mode
+strips explicit `[pause:…]` markers without inserting silence and warns when they
+are present. Use `--play --no-highlight` for ordinary pause handling or models
+without calibrated timestamp heads; see the supported configurations above.
+
+Native playback is a default CLI Cargo feature. Linux builders need ALSA headers
+(`sudo apt-get install libasound2-dev pkg-config` on Debian/Ubuntu). For a headless
+server without audio dependencies, build with
+`--no-default-features --features web-ui`. The Docker image uses this configuration.
 
 ### `serve` command
 

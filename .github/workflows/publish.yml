@@ -19,6 +19,8 @@ jobs:
       HF_TOKEN: ${{ secrets.HF_TOKEN }}
     steps:
       - uses: actions/checkout@v4
+      - name: Install Linux audio dependencies
+        run: sudo apt-get update && sudo apt-get install -y libasound2-dev pkg-config
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
       - name: Setup Bun
