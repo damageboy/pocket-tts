@@ -10,13 +10,13 @@ const configs = Object.fromEntries(readdirSync(root).filter(name => name.endsWit
   .map(name => [name.slice(0, -5), readFileSync(new URL(name, root), "utf8")]));
 
 describe("canonical model configs", () => {
-  it("selects all 18 released configs without changing their YAML", () => {
-    assert.equal(Object.keys(configs).length, 18);
+  it("selects all released configs without changing their YAML", () => {
+    assert.equal(Object.keys(configs).length, 21);
     for (const [name, yaml] of Object.entries(configs)) {
       assert.equal(selectConfig(configs, name).yaml, yaml);
       const assets = configAssets(yaml);
       assert.match(assets.weightsUrl, /\/resolve\/[a-f0-9]{40}\//);
-      assert.match(assets.tokenizerUrl, /\/resolve\/[a-f0-9]{40}\/.*tokenizer\.json$/);
+      assert.match(assets.tokenizerUrl, /\/resolve\/[a-f0-9]{40}\/.*tokenizer\.(json|model)$/);
     }
   });
   it("preserves hyphenated legacy names and accepts old underscore aliases", () => {
@@ -45,5 +45,9 @@ describe("canonical model configs", () => {
   it("pins every preset including daan and uses canonical legacy language names", () => {
     assert.equal(presetVoiceUrl("english_2026-01", "daan"),
       "https://huggingface.co/kyutai/pocket-tts-without-voice-cloning/resolve/4e1e0a3e611c51c0b4ed8174fc10f32a54644303/languages/english_2026-01/embeddings/daan.safetensors");
+    for (const size of ["18m", "7m", "2m"]) {
+      assert.equal(presetVoiceUrl(`english_${size}_2026-10`, "anna"),
+        `https://huggingface.co/kyutai/pocket-tts-without-voice-cloning/resolve/a3055dcb533cf2ec90458008a01e7cef550bae2a/languages/english_${size}_2026-10/embeddings/anna.safetensors`);
+    }
   });
 });

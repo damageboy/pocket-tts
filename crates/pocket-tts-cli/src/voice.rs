@@ -186,9 +186,15 @@ fn stock_voice_url(origin: Option<&std::path::Path>, name: &str) -> Result<Strin
             name
         );
     }
+    let revision = match language {
+        "english_18m_2026-10" | "english_7m_2026-10" | "english_2m_2026-10" => {
+            "a3055dcb533cf2ec90458008a01e7cef550bae2a"
+        }
+        _ => STOCK_VOICE_REVISION,
+    };
     Ok(format!(
         "hf://{}/languages/{}/embeddings/{}.safetensors@{}",
-        STOCK_VOICE_REPO, language, name, STOCK_VOICE_REVISION
+        STOCK_VOICE_REPO, language, name, revision
     ))
 }
 
@@ -309,6 +315,13 @@ mod tests {
         assert!(stock_voice_url(Some(&origin), "alba").unwrap().contains(
             "/languages/english/embeddings/alba.safetensors@4e1e0a3e611c51c0b4ed8174fc10f32a54644303"
         ));
+        for size in ["18m", "7m", "2m"] {
+            let language = format!("english_{size}_2026-10");
+            let origin = pocket_tts::tts_model::find_config_path(&language).unwrap();
+            assert!(stock_voice_url(Some(&origin), "anna").unwrap().contains(&format!(
+                "/languages/{language}/embeddings/anna.safetensors@a3055dcb533cf2ec90458008a01e7cef550bae2a"
+            )));
+        }
         assert!(stock_voice_url(None, "alba").is_err());
         assert!(stock_voice_url(Some(std::path::Path::new("custom.yaml")), "alba").is_err());
         // A familiar filename alone does not establish weight compatibility.

@@ -28,14 +28,24 @@ Text-to-speech that runs entirely on CPU—no Python, no GPU required.
 
 ## Model compatibility
 
-The configuration catalog targets upstream **v3.3.0**, pinned to
+The existing configuration catalog targets upstream **v3.3.0**, pinned to
 [`3dbee45`](https://github.com/kyutai-labs/pocket-tts/commit/3dbee45d343d7dddd0d105468d17f8dcba14db3e).
 It includes English, French, German, Italian, Spanish, Portuguese and Dutch,
 their released 24-layer variants, and dated English checkpoints. Use
 `pocket-tts-cli language-list` and `pocket-tts-cli voice-list` to list the catalog.
 For example, `generate --language dutch --voice daan` uses the Dutch model.
 
-Configs pin weights and JSON tokenizers; stock voice states have a separate
+The catalog also includes upstream **v4.0.0**'s October English checkpoints,
+from [`9a1b489`](https://github.com/kyutai-labs/pocket-tts/commit/9a1b48922deb44cd4a805fde279eb33b71c1a473):
+`english_18m_2026-10`, `english_7m_2026-10`, and `english_2m_2026-10`.
+These preview models use the same Candle/Rust/WASM engine, with one-step
+drifting/pointwise sampling, smaller decoders and, where configured, grouped-query
+attention and low-rank text embeddings. The default `english` model is unchanged.
+Use `generate --language english_2m_2026-10 --voice anna` to try the smallest one.
+Their default EOS threshold is −1 instead of −4; explicit overrides still work.
+Smaller size alone does not establish real-time performance on mobile hardware.
+
+Configs pin weights and JSON or SentencePiece tokenizers; stock voice states have a separate
 pinned revision. These states contain weight-specific attention caches: do not
 mix them with custom weights. Native loading falls back to public preset-only
 weights when cloning weights cannot be downloaded. WAV cloning then returns an
@@ -190,10 +200,24 @@ highlighting to the demo UI or change the HTTP audio-stream format.
 - Calibrated heads are configured only for verified matching checkpoints:
   `english`, `english_2026-01`, `english_2026-04`, `english_2026-09`,
   `english_2026-04_24l`, `english_2026-09_24l`, `dutch_24l`, `german_24l`,
-  `portuguese_24l`, and `spanish_24l`. Other bundled configs pin different
+  `portuguese_24l`, `spanish_24l`, and the three October small English models.
+  Other bundled configs pin different
   weights from the fork and reject timestamp requests. Ordinary synthesis works
   without `timestamp_heads`. Custom selections must be calibrated for the actual
   weights, not just chosen to fit the layer/head dimensions.
+
+The small-model heads were selected independently for each pinned checkpoint:
+18M `(5, 3)`, 7M `(5, 3), (4, 3)`, and 2M `(5, 2), (5, 0)` (zero-based
+layer/query-head indices, not KV-head indices). Calibration captured text-only
+attention during upstream synthesis at temperature 0.3, mapped it to words,
+and applied the streaming aligner's voiced-frame and monotonic-transition rules.
+Candidate single heads and pairs were ranked against faster-whisper `base.en`
+word starts on two utterances with Alba and Anna, then checked on two different
+utterances with both voices. Held-out mean absolute start-time differences were
+82 ms, 101 ms and 86 ms respectively, with no missing aligned words among the
+ASR-matched words. This is a small calibration set and an ASR comparison, not
+human-labelled ground truth or an accuracy guarantee. Runtime timestamps still
+come from attention and PCM alone; Whisper is not a runtime dependency.
 
 ### Model catalog consumer contract (schema version 1)
 

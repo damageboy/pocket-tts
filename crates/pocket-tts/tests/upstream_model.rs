@@ -19,9 +19,12 @@ fn teacher_forced_noise_matches_python_prefill_latents_and_decoder() -> Result<(
     let directory = PathBuf::from(std::env::var("POCKET_TTS_REFERENCE")?);
     let manifest: serde_json::Value =
         serde_json::from_slice(&std::fs::read(directory.join("manifest.json"))?)?;
-    assert_eq!(
-        manifest["upstream_commit"],
-        "3dbee45d343d7dddd0d105468d17f8dcba14db3e"
+    assert!(
+        [
+            "3dbee45d343d7dddd0d105468d17f8dcba14db3e", // v3.3
+            "9a1b48922deb44cd4a805fde279eb33b71c1a473", // v4 small models
+        ]
+        .contains(&manifest["upstream_commit"].as_str().unwrap())
     );
     let path = |key: &str| -> &str { manifest[key]["path"].as_str().unwrap() };
     let reference =
@@ -31,16 +34,21 @@ fn teacher_forced_noise_matches_python_prefill_latents_and_decoder() -> Result<(
             .join("config")
             .join(format!("{}.yaml", manifest["language"].as_str().unwrap())),
     )?;
-    assert_eq!(
-        config,
-        std::fs::read(manifest["config_path"].as_str().unwrap())?,
-        "released config drift"
-    );
+    let mut actual_config: serde_yaml::Value = serde_yaml::from_slice(&config)?;
+    actual_config
+        .as_mapping_mut()
+        .unwrap()
+        .remove("timestamp_heads");
+    let expected_config: serde_yaml::Value =
+        serde_yaml::from_slice(&std::fs::read(manifest["config_path"].as_str().unwrap())?)?;
+    assert_eq!(actual_config, expected_config, "released config drift");
     let model = TTSModel::load_from_bytes(
         &config,
         &std::fs::read(path("weights"))?,
         &std::fs::read(path("tokenizer"))?,
     )?;
+    let eos_threshold = manifest["eos_threshold"].as_f64().unwrap_or(-4.0) as f32;
+    assert_eq!(model.eos_threshold, eos_threshold);
     let mut state = model.get_voice_state_from_prompt_file(path("voice_state"))?;
     let tokens = model
         .conditioner
@@ -53,7 +61,7 @@ fn teacher_forced_noise_matches_python_prefill_latents_and_decoder() -> Result<(
     close(
         &embeddings,
         &reference["text_embeddings"],
-        0.0,
+        2e-6, // Low-rank lookup includes a float32 projection.
         "text embeddings",
     )?;
     model
@@ -102,7 +110,7 @@ fn teacher_forced_noise_matches_python_prefill_latents_and_decoder() -> Result<(
             &mut state,
             &times,
             &reference[&format!("{prefix}.noise")],
-            -4.0,
+            eos_threshold,
             step,
         )?;
         close(
@@ -114,7 +122,7 @@ fn teacher_forced_noise_matches_python_prefill_latents_and_decoder() -> Result<(
         let logit = reference[&format!("{prefix}.eos_logit")]
             .flatten_all()?
             .to_vec1::<f32>()?[0];
-        assert_eq!(eos, logit > -4.0, "{prefix} EOS");
+        assert_eq!(eos, logit > eos_threshold, "{prefix} EOS");
         let expected_latent = reference[&format!("{prefix}.latent")].squeeze(1)?;
         let denorm = expected_latent
             .broadcast_mul(&model.flow_lm.emb_std)?

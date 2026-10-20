@@ -9,6 +9,8 @@ pub enum SamplerType {
     #[default]
     Lsd,
     FlowMatching,
+    Drifting,
+    Pointwise,
 }
 
 impl SamplerType {
@@ -16,6 +18,7 @@ impl SamplerType {
         match self {
             Self::Lsd => 2,
             Self::FlowMatching => 1,
+            Self::Drifting | Self::Pointwise => 0,
         }
     }
 }
@@ -37,6 +40,9 @@ pub struct FlowLMTransformerConfig {
     pub d_model: usize,
     pub num_heads: usize,
     pub num_layers: usize,
+    pub attn_dim: Option<usize>,
+    pub num_kv_heads: Option<usize>,
+    pub dim_feedforward: Option<usize>,
 }
 
 /// Lookup table (text conditioner) configuration
@@ -46,6 +52,7 @@ pub struct LookupTableConfig {
     pub n_bins: usize,
     pub tokenizer: String,
     pub tokenizer_path: String,
+    pub rank: Option<usize>,
 }
 
 /// FlowLM model configuration
@@ -55,6 +62,7 @@ pub struct FlowLMConfig {
     pub flow: FlowConfig,
     pub transformer: FlowLMTransformerConfig,
     pub lookup_table: LookupTableConfig,
+    pub z_dim: Option<usize>,
     #[serde(default)]
     pub insert_bos_before_voice: bool,
     #[serde(default)]
@@ -116,6 +124,8 @@ pub struct MimiConfig {
     pub outer_dim: Option<usize>,
     pub seanet: SEANetConfig,
     pub transformer: MimiTransformerConfig,
+    pub decoder_seanet: Option<SEANetConfig>,
+    pub decoder_transformer: Option<MimiTransformerConfig>,
     pub quantizer: QuantizerConfig,
     #[serde(default)]
     pub weights_path: Option<String>,
@@ -132,6 +142,8 @@ pub struct Config {
     pub timestamp_heads: Vec<(usize, usize)>,
     #[serde(default = "default_temperature")]
     pub default_temperature: f32,
+    #[serde(default = "default_eos_threshold")]
+    pub default_eos_threshold: f32,
     #[serde(default)]
     pub pad_with_spaces_for_short_inputs: bool,
     #[serde(default)]
@@ -152,6 +164,10 @@ pub struct Config {
 
 fn default_temperature() -> f32 {
     defaults::TEMPERATURE
+}
+
+fn default_eos_threshold() -> f32 {
+    defaults::EOS_THRESHOLD
 }
 
 fn default_true() -> bool {

@@ -34,6 +34,9 @@ export const FALLBACK_LANGUAGES: LanguageEntry[] = [
   { name: "italian_24l", description: "Italian (24-layer)", default_voice: "giovanni", layers: 24, status: "preview" },
   { name: "portuguese_24l", description: "Portuguese (24-layer)", default_voice: "rafael", layers: 24, status: "preview" },
   { name: "spanish_24l", description: "Spanish (24-layer)", default_voice: "lola", layers: 24, status: "preview" },
+  { name: "english_18m_2026-10", description: "English (18M, October 2026)", default_voice: "alba", layers: 8, status: "preview" },
+  { name: "english_7m_2026-10", description: "English (7M, October 2026)", default_voice: "alba", layers: 8, status: "preview" },
+  { name: "english_2m_2026-10", description: "English (2M, October 2026)", default_voice: "alba", layers: 8, status: "preview" },
 ];
 
 // Fallback used when API is unavailable (e.g. WASM-only mode).

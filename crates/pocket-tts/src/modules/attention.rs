@@ -8,6 +8,23 @@ use candle_core::{DType, Result, Tensor};
 use candle_nn::{Linear, Module, VarBuilder};
 use std::collections::HashMap;
 
+pub(crate) fn validate_attention_dims(
+    attn_dim: usize,
+    num_heads: usize,
+    num_kv_heads: usize,
+) -> Result<()> {
+    if num_heads == 0 || attn_dim == 0 || attn_dim % num_heads != 0 {
+        candle_core::bail!("Attention width must be a positive multiple of query heads");
+    }
+    if num_kv_heads == 0 || num_heads % num_kv_heads != 0 {
+        candle_core::bail!("Query heads must be a positive multiple of KV heads");
+    }
+    if (attn_dim / num_heads) % 2 != 0 {
+        candle_core::bail!("RoPE requires an even attention head dimension");
+    }
+    Ok(())
+}
+
 fn ring_chunks(buf: &Tensor, head: usize, len: usize) -> Result<Vec<Tensor>> {
     let cap = buf.dim(2)?;
     if cap == 0 {
@@ -32,8 +49,9 @@ fn ring_chunks(buf: &Tensor, head: usize, len: usize) -> Result<Vec<Tensor>> {
 
 #[derive(Clone)]
 pub struct StreamingMultiheadAttention {
-    embed_dim: usize,
+    attn_dim: usize,
     num_heads: usize,
+    num_kv_heads: usize,
     rope: RotaryEmbedding,
     in_proj: Linear,
     out_proj: Linear,
@@ -50,18 +68,34 @@ impl StreamingMultiheadAttention {
         name: &str,
         vb: VarBuilder,
     ) -> Result<Self> {
-        // out_dim = embed_dim + 2 * kv_dim (GQA/MHA logic in original)
-        // Original code:
-        // out_dim = embed_dim
-        // num_kv = num_heads
-        // kv_dim = (embed_dim // num_heads) * num_kv -> so embed_dim
-        // out_dim += 2 * kv_dim -> so 3 * embed_dim
-        let in_proj = candle_nn::linear_no_bias(embed_dim, 3 * embed_dim, vb.pp("in_proj"))?;
-        let out_proj = candle_nn::linear_no_bias(embed_dim, embed_dim, vb.pp("out_proj"))?;
+        Self::new_with_attention_dims(
+            embed_dim, num_heads, embed_dim, num_heads, rope, context, name, vb,
+        )
+    }
+
+    /// Attention width is independent of model width; KV heads are shared by
+    /// consecutive groups of query heads and remain grouped in streaming state.
+    #[allow(clippy::too_many_arguments)]
+    pub fn new_with_attention_dims(
+        embed_dim: usize,
+        num_heads: usize,
+        attn_dim: usize,
+        num_kv_heads: usize,
+        rope: RotaryEmbedding,
+        context: Option<usize>,
+        name: &str,
+        vb: VarBuilder,
+    ) -> Result<Self> {
+        validate_attention_dims(attn_dim, num_heads, num_kv_heads)?;
+        let kv_dim = (attn_dim / num_heads) * num_kv_heads;
+        let in_proj =
+            candle_nn::linear_no_bias(embed_dim, attn_dim + 2 * kv_dim, vb.pp("in_proj"))?;
+        let out_proj = candle_nn::linear_no_bias(attn_dim, embed_dim, vb.pp("out_proj"))?;
 
         Ok(Self {
-            embed_dim,
+            attn_dim,
             num_heads,
+            num_kv_heads,
             rope,
             in_proj,
             out_proj,
@@ -76,7 +110,7 @@ impl StreamingMultiheadAttention {
         _sequence_length: usize,
         device: &candle_core::Device,
     ) -> Result<HashMap<String, Tensor>> {
-        let dim_per_head = self.embed_dim / self.num_heads;
+        let dim_per_head = self.attn_dim / self.num_heads;
         let mut state = HashMap::new();
 
         // Initial capacity: match context if windowed, otherwise reasonable default
@@ -84,7 +118,7 @@ impl StreamingMultiheadAttention {
         state.insert(
             ATTN_K_BUF_KEY.to_string(),
             Tensor::zeros(
-                (batch_size, self.num_heads, cap, dim_per_head),
+                (batch_size, self.num_kv_heads, cap, dim_per_head),
                 DType::F32,
                 device,
             )?,
@@ -92,7 +126,7 @@ impl StreamingMultiheadAttention {
         state.insert(
             ATTN_V_BUF_KEY.to_string(),
             Tensor::zeros(
-                (batch_size, self.num_heads, cap, dim_per_head),
+                (batch_size, self.num_kv_heads, cap, dim_per_head),
                 DType::F32,
                 device,
             )?,
@@ -120,7 +154,7 @@ impl StreamingMultiheadAttention {
         capture: Option<(usize, &mut crate::timestamps::attention::AttentionCapture)>,
     ) -> Result<Tensor> {
         let (b, t, _) = query.dims3()?;
-        let d = self.embed_dim / self.num_heads;
+        let d = self.attn_dim / self.num_heads;
         let window_size = self.context;
 
         // Auto-initialize state if missing
@@ -139,11 +173,18 @@ impl StreamingMultiheadAttention {
 
         let projected = self.in_proj.forward(query)?;
 
-        // Reshape to (b, t, 3, h, d)
-        let packed = projected.reshape((b, t, 3, self.num_heads, d))?;
-        let mut q = packed.narrow(2, 0, 1)?.squeeze(2)?; // (b, t, h, d)
-        let mut k = packed.narrow(2, 1, 1)?.squeeze(2)?; // (b, t, h, d)
-        let mut v = packed.narrow(2, 2, 1)?.squeeze(2)?; // (b, t, h, d)
+        // Packed projection order is Q (attn_dim), K (kv_dim), V (kv_dim).
+        let kv_dim = self.num_kv_heads * d;
+        let mut q = projected
+            .narrow(2, 0, self.attn_dim)?
+            .reshape((b, t, self.num_heads, d))?;
+        let mut k =
+            projected
+                .narrow(2, self.attn_dim, kv_dim)?
+                .reshape((b, t, self.num_kv_heads, d))?;
+        let mut v = projected
+            .narrow(2, self.attn_dim + kv_dim, kv_dim)?
+            .reshape((b, t, self.num_kv_heads, d))?;
 
         // current_pos passed as argument
 
@@ -165,8 +206,16 @@ impl StreamingMultiheadAttention {
             (Some(kb), Some(vb)) => (kb, vb),
             _ => {
                 let initial_cap = window_size.unwrap_or(64);
-                let kb = Tensor::zeros((b, self.num_heads, initial_cap, d), q.dtype(), q.device())?;
-                let vb = Tensor::zeros((b, self.num_heads, initial_cap, d), q.dtype(), q.device())?;
+                let kb = Tensor::zeros(
+                    (b, self.num_kv_heads, initial_cap, d),
+                    q.dtype(),
+                    q.device(),
+                )?;
+                let vb = Tensor::zeros(
+                    (b, self.num_kv_heads, initial_cap, d),
+                    q.dtype(),
+                    q.device(),
+                )?;
                 (kb, vb)
             }
         };
@@ -182,7 +231,7 @@ impl StreamingMultiheadAttention {
                     k_buf = k_buf.narrow(2, 0, window_size)?.contiguous()?;
                     v_buf = v_buf.narrow(2, 0, window_size)?.contiguous()?;
                 } else {
-                    let zeros_shape = (b, self.num_heads, window_size - cap, d);
+                    let zeros_shape = (b, self.num_kv_heads, window_size - cap, d);
                     let k_zeros = Tensor::zeros(zeros_shape, q.dtype(), q.device())?;
                     let v_zeros = Tensor::zeros(zeros_shape, q.dtype(), q.device())?;
                     k_buf = Tensor::cat(&[k_buf, k_zeros], 2)?;
@@ -223,7 +272,7 @@ impl StreamingMultiheadAttention {
             // Linear attention (FlowLM) with doubling contiguous buffer.
             if cache_len + t > cap {
                 let new_cap = (cache_len + t).next_power_of_two();
-                let zeros_shape = (b, self.num_heads, new_cap - cap, d);
+                let zeros_shape = (b, self.num_kv_heads, new_cap - cap, d);
                 let k_zeros = Tensor::zeros(zeros_shape, q.dtype(), q.device())?;
                 let v_zeros = Tensor::zeros(zeros_shape, q.dtype(), q.device())?;
                 k_buf = Tensor::cat(&[k_buf, k_zeros], 2)?;
@@ -295,9 +344,170 @@ impl StreamingMultiheadAttention {
         )?;
 
         // Transpose back to [B, T, H, D] and project out
-        let x = x.transpose(1, 2)?.reshape((b, t, self.embed_dim))?;
+        let x = x.transpose(1, 2)?.reshape((b, t, self.attn_dim))?;
         let x = self.out_proj.forward(&x)?;
 
         Ok(x)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use candle_core::Device;
+
+    fn weights(
+        model: usize,
+        attn: usize,
+        heads: usize,
+        kv_heads: usize,
+    ) -> Result<HashMap<String, Tensor>> {
+        let width = attn + 2 * kv_heads * (attn / heads);
+        let tensor = |rows: usize, cols: usize, phase: f32| {
+            Tensor::from_vec(
+                (0..rows * cols)
+                    .map(|i| ((i as f32 + phase) * 0.17).sin() * 0.08)
+                    .collect(),
+                (rows, cols),
+                &Device::Cpu,
+            )
+        };
+        Ok(HashMap::from([
+            ("in_proj.weight".into(), tensor(width, model, 0.3)?),
+            ("out_proj.weight".into(), tensor(model, attn, 2.1)?),
+        ]))
+    }
+
+    #[test]
+    fn gqa_projection_streaming_growth_and_ring_match_dense() -> Result<()> {
+        // Include the real small-model dimensions, a batched asymmetric grouping,
+        // and legacy MHA. A single full dense calculation is the streaming oracle.
+        for (model, attn, heads, kv_heads) in [
+            (224, 512, 8, 2),
+            (112, 192, 3, 1),
+            (5, 12, 6, 2),
+            (8, 8, 2, 2),
+        ] {
+            for window in [None, Some(7)] {
+                let tensors = weights(model, attn, heads, kv_heads)?;
+                let vb = VarBuilder::from_tensors(tensors, DType::F32, &Device::Cpu);
+                let rope = RotaryEmbedding::new(10000., attn / heads, &Device::Cpu)?;
+                let layer = StreamingMultiheadAttention::new_with_attention_dims(
+                    model,
+                    heads,
+                    attn,
+                    kv_heads,
+                    rope.clone(),
+                    window,
+                    "attn",
+                    vb.clone(),
+                )?;
+                let b = 2;
+                let t = 70;
+                let input = Tensor::from_vec(
+                    (0..b * t * model)
+                        .map(|i| ((i as f32 + 0.7) * 0.13).cos())
+                        .collect(),
+                    (b, t, model),
+                    &Device::Cpu,
+                )?;
+                let packed = candle_nn::linear_no_bias(
+                    model,
+                    attn + 2 * kv_heads * (attn / heads),
+                    vb.pp("in_proj"),
+                )?
+                .forward(&input)?;
+                let d = attn / heads;
+                let kv = kv_heads * d;
+                let q = packed.narrow(2, 0, attn)?.reshape((b, t, heads, d))?;
+                let k = packed.narrow(2, attn, kv)?.reshape((b, t, kv_heads, d))?;
+                let v = packed
+                    .narrow(2, attn + kv, kv)?
+                    .reshape((b, t, kv_heads, d))?
+                    .transpose(1, 2)?;
+                let (q, k) = rope.forward(&q, &k, 0)?;
+                let dense = crate::modules::sdpa::tests::dense_reference(
+                    &q.transpose(1, 2)?,
+                    &k.transpose(1, 2)?,
+                    &v,
+                    window,
+                )?;
+                let expected = candle_nn::linear_no_bias(attn, model, vb.pp("out_proj"))?
+                    .forward(&dense.transpose(1, 2)?.reshape((b, t, attn))?)?;
+                let mut state = ModelState::new();
+                let mut offset = 0;
+                // Prefill, cached single-token decoding, cache growth above 64,
+                // ring wraparound, and a chunk larger than the window.
+                for len in [4, 1, 3, 1, 56, 1, 4] {
+                    let actual = layer.forward(
+                        &input.narrow(1, offset, len)?,
+                        &mut state,
+                        offset,
+                        offset,
+                    )?;
+                    let error = (&actual - expected.narrow(1, offset, len)?)?
+                        .abs()?
+                        .max_all()?
+                        .to_scalar::<f32>()?;
+                    assert!(
+                        error < 2e-5,
+                        "model={model}, window={window:?}, offset={offset}, error={error}"
+                    );
+                    offset += len;
+                    let module_state = &state["attn"];
+                    let cursor = read_attention_cursor(module_state);
+                    assert_eq!(cursor.pos, offset);
+                    assert_eq!(cursor.len, window.map_or(offset, |w| offset.min(w)));
+                    for key in [ATTN_K_BUF_KEY, ATTN_V_BUF_KEY] {
+                        let shape = module_state[key].dims();
+                        assert_eq!(shape[1], kv_heads); // persistent cache must stay grouped
+                        assert_eq!(shape[3], d);
+                        assert!(shape[2] >= cursor.len);
+                    }
+                }
+                if model == attn && heads == kv_heads {
+                    let legacy =
+                        StreamingMultiheadAttention::new(model, heads, rope, window, "legacy", vb)?;
+                    let actual = legacy.forward(&input, &mut ModelState::new(), 0, 0)?;
+                    assert!(
+                        (&actual - &expected)?
+                            .abs()?
+                            .max_all()?
+                            .to_scalar::<f32>()?
+                            < 2e-5
+                    );
+                }
+            }
+        }
+        Ok(())
+    }
+
+    #[test]
+    fn gqa_rejects_invalid_head_dimensions() -> Result<()> {
+        let vb = VarBuilder::zeros(DType::F32, &Device::Cpu);
+        for (attn, heads, kv_heads) in [
+            (12, 0, 1),
+            (12, 3, 0),
+            (11, 3, 1),
+            (12, 3, 2),
+            (0, 3, 1),
+            (9, 3, 1),
+        ] {
+            let rope = RotaryEmbedding::new(10000., 4, &Device::Cpu)?;
+            assert!(
+                StreamingMultiheadAttention::new_with_attention_dims(
+                    5,
+                    heads,
+                    attn,
+                    kv_heads,
+                    rope,
+                    None,
+                    "attn",
+                    vb.clone()
+                )
+                .is_err()
+            );
+        }
+        Ok(())
     }
 }

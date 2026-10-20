@@ -234,8 +234,10 @@ impl SimpleMLPAdaLN {
         max_period: f32,
         vb: VarBuilder,
     ) -> Result<Self> {
-        if !matches!(num_time_conds, 1 | 2) {
-            candle_core::bail!("unsupported time-condition count {num_time_conds}: expected 1 or 2")
+        if num_time_conds > 2 {
+            candle_core::bail!(
+                "unsupported time-condition count {num_time_conds}: expected 0, 1 or 2"
+            )
         }
         let mut time_embeds = Vec::new();
         for i in 0..num_time_conds {
@@ -297,7 +299,11 @@ impl SimpleMLPAdaLN {
         s: &Tensor,
         t: &Tensor,
     ) -> Result<Tensor> {
-        let t_combined = self.embed_times(s, t)?;
+        let t_combined = if self.num_time_conds == 0 {
+            Tensor::zeros_like(c_emb)?
+        } else {
+            self.embed_times(s, t)?
+        };
 
         // Compute modulations on the fly for non-cached call
         let mod_vec = self.precompute_modulations(c_emb, &t_combined)?;
@@ -316,6 +322,11 @@ impl SimpleMLPAdaLN {
     ) -> Result<Tensor> {
         if num_steps == 0 {
             candle_core::bail!("sampler requires at least one step")
+        }
+        if self.num_time_conds == 0 {
+            // Drifting/pointwise are one evaluation with no time conditioning,
+            // regardless of the caller's requested ODE integration step count.
+            return Tensor::zeros((1, self.cond_embed.weight().dim(0)?), dtype, device);
         }
         let mut embeddings = Vec::with_capacity(num_steps);
         for i in 0..num_steps {

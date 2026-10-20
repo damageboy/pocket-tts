@@ -102,22 +102,17 @@ impl TTSModel {
     /// # Returns
     /// Fully initialized TTSModel ready for generation
     pub fn load(variant: &str) -> Result<Self> {
-        Self::load_with_optional_params(
-            variant,
-            None,
-            defaults::LSD_DECODE_STEPS,
-            defaults::EOS_THRESHOLD,
-        )
+        Self::load_with_optional_params(variant, None, defaults::LSD_DECODE_STEPS, None)
     }
 
-    /// Load with an optional temperature override.
+    /// Load with optional temperature and EOS overrides.
     ///
     /// When `temp` is `None`, the model's configured recommendation is used.
     pub fn load_with_optional_params(
         variant: &str,
         temp: Option<f32>,
         lsd_decode_steps: usize,
-        eos_threshold: f32,
+        eos_threshold: impl Into<Option<f32>>,
     ) -> Result<Self> {
         Self::load_with_optional_params_device(
             variant,
@@ -170,7 +165,7 @@ impl TTSModel {
         variant: &str,
         temp: Option<f32>,
         lsd_decode_steps: usize,
-        eos_threshold: f32,
+        eos_threshold: impl Into<Option<f32>>,
         noise_clamp: Option<f32>,
         device: &Device,
     ) -> Result<Self> {
@@ -178,6 +173,7 @@ impl TTSModel {
         let config_path = find_config_path(variant)?;
         let config = load_config(&config_path)?;
         let temp = config.resolve_temperature(temp);
+        let eos_threshold = eos_threshold.into().unwrap_or(config.default_eos_threshold);
 
         let mut model = Self::from_config(
             config,
@@ -207,12 +203,7 @@ impl TTSModel {
     /// Some layers (embeddings, output projections) are kept in full precision.
     #[cfg(feature = "quantized")]
     pub fn load_quantized(variant: &str) -> Result<Self> {
-        Self::load_quantized_with_optional_params(
-            variant,
-            None,
-            defaults::LSD_DECODE_STEPS,
-            defaults::EOS_THRESHOLD,
-        )
+        Self::load_quantized_with_optional_params(variant, None, defaults::LSD_DECODE_STEPS, None)
     }
 
     /// Load a quantized model with an optional temperature override.
@@ -221,7 +212,7 @@ impl TTSModel {
         variant: &str,
         temp: Option<f32>,
         lsd_decode_steps: usize,
-        eos_threshold: f32,
+        eos_threshold: impl Into<Option<f32>>,
     ) -> Result<Self> {
         Self::load_quantized_with_optional_params_device(
             variant,
@@ -277,7 +268,7 @@ impl TTSModel {
         variant: &str,
         temp: Option<f32>,
         lsd_decode_steps: usize,
-        eos_threshold: f32,
+        eos_threshold: impl Into<Option<f32>>,
         noise_clamp: Option<f32>,
         device: &Device,
     ) -> Result<Self> {
@@ -330,11 +321,11 @@ impl TTSModel {
                 crate::weights::download_if_necessary(&config.flow_lm.lookup_table.tokenizer_path)?;
 
             // Build conditioner
-            let conditioner = LUTConditioner::new(
+            let conditioner = LUTConditioner::new_from_bytes_with_rank(
                 config.flow_lm.lookup_table.n_bins,
-                &tokenizer_path,
+                &std::fs::read(tokenizer_path)?,
                 config.flow_lm.lookup_table.dim,
-                config.flow_lm.transformer.d_model,
+                config.flow_lm.lookup_table.rank,
                 vb.pp("flow_lm.conditioner"),
             )?;
 
@@ -385,27 +376,20 @@ impl TTSModel {
         let tensors = candle_core::safetensors::load_buffer(weights_bytes, &device)?;
         let vb = VarBuilder::from_tensors(tensors, dtype, &device);
 
-        // On WASM, LUTConditioner::new needs a path, but we've updated it to
-        // eventually support bytes. For now, we'll need to adapt it.
-        // Actually, my recent change to conditioners/text.rs still uses Tokenizer::from_file on WASM.
-        // I should probably fix that to support bytes too.
-
-        // For now, let's keep it simple and assume we have a path for the tokenizer or a way to load it.
-        // This is a placeholder for real WASM loading.
-
-        let conditioner = LUTConditioner::new_from_bytes(
+        let conditioner = LUTConditioner::new_from_bytes_with_rank(
             config.flow_lm.lookup_table.n_bins,
             tokenizer_bytes,
             config.flow_lm.lookup_table.dim,
-            config.flow_lm.transformer.d_model,
+            config.flow_lm.lookup_table.rank,
             vb.pp("flow_lm.conditioner"),
         )?;
 
+        let eos_threshold = config.default_eos_threshold;
         Self::from_config_and_vb(
             config,
             temp,
             defaults::LSD_DECODE_STEPS,
-            defaults::EOS_THRESHOLD,
+            eos_threshold,
             None,
             conditioner,
             vb,
@@ -427,24 +411,27 @@ impl TTSModel {
         // Build FlowLM components
         let dim = config.flow_lm.transformer.d_model;
         let ldim = config.mimi.quantizer.dimension;
-        let hidden_dim = dim * config.flow_lm.transformer.hidden_scale;
+        let tr = &config.flow_lm.transformer;
+        let hidden_dim = tr.dim_feedforward.unwrap_or(dim * tr.hidden_scale);
 
         // SimpleMLPAdaLN::new(in_channels, model_channels, out_channels, cond_channels, num_res_blocks, num_time_conds, max_period, vb)
         let flow_net = SimpleMLPAdaLN::new(
-            ldim,                      // in_channels (input is latent dim)
-            config.flow_lm.flow.dim,   // model_channels
-            ldim,                      // out_channels (output is also latent dim)
-            dim,                       // cond_channels (conditioning from transformer)
-            config.flow_lm.flow.depth, // num_res_blocks
+            ldim,                                // in_channels (input is latent dim)
+            config.flow_lm.flow.dim,             // model_channels
+            ldim,                                // out_channels (output is also latent dim)
+            config.flow_lm.z_dim.unwrap_or(dim), // conditioning, not audio latent width
+            config.flow_lm.flow.depth,           // num_res_blocks
             config.flow_lm.flow.sampler.time_conditions(),
             config.flow_lm.transformer.max_period as f32,
             vb.pp("flow_lm.flow_net"),
         )?;
 
         // StreamingTransformer::new(d_model, num_heads, num_layers, layer_scale, dim_feedforward, context, max_period, kind, name, vb)
-        let transformer = StreamingTransformer::new(
+        let transformer = StreamingTransformer::new_with_attention_dims(
             dim,
             config.flow_lm.transformer.num_heads,
+            tr.attn_dim.unwrap_or(dim),
+            tr.num_kv_heads.unwrap_or(tr.num_heads),
             config.flow_lm.transformer.num_layers,
             None,       // layer_scale
             hidden_dim, // dim_feedforward
@@ -455,12 +442,14 @@ impl TTSModel {
             vb.pp("flow_lm.transformer"),
         )?;
 
-        let mut flow_lm = FlowLMModel::new(
+        let mut flow_lm = FlowLMModel::new_with_sampler(
             flow_net,
             transformer,
             ldim,
             dim,
             config.flow_lm.insert_bos_before_voice,
+            config.flow_lm.flow.sampler,
+            config.flow_lm.z_dim,
             vb.pp("flow_lm"),
         )?;
         flow_lm.noise_clamp = noise_clamp;
@@ -483,18 +472,19 @@ impl TTSModel {
             vb.pp("mimi.encoder"),
         )?;
 
+        let decoder_cfg = config.mimi.decoder_seanet.as_ref().unwrap_or(seanet_cfg);
         let decoder = SEANetDecoder::new(
-            seanet_cfg.channels,
-            seanet_cfg.dimension,
-            seanet_cfg.n_filters,
-            seanet_cfg.n_residual_layers,
-            &seanet_cfg.ratios,
-            seanet_cfg.kernel_size,
-            seanet_cfg.residual_kernel_size,
-            seanet_cfg.last_kernel_size,
-            seanet_cfg.dilation_base,
-            &seanet_cfg.pad_mode,
-            seanet_cfg.compress,
+            decoder_cfg.channels,
+            decoder_cfg.dimension,
+            decoder_cfg.n_filters,
+            decoder_cfg.n_residual_layers,
+            &decoder_cfg.ratios,
+            decoder_cfg.kernel_size,
+            decoder_cfg.residual_kernel_size,
+            decoder_cfg.last_kernel_size,
+            decoder_cfg.dilation_base,
+            &decoder_cfg.pad_mode,
+            decoder_cfg.compress,
             "mimi.decoder",
             vb.pp("mimi.decoder"),
         )?;
@@ -515,16 +505,21 @@ impl TTSModel {
             vb.pp("mimi.encoder_transformer"),
         )?;
 
+        let decoder_tr_cfg = config
+            .mimi
+            .decoder_transformer
+            .as_ref()
+            .unwrap_or(mimi_tr_cfg);
         let decoder_transformer = ProjectedTransformer::new(
-            mimi_tr_cfg.input_dimension,
-            mimi_tr_cfg.output_dimensions.clone(),
-            mimi_tr_cfg.d_model,
-            mimi_tr_cfg.num_heads,
-            mimi_tr_cfg.num_layers,
-            mimi_tr_cfg.layer_scale as f32,
-            mimi_tr_cfg.context,
-            mimi_tr_cfg.max_period as f32,
-            mimi_tr_cfg.dim_feedforward,
+            decoder_tr_cfg.input_dimension,
+            decoder_tr_cfg.output_dimensions.clone(),
+            decoder_tr_cfg.d_model,
+            decoder_tr_cfg.num_heads,
+            decoder_tr_cfg.num_layers,
+            decoder_tr_cfg.layer_scale as f32,
+            decoder_tr_cfg.context,
+            decoder_tr_cfg.max_period as f32,
+            decoder_tr_cfg.dim_feedforward,
             "mimi.decoder_transformer",
             vb.pp("mimi.decoder_transformer"),
         )?;
@@ -544,6 +539,7 @@ impl TTSModel {
             config.mimi.channels,
             config.mimi.quantizer.dimension,
             config.mimi.quantizer.output_dimension,
+            mimi_tr_cfg.output_dimensions[0],
             config.mimi.inner_dim,
             config.mimi.outer_dim,
             "mimi",

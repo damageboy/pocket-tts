@@ -65,6 +65,7 @@ impl MimiModel {
         channels: usize,
         dimension: usize,         // The quantizer input dimension (32)
         output_dimension: usize,  // The decoder input dimension (512)
+        encoder_dimension: usize, // Encoder output can differ from the small decoder.
         inner_dim: Option<usize>, // v2: downsample output dimension
         outer_dim: Option<usize>, // v2: upsample input dimension
         name: &str,
@@ -77,7 +78,7 @@ impl MimiModel {
             (
                 Some(ConvDownsample1d::new(
                     stride,
-                    output_dimension,
+                    encoder_dimension,
                     inner_dim,
                     &format!("{}.downsample", name),
                     vb.pp("downsample"),
@@ -244,6 +245,7 @@ mod tests {
             16000,
             1,
             128,
+            512,
             512,
             None, // inner_dim
             None, // outer_dim

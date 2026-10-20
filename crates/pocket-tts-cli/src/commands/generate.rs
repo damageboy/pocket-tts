@@ -55,9 +55,9 @@ pub struct GenerateArgs {
     )]
     pub lsd_decode_steps: usize,
 
-    /// EOS threshold (more negative = longer audio)
-    #[arg(long, default_value = "-4.0")]
-    pub eos_threshold: f32,
+    /// EOS threshold. Defaults to the model's recommendation; higher values prolong speech.
+    #[arg(long, allow_hyphen_values = true)]
+    pub eos_threshold: Option<f32>,
 
     /// Noise clamp value (optional)
     #[arg(long)]
@@ -508,9 +508,13 @@ mod tests {
     }
 
     #[test]
-    fn omitted_temperature_uses_model_recommendation() {
+    fn omitted_sampling_parameters_use_model_recommendations() {
         let args = GenerateArgs::try_parse_from(["pocket-tts"]).unwrap();
         assert_eq!(args.temperature, None);
+        assert_eq!(args.eos_threshold, None);
+        let overridden =
+            GenerateArgs::try_parse_from(["pocket-tts", "--eos-threshold", "-2.5"]).unwrap();
+        assert_eq!(overridden.eos_threshold, Some(-2.5));
 
         let mut help = Vec::new();
         GenerateArgs::command().write_long_help(&mut help).unwrap();

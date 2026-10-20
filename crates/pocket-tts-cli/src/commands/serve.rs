@@ -64,9 +64,9 @@ pub struct ServeArgs {
     )]
     pub lsd_decode_steps: usize,
 
-    /// EOS threshold
-    #[arg(long, default_value = "-4.0")]
-    pub eos_threshold: f32,
+    /// EOS threshold. Defaults to the model's recommendation.
+    #[arg(long, allow_hyphen_values = true)]
+    pub eos_threshold: Option<f32>,
 
     /// Use simulated int8 quantization for inference
     #[arg(long)]
@@ -210,8 +210,12 @@ mod tests {
     }
 
     #[test]
-    fn omitted_temperature_uses_model_recommendation() {
+    fn omitted_sampling_parameters_use_model_recommendations() {
         let args = ServeArgs::try_parse_from(["pocket-tts"]).unwrap();
         assert_eq!(args.temperature, None);
+        assert_eq!(args.eos_threshold, None);
+        let overridden =
+            ServeArgs::try_parse_from(["pocket-tts", "--eos-threshold", "-2.5"]).unwrap();
+        assert_eq!(overridden.eos_threshold, Some(-2.5));
     }
 }

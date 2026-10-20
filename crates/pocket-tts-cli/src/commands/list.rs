@@ -328,6 +328,27 @@ const LANGUAGE_CATALOG: &[LanguageCatalogEntry] = &[
         layers: 6,
         status: "legacy",
     },
+    LanguageCatalogEntry {
+        name: "english_18m_2026-10",
+        description: "English (18M, October 2026)",
+        default_voice: "alba",
+        layers: 8,
+        status: "preview",
+    },
+    LanguageCatalogEntry {
+        name: "english_7m_2026-10",
+        description: "English (7M, October 2026)",
+        default_voice: "alba",
+        layers: 8,
+        status: "preview",
+    },
+    LanguageCatalogEntry {
+        name: "english_2m_2026-10",
+        description: "English (2M, October 2026)",
+        default_voice: "alba",
+        layers: 8,
+        status: "preview",
+    },
 ];
 
 pub fn list_languages() {
@@ -349,7 +370,7 @@ pub fn list_languages() {
             }
             let header = match lang.status {
                 "production" => "Production (distilled 6-layer, real-time on CPU)",
-                "preview" => "Preview (undistilled 24-layer, slower)",
+                "preview" => "Preview models",
                 "legacy" => "Legacy / alternate",
                 _ => lang.status,
             };
@@ -435,7 +456,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn catalog_matches_released_v3_3_configs() {
+    fn catalog_matches_released_configs() {
         let mut names: Vec<_> = language_catalog().iter().map(|entry| entry.name).collect();
         names.sort_unstable();
         assert_eq!(
@@ -444,11 +465,14 @@ mod tests {
                 "dutch",
                 "dutch_24l",
                 "english",
+                "english_18m_2026-10",
                 "english_2026-01",
                 "english_2026-04",
                 "english_2026-04_24l",
                 "english_2026-09",
                 "english_2026-09_24l",
+                "english_2m_2026-10",
+                "english_7m_2026-10",
                 "french",
                 "french_24l",
                 "german",
@@ -462,10 +486,9 @@ mod tests {
             ]
         );
         for entry in language_catalog() {
-            assert_eq!(
-                entry.layers,
-                if entry.name.ends_with("_24l") { 24 } else { 6 }
-            );
+            let path = pocket_tts::tts_model::find_config_path(entry.name).unwrap();
+            let config = pocket_tts::config::load_config(&path).unwrap();
+            assert_eq!(entry.layers, config.flow_lm.transformer.num_layers);
             assert!(PREDEFINED_VOICES.contains(&entry.default_voice));
         }
         let mut voices: Vec<_> = voice_catalog().iter().map(|entry| entry.name).collect();

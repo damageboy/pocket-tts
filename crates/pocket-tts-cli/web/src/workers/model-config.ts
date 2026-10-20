@@ -27,5 +27,8 @@ export function configAssets(yaml: string) {
 }
 
 export function presetVoiceUrl(language: string, voice: string): string {
-  return hfDownloadUrl(`hf://kyutai/pocket-tts-without-voice-cloning/languages/${language}/embeddings/${voice}.safetensors@4e1e0a3e611c51c0b4ed8174fc10f32a54644303`);
+  const revision = ["english_18m_2026-10", "english_7m_2026-10", "english_2m_2026-10"].includes(language)
+    ? "a3055dcb533cf2ec90458008a01e7cef550bae2a"
+    : "4e1e0a3e611c51c0b4ed8174fc10f32a54644303";
+  return hfDownloadUrl(`hf://kyutai/pocket-tts-without-voice-cloning/languages/${language}/embeddings/${voice}.safetensors@${revision}`);
 }

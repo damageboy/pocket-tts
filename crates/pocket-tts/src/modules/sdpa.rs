@@ -1,5 +1,21 @@
 use candle_core::{D, Result, Tensor};
 
+// Repeat only the attention input, never the persistent cache. In particular,
+// [K0, K1] becomes [K0, K0, ..., K1, K1, ...], not a cyclic repetition.
+fn expand_kv_heads(t: &Tensor, query_heads: usize) -> Result<Tensor> {
+    let (b, kv_heads, s, d) = t.dims4()?;
+    if kv_heads == 0 || query_heads == 0 || query_heads % kv_heads != 0 {
+        candle_core::bail!("Query heads must be a positive multiple of KV heads");
+    }
+    if query_heads == kv_heads {
+        return t.contiguous();
+    }
+    t.unsqueeze(2)?
+        .broadcast_as((b, kv_heads, query_heads / kv_heads, s, d))?
+        .contiguous()?
+        .reshape((b, query_heads, s, d))
+}
+
 #[inline]
 fn can_skip_mask_for_single_query(
     q_len: usize,
@@ -24,8 +40,9 @@ fn can_skip_mask_for_single_query(
 ///
 /// # Arguments
 /// * `q` - Query tensor of shape [Batch, Heads, Q_Len, Dim]
-/// * `k` - Key tensor of shape [Batch, Heads, KV_Len, Dim]
-/// * `v` - Value tensor of shape [Batch, Heads, KV_Len, Dim]
+/// * `k` - Key tensor of shape [Batch, KV_Heads, KV_Len, Dim]
+/// * `v` - Value tensor of shape [Batch, KV_Heads, KV_Len, Dim]
+///   Query heads must be a positive multiple of KV heads.
 /// * `scale` - Scaling factor (usually 1 / sqrt(dim))
 /// * `is_causal` - Whether to apply causal masking
 /// * `context_window` - Optional context window size for local attention
@@ -55,9 +72,9 @@ pub(crate) fn sdpa_with_capture(
     capture: Option<(usize, &mut crate::timestamps::attention::AttentionCapture)>,
 ) -> Result<Tensor> {
     let q = q.contiguous()?;
-    let k = k.contiguous()?;
-    let v = v.contiguous()?;
-    let (_b, _h, q_len, _dim) = q.dims4()?;
+    let (_b, h, q_len, _dim) = q.dims4()?;
+    let k = expand_kv_heads(k, h)?;
+    let v = expand_kv_heads(v, h)?;
     let kv_len = k.dims()[2];
 
     if capture.is_some() && (q_len != 1 || context_window.is_some()) {
@@ -214,11 +231,11 @@ pub fn sdpa_chunked(
     // Ensure all KV chunks are contiguous for CPU matmul compatibility
     let k_chunks: Vec<Tensor> = k_chunks
         .iter()
-        .map(|t| t.contiguous())
+        .map(|t| expand_kv_heads(t, h))
         .collect::<Result<_>>()?;
     let v_chunks: Vec<Tensor> = v_chunks
         .iter()
-        .map(|t| t.contiguous())
+        .map(|t| expand_kv_heads(t, h))
         .collect::<Result<_>>()?;
 
     // Fast path for single chunk
@@ -301,9 +318,110 @@ pub fn sdpa_chunked(
 }
 
 #[cfg(test)]
-mod tests {
+pub(crate) mod tests {
     use super::*;
     use candle_core::Device;
+
+    fn asymmetric(shape: (usize, usize, usize, usize), phase: f32) -> Result<Tensor> {
+        let n = shape.0 * shape.1 * shape.2 * shape.3;
+        Tensor::from_vec(
+            (0..n).map(|i| ((i as f32 + phase) * 0.37).sin()).collect(),
+            shape,
+            &Device::Cpu,
+        )
+    }
+
+    // Independent scalar reference: head h reads KV head floor(h / group_size).
+    // This catches cyclic head repetition, wrong masks, and lost upper query heads.
+    pub(crate) fn dense_reference(
+        q: &Tensor,
+        k: &Tensor,
+        v: &Tensor,
+        window: Option<usize>,
+    ) -> Result<Tensor> {
+        let (b, h, t, d) = q.dims4()?;
+        let (_, kh, s, _) = k.dims4()?;
+        let qv = q.flatten_all()?.to_vec1::<f32>()?;
+        let kv = k.flatten_all()?.to_vec1::<f32>()?;
+        let vv = v.flatten_all()?.to_vec1::<f32>()?;
+        let mut out = vec![0f32; b * h * t * d];
+        for batch in 0..b {
+            for head in 0..h {
+                for i in 0..t {
+                    let pos = s - t + i;
+                    let first = window.map_or(0, |w| (pos + 1).saturating_sub(w));
+                    let qi = ((batch * h + head) * t + i) * d;
+                    let ki = (batch * kh + head / (h / kh)) * s * d;
+                    let logits: Vec<f32> = (first..=pos)
+                        .map(|j| {
+                            (0..d).map(|a| qv[qi + a] * kv[ki + j * d + a]).sum::<f32>()
+                                / (d as f32).sqrt()
+                        })
+                        .collect();
+                    let max = logits.iter().copied().fold(f32::NEG_INFINITY, f32::max);
+                    let weights: Vec<f32> = logits.iter().map(|x| (x - max).exp()).collect();
+                    let sum: f32 = weights.iter().sum();
+                    for (j, weight) in (first..=pos).zip(weights) {
+                        for a in 0..d {
+                            out[qi + a] += weight / sum * vv[ki + j * d + a];
+                        }
+                    }
+                }
+            }
+        }
+        Tensor::from_vec(out, (b, h, t, d), q.device())
+    }
+
+    #[test]
+    fn gqa_matches_dense_prefill_decode_tiled_and_chunked() -> Result<()> {
+        for (t, s, window) in [(5, 5, None), (1, 9, None), (512, 515, Some(7))] {
+            let q = asymmetric((2, 6, t, 4), 0.3)?;
+            let k = asymmetric((2, 2, s, 4), 1.7)?;
+            let v = asymmetric((2, 2, s, 4), 4.1)?;
+            let expected = dense_reference(&q, &k, &v, window)?;
+            let scale = 0.5;
+            let single = sdpa(&q, &k, &v, scale, true, window)?;
+            let chunked = sdpa_chunked(
+                &q,
+                &[k.narrow(2, 0, 2)?, k.narrow(2, 2, s - 2)?],
+                &[v.narrow(2, 0, 2)?, v.narrow(2, 2, s - 2)?],
+                scale,
+                true,
+                window,
+            )?;
+            let one_chunk = sdpa_chunked(&q, &[k], &[v], scale, true, window)?;
+            for actual in [single, chunked, one_chunk] {
+                let error = (&actual - &expected)?
+                    .abs()?
+                    .max_all()?
+                    .to_scalar::<f32>()?;
+                assert!(
+                    error < 2e-6,
+                    "t={t}, s={s}, window={window:?}, error={error}"
+                );
+            }
+        }
+        Ok(())
+    }
+
+    #[test]
+    fn gqa_capture_keeps_upper_query_head_and_text_only_softmax() -> Result<()> {
+        use crate::timestamps::attention::AttentionCapture;
+        let q = Tensor::from_vec(vec![0.2f32, -0.4, 0.7, 1.3], (1, 4, 1, 1), &Device::Cpu)?;
+        let k = Tensor::from_vec(
+            vec![0f32, 1., 2., 3., 100., 0.5, -0.8, 100.],
+            (1, 2, 4, 1),
+            &Device::Cpu,
+        )?;
+        let v = asymmetric((1, 2, 4, 1), 1.)?;
+        let mut capture = AttentionCapture::new(vec![(2, 3)], 1, vec![vec![1., 0.], vec![0., 1.]])?;
+        sdpa_with_capture(&q, &k, &v, 1., true, None, Some((2, &mut capture)))?;
+        let scores = capture.finish_frame()?;
+        let first = 1. / (1. + (-1.3f32 * 1.3).exp());
+        assert!((scores[0] - first).abs() < 1e-6);
+        assert!((scores[1] - (1. - first)).abs() < 1e-6);
+        Ok(())
+    }
 
     #[test]
     fn test_generate_mask_chunk_causal() -> Result<()> {

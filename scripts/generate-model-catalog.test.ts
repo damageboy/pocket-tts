@@ -15,7 +15,7 @@ test("real configs publish all metadata, verbatim YAML and existing public asset
   expect(catalog.schemaVersion).toBe(1);
   expect(catalog.sourceRevision).toBe("revision");
   expect(catalog.defaultModel).toBe("english");
-  expect(catalog.models).toHaveLength(18);
+  expect(catalog.models).toHaveLength(21);
   expect(catalog.voices).toHaveLength(27);
   expect(catalog.voices).toEqual(FALLBACK_VOICES.map(({ name, ...voice }) => ({ id: name, ...voice })));
   for (const [i, model] of catalog.models.entries()) {

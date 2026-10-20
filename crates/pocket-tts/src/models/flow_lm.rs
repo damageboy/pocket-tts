@@ -1,4 +1,5 @@
 use crate::ModelState;
+use crate::config::SamplerType;
 use crate::models::transformer::StreamingTransformer;
 use crate::modules::mlp::{LayerNorm, ModulationParams, SimpleMLPAdaLN};
 use candle_core::{Result, Tensor};
@@ -39,6 +40,8 @@ pub struct FlowLMModel {
     pub noise_clamp: Option<f32>,
     pub insert_bos_before_voice: bool,
     pub bos_before_voice: Option<Tensor>,
+    pub z_proj: Option<Linear>,
+    sampler: SamplerType,
 }
 
 fn sample_noise(
@@ -78,9 +81,35 @@ impl FlowLMModel {
         insert_bos_before_voice: bool,
         vb: VarBuilder,
     ) -> Result<Self> {
+        Self::new_with_sampler(
+            flow_net,
+            transformer,
+            ldim,
+            dim,
+            insert_bos_before_voice,
+            SamplerType::Lsd,
+            None,
+            vb,
+        )
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    pub fn new_with_sampler(
+        flow_net: SimpleMLPAdaLN,
+        transformer: StreamingTransformer,
+        ldim: usize,
+        dim: usize,
+        insert_bos_before_voice: bool,
+        sampler: SamplerType,
+        z_dim: Option<usize>,
+        vb: VarBuilder,
+    ) -> Result<Self> {
         let input_linear = candle_nn::linear_no_bias(ldim, dim, vb.pp("input_linear"))?;
         let out_norm = LayerNorm::new(dim, 1e-5, true, vb.pp("out_norm"))?;
-        let out_eos = candle_nn::linear(dim, 1, vb.pp("out_eos"))?;
+        let z_proj = z_dim
+            .map(|z_dim| candle_nn::linear_no_bias(dim, z_dim, vb.pp("z_proj")))
+            .transpose()?;
+        let out_eos = candle_nn::linear(z_dim.unwrap_or(dim), 1, vb.pp("out_eos"))?;
         let bos_emb = vb.get(ldim, "bos_emb")?;
         let emb_mean = vb.get(ldim, "emb_mean")?;
         let emb_std = vb.get(ldim, "emb_std")?;
@@ -106,6 +135,8 @@ impl FlowLMModel {
             noise_clamp: None,
             insert_bos_before_voice,
             bos_before_voice,
+            z_proj,
+            sampler,
         })
     }
 
@@ -244,6 +275,10 @@ impl FlowLMModel {
         let last_frame = transformer_out
             .narrow(1, transformer_out.dims()[1] - 1, 1)?
             .squeeze(1)?;
+        let last_frame = match &self.z_proj {
+            Some(proj) => proj.forward(&last_frame)?,
+            None => last_frame,
+        };
 
         let eos_score = self
             .out_eos
@@ -261,7 +296,15 @@ impl FlowLMModel {
             .flow_net
             .precompute_modulations(&c_emb, time_embeddings)?;
 
-        let next_latent = lsd_decode(&self.flow_net, &modulations, &noise)?;
+        let next_latent = match self.sampler {
+            SamplerType::Lsd | SamplerType::FlowMatching => {
+                lsd_decode(&self.flow_net, &modulations, &noise)?
+            }
+            SamplerType::Drifting => self.flow_net.forward_step_cached(&noise, &modulations[0])?,
+            SamplerType::Pointwise => {
+                (&noise + self.flow_net.forward_step_cached(&noise, &modulations[0])?)?
+            }
+        };
 
         Ok((next_latent, is_eos))
     }

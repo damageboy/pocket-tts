@@ -129,8 +129,30 @@ fn two_condition_lsd_schedule_and_cache() -> Result<()> {
 
 #[test]
 fn unsupported_time_counts_are_rejected() -> Result<()> {
-    assert!(network(0).is_err());
     assert!(network(3).is_err());
+    Ok(())
+}
+
+#[test]
+fn one_step_heads_have_no_time_condition_or_step_dependence() -> Result<()> {
+    let net = network(0)?;
+    let c = Tensor::new(&[[0.3f32, -0.7, 1.2, 0.4]], &Device::Cpu)?;
+    let noise = Tensor::new(&[[0.8f32, -1.3]], &Device::Cpu)?;
+    let start = Tensor::new(&[0.13f32], &Device::Cpu)?;
+    let end = Tensor::new(&[0.79f32], &Device::Cpu)?;
+    let output = net.forward(&c, &start, &end, &noise)?;
+    assert!(max_diff(&output, &net.forward(&c, &end, &start, &noise)?)? < 1e-7);
+    assert!(max_diff(&output, &noise)? > 0.1);
+    for steps in [1, 3] {
+        let times = net.compute_time_embeddings(steps, &Device::Cpu, DType::F32)?;
+        let mods = net.precompute_modulations(&net.embed_condition(&c)?, &times)?;
+        assert_eq!(
+            mods.len(),
+            1,
+            "untimed heads perform exactly one evaluation"
+        );
+        assert!(max_diff(&output, &net.forward_step_cached(&noise, &mods[0])?)? < 2e-6);
+    }
     Ok(())
 }
 

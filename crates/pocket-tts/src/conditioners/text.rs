@@ -1,5 +1,5 @@
 use candle_core::Tensor;
-use candle_nn::{Embedding, Module, VarBuilder};
+use candle_nn::{Embedding, Linear, Module, VarBuilder};
 
 // Use tokenizers crate for all platforms (no protobuf dependency)
 use tokenizers::Tokenizer;
@@ -13,6 +13,8 @@ use std::sync::Arc;
 pub struct LUTConditioner {
     tokenizer: Arc<Tokenizer>,
     embed: Embedding,
+    proj: Option<Linear>,
+    dim: usize,
 }
 
 impl LUTConditioner {
@@ -51,6 +53,8 @@ impl LUTConditioner {
         Ok(Self {
             tokenizer: Arc::new(tokenizer),
             embed,
+            proj: None,
+            dim,
         })
     }
 
@@ -248,6 +252,16 @@ impl LUTConditioner {
         _output_dim: usize,
         vb: VarBuilder,
     ) -> Result<Self> {
+        Self::new_from_bytes_with_rank(n_bins, tokenizer_bytes, dim, None, vb)
+    }
+
+    pub fn new_from_bytes_with_rank(
+        n_bins: usize,
+        tokenizer_bytes: &[u8],
+        dim: usize,
+        rank: Option<usize>,
+        vb: VarBuilder,
+    ) -> Result<Self> {
         // Try to parse as JSON tokenizer first
         let tokenizer = if let Ok(t) = Tokenizer::from_bytes(tokenizer_bytes) {
             t
@@ -276,12 +290,17 @@ impl LUTConditioner {
             );
         }
 
-        // n_bins + 1 for padding
-        let embed = candle_nn::embedding(n_bins + 1, dim, vb.pp("embed"))?;
+        // Low-rank tables project back to the transformer width after lookup.
+        let embed = candle_nn::embedding(n_bins + 1, rank.unwrap_or(dim), vb.pp("embed"))?;
+        let proj = rank
+            .map(|rank| candle_nn::linear_no_bias(rank, dim, vb.pp("proj")))
+            .transpose()?;
 
         Ok(Self {
             tokenizer: Arc::new(tokenizer),
             embed,
+            proj,
+            dim,
         })
     }
 
@@ -305,14 +324,17 @@ impl LUTConditioner {
         let dims = tokens.dims();
         if dims.len() >= 2 && dims[1] == 0 {
             // Return empty embeddings with correct shape [batch, 0, embed_dim]
-            let embed_dim = self.embed.embeddings().dims()[1];
             return Ok(Tensor::zeros(
-                (dims[0], 0, embed_dim),
+                (dims[0], 0, self.dim),
                 candle_core::DType::F32,
                 tokens.device(),
             )?);
         }
-        Ok(self.embed.forward(tokens)?)
+        let embedding = self.embed.forward(tokens)?;
+        Ok(match &self.proj {
+            Some(proj) => proj.forward(&embedding)?,
+            None => embedding,
+        })
     }
 
     /// Count tokens in a text string without creating tensors.

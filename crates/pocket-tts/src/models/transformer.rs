@@ -1,5 +1,5 @@
 use crate::ModelState;
-use crate::modules::attention::StreamingMultiheadAttention;
+use crate::modules::attention::{StreamingMultiheadAttention, validate_attention_dims};
 use crate::modules::mlp::{LayerNorm, LayerScale};
 use crate::modules::rope::RotaryEmbedding;
 use crate::voice_state::get_attention_cursor;
@@ -30,9 +30,40 @@ impl StreamingTransformerLayer {
         name: &str,
         vb: VarBuilder,
     ) -> Result<Self> {
-        let self_attn = StreamingMultiheadAttention::new(
+        Self::new_with_attention_dims(
             d_model,
             num_heads,
+            d_model,
+            num_heads,
+            dim_feedforward,
+            context,
+            rope,
+            layer_scale,
+            _attention_kind,
+            name,
+            vb,
+        )
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    pub fn new_with_attention_dims(
+        d_model: usize,
+        num_heads: usize,
+        attn_dim: usize,
+        num_kv_heads: usize,
+        dim_feedforward: usize,
+        context: Option<usize>,
+        rope: RotaryEmbedding,
+        layer_scale: Option<f32>,
+        _attention_kind: &str,
+        name: &str,
+        vb: VarBuilder,
+    ) -> Result<Self> {
+        let self_attn = StreamingMultiheadAttention::new_with_attention_dims(
+            d_model,
+            num_heads,
+            attn_dim,
+            num_kv_heads,
             rope,
             context,
             &format!("{}.self_attn", name),
@@ -126,12 +157,48 @@ impl StreamingTransformer {
         name: &str,
         vb: VarBuilder,
     ) -> Result<Self> {
-        let rope = RotaryEmbedding::new(max_period, d_model / num_heads, vb.device())?;
+        Self::new_with_attention_dims(
+            d_model,
+            num_heads,
+            d_model,
+            num_heads,
+            num_layers,
+            layer_scale,
+            dim_feedforward,
+            context,
+            max_period,
+            kind,
+            name,
+            vb,
+        )
+    }
+
+    /// Construct a streaming transformer with independent model/attention widths
+    /// and grouped KV heads. The legacy constructor retains MHA dimensions.
+    #[allow(clippy::too_many_arguments)]
+    pub fn new_with_attention_dims(
+        d_model: usize,
+        num_heads: usize,
+        attn_dim: usize,
+        num_kv_heads: usize,
+        num_layers: usize,
+        layer_scale: Option<f32>,
+        dim_feedforward: usize,
+        context: Option<usize>,
+        max_period: f32,
+        kind: &str,
+        name: &str,
+        vb: VarBuilder,
+    ) -> Result<Self> {
+        validate_attention_dims(attn_dim, num_heads, num_kv_heads)?;
+        let rope = RotaryEmbedding::new(max_period, attn_dim / num_heads, vb.device())?;
         let mut layers = Vec::new();
         for i in 0..num_layers {
-            layers.push(StreamingTransformerLayer::new(
+            layers.push(StreamingTransformerLayer::new_with_attention_dims(
                 d_model,
                 num_heads,
+                attn_dim,
+                num_kv_heads,
                 dim_feedforward,
                 context,
                 rope.clone(),
@@ -278,5 +345,92 @@ impl ProjectedTransformer {
             ys.append(&mut vec![y]);
         }
         Ok(ys)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use candle_core::{DType, Device};
+
+    #[test]
+    fn gqa_transformer_propagates_dimensions_and_streaming_positions() -> Result<()> {
+        let vars = candle_nn::VarMap::new();
+        let vb = VarBuilder::from_varmap(&vars, DType::F32, &Device::Cpu);
+        // d_model is deliberately not divisible by Q heads. RoPE must use
+        // attn_dim / num_heads, and each layer must preserve residual width.
+        let transformer = StreamingTransformer::new_with_attention_dims(
+            5,
+            3,
+            12,
+            1,
+            2,
+            None,
+            9,
+            None,
+            10000.,
+            "flow_lm",
+            "tr",
+            vb.clone(),
+        )?;
+        // VarBuilder's default norm weights are zero. Install deterministic,
+        // nonzero weights so an accidental identity transformer cannot pass.
+        for (name, var) in vars.data().lock().unwrap().iter() {
+            let value = if name.ends_with("norm1.weight") || name.ends_with("norm2.weight") {
+                Tensor::ones(var.shape(), DType::F32, &Device::Cpu)?
+            } else if name.ends_with("bias") {
+                Tensor::zeros(var.shape(), DType::F32, &Device::Cpu)?
+            } else {
+                let phase = name.bytes().map(|b| b as usize).sum::<usize>() as f32;
+                Tensor::from_vec(
+                    (0..var.elem_count())
+                        .map(|i| ((i as f32 + phase) * 0.31).sin() * 0.2)
+                        .collect(),
+                    var.shape(),
+                    &Device::Cpu,
+                )?
+            };
+            var.set(&value)?;
+        }
+        let input = Tensor::from_vec(
+            (0..30).map(|i| (i as f32 * 0.7).sin()).collect(),
+            (1, 6, 5),
+            &Device::Cpu,
+        )?;
+        let full = transformer.forward(&input, &mut ModelState::new(), 0)?;
+        assert!((&full - &input)?.abs()?.max_all()?.to_scalar::<f32>()? > 1e-4);
+        let mut state = ModelState::new();
+        let first = transformer.forward(&input.narrow(1, 0, 4)?, &mut state, 0)?;
+        let second = transformer.forward(&input.narrow(1, 4, 2)?, &mut state, 1)?;
+        let streamed = Tensor::cat(&[first, second], 1)?;
+        assert!((&full - &streamed)?.abs()?.max_all()?.to_scalar::<f32>()? < 1e-5);
+        for i in 0..2 {
+            let name = format!("tr.layers.{i}.self_attn");
+            assert_eq!(get_attention_cursor(&state, &name).pos, 6);
+            assert_eq!(
+                state[&name][crate::voice_state::ATTN_K_BUF_KEY].dims(),
+                &[1, 1, 64, 4]
+            );
+        }
+        for (heads, attn, kv) in [(0, 12, 1), (3, 11, 1), (3, 12, 2), (3, 9, 1)] {
+            assert!(
+                StreamingTransformer::new_with_attention_dims(
+                    5,
+                    heads,
+                    attn,
+                    kv,
+                    0,
+                    None,
+                    9,
+                    None,
+                    10000.,
+                    "flow_lm",
+                    "bad",
+                    vb.clone()
+                )
+                .is_err()
+            );
+        }
+        Ok(())
     }
 }
