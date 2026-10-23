@@ -1,0 +1,18 @@
+{
+  "upstream_commit": "9a1b48922deb44cd4a805fde279eb33b71c1a473",
+  "language": "english_18m_2026-10",
+  "prepared": "The price is 3.14 euros, not twelve. Tomorrow, Anna will read another book.",
+  "steps": 72,
+  "sampler_decode_steps": 3,
+  "eos_threshold": -1.0,
+  "config_path": "/Users/dmg/projects/pocket-speechify/.amp/in/xn-pocket/official/pocket_tts/config/english_18m_2026-10.yaml",
+  "weights": {
+    "path": "/Users/dmg/projects/pocket-speechify/.amp/in/xn-pocket/models/english_18m_2026-10/model.safetensors"
+  },
+  "tokenizer": {
+    "path": "/Users/dmg/projects/pocket-speechify/.amp/in/xn-pocket/models/english_18m_2026-10/tokenizer.model"
+  },
+  "voice_state": {
+    "path": "/Users/dmg/projects/pocket-speechify/.amp/in/xn-pocket/models/english_18m_2026-10/alba.safetensors"
+  }
+}

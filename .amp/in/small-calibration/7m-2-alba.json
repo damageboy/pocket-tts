@@ -1,0 +1,87 @@
+[
+  {
+    "word": "Tomorrow",
+    "start": 0.0,
+    "end": 0.3
+  },
+  {
+    "word": "Anna",
+    "start": 0.3,
+    "end": 0.7
+  },
+  {
+    "word": "will",
+    "start": 0.7,
+    "end": 0.94
+  },
+  {
+    "word": "bring",
+    "start": 0.94,
+    "end": 1.14
+  },
+  {
+    "word": "seven",
+    "start": 1.14,
+    "end": 1.46
+  },
+  {
+    "word": "books",
+    "start": 1.46,
+    "end": 1.72
+  },
+  {
+    "word": "to",
+    "start": 1.72,
+    "end": 1.96
+  },
+  {
+    "word": "the",
+    "start": 1.96,
+    "end": 2.04
+  },
+  {
+    "word": "station.",
+    "start": 2.04,
+    "end": 2.32
+  },
+  {
+    "word": "Please",
+    "start": 2.86,
+    "end": 3.04
+  },
+  {
+    "word": "leave",
+    "start": 3.04,
+    "end": 3.3
+  },
+  {
+    "word": "the",
+    "start": 3.3,
+    "end": 3.46
+  },
+  {
+    "word": "blue",
+    "start": 3.46,
+    "end": 3.6
+  },
+  {
+    "word": "box",
+    "start": 3.6,
+    "end": 3.86
+  },
+  {
+    "word": "beside",
+    "start": 3.86,
+    "end": 4.14
+  },
+  {
+    "word": "the",
+    "start": 4.14,
+    "end": 4.42
+  },
+  {
+    "word": "door.",
+    "start": 4.42,
+    "end": 4.6
+  }
+]

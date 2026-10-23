@@ -1,0 +1,67 @@
+   Compiling pocket-tts-cli v0.8.1 (/Users/dmg/projects/pocket-tts/crates/pocket-tts-cli)
+    Finished `release` profile [optimized] target(s) in 1m 09s
+     Running unittests src/lib.rs (target/release/deps/pocket_tts_cli-238f33d90378ee66)
+
+running 30 tests
+test commands::generate::tests::released_french_and_dutch_are_model_identifiers ... ok
+test commands::generate::tests::timing_line_is_machine_readable_milliseconds ... ok
+test commands::playback::read_along::tests::wraps_unicode_without_splitting_graphemes_or_losing_newlines ... ok
+test commands::generate::tests::playback_rejects_pcm_stdout_and_orphan_highlight_flag ... ok
+test commands::playback::tests::eof_drains_all_chunks_and_silent_tail_without_advancing_clock ... ok
+test commands::generate::tests::sampler_decode_steps_accepts_both_spellings ... ok
+test commands::playback::tests::underrun_freezes_content_clock_but_real_silence_counts ... ok
+test commands::generate::tests::playback_accepts_optional_save_and_audio_only_mode ... ok
+test commands::generate::tests::generate_help_includes_timings_flag ... ok
+test commands::generate::tests::omitted_sampling_parameters_use_model_recommendations ... ok
+test commands::serve::tests::sampler_decode_steps_accepts_both_spellings ... ok
+test commands::serve::tests::omitted_sampling_parameters_use_model_recommendations ... ok
+test server::state::tests::voice_state_cache_evicts_lru ... ok
+test commands::playback::read_along::tests::repeated_and_skipped_words_keep_source_indices_and_exclusive_ends ... ok
+test voice::tests::stock_states_use_released_revision ... ok
+test commands::playback::read_along::tests::narrow_terminal_keeps_the_whole_timestamp_range_visible ... ok
+test voice::tests::stock_voice_resolution_requires_released_config_origin ... ok
+test voice::tests::test_is_base64_audio ... ok
+test voice::tests::test_predefined_voices_list ... ok
+test voice::tests::test_voice_cache_key_stock ... ok
+test commands::list::tests::catalog_matches_released_configs ... ok
+test voice::tests::test_voice_cache_key_base64 ... ok
+test commands::playback::read_along::tests::unicode_and_pause_markers_match_timestamp_word_identity ... ok
+test server_tests::test_static_spa_fallback_for_route ... ok
+test server_tests::test_api_full_flow ... ok
+test base64_tests::test_api_base64_cloning ... ok
+test stream_tests::test_api_stream_endpoint ... ok
+test server_tests::test_static_missing_file_404 ... ok
+test server_tests::test_static_index_content_type_html ... ok
+test server_tests::test_web_interface ... ok
+
+test result: ok. 30 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.15s
+
+     Running unittests src/main.rs (target/release/deps/pocket_tts_cli-22f0ad50019f3988)
+
+running 23 tests
+test commands::generate::tests::released_french_and_dutch_are_model_identifiers ... ok
+test commands::generate::tests::timing_line_is_machine_readable_milliseconds ... ok
+test commands::playback::read_along::tests::wraps_unicode_without_splitting_graphemes_or_losing_newlines ... ok
+test commands::generate::tests::playback_accepts_optional_save_and_audio_only_mode ... ok
+test commands::generate::tests::sampler_decode_steps_accepts_both_spellings ... ok
+test commands::playback::tests::eof_drains_all_chunks_and_silent_tail_without_advancing_clock ... ok
+test commands::generate::tests::playback_rejects_pcm_stdout_and_orphan_highlight_flag ... ok
+test commands::playback::tests::underrun_freezes_content_clock_but_real_silence_counts ... ok
+test commands::generate::tests::omitted_sampling_parameters_use_model_recommendations ... ok
+test commands::generate::tests::generate_help_includes_timings_flag ... ok
+test commands::serve::tests::omitted_sampling_parameters_use_model_recommendations ... ok
+test commands::serve::tests::sampler_decode_steps_accepts_both_spellings ... ok
+test server::state::tests::voice_state_cache_evicts_lru ... ok
+test voice::tests::stock_states_use_released_revision ... ok
+test voice::tests::stock_voice_resolution_requires_released_config_origin ... ok
+test voice::tests::test_predefined_voices_list ... ok
+test voice::tests::test_is_base64_audio ... ok
+test voice::tests::test_voice_cache_key_base64 ... ok
+test voice::tests::test_voice_cache_key_stock ... ok
+test commands::playback::read_along::tests::repeated_and_skipped_words_keep_source_indices_and_exclusive_ends ... ok
+test commands::playback::read_along::tests::narrow_terminal_keeps_the_whole_timestamp_range_visible ... ok
+test commands::playback::read_along::tests::unicode_and_pause_markers_match_timestamp_word_identity ... ok
+test commands::list::tests::catalog_matches_released_configs ... ok
+
+test result: ok. 23 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+

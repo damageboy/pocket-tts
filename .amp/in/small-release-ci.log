@@ -1,0 +1,412 @@
+Refreshing run status every 20 seconds. Press Ctrl+C to quit.
+
+* v4.0.0 Release WASM · 39476592551
+Triggered via push less than a minute ago
+
+JOBS
+* Build release WASM / Build WASM UI (ID 118814021799)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Test site version stamping
+  ✓ Test release packaging
+  ✓ Install Rust
+  ✓ Rust cache
+  ✓ Setup Bun
+  ✓ Test model catalog and config URLs
+  ✓ Bun cache
+  ✓ Build CLI web UI
+  * Install wasm-bindgen-cli
+  * Install wasm-opt
+  * Build wasm package
+  * Package GitHub Pages site
+  * Smoke-test packaged WASM initialization
+  * Package and smoke-test release archive
+  * Upload release package
+  * Upload build artifact
+  * Upload Pages artifact
+  * Post Bun cache
+  * Post Setup Bun
+  * Post Rust cache
+  * Post Run actions/checkout@v4
+Refreshing run status every 20 seconds. Press Ctrl+C to quit.
+
+* v4.0.0 Release WASM · 39476592551
+Triggered via push about 1 minute ago
+
+JOBS
+* Build release WASM / Build WASM UI (ID 118814021799)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Test site version stamping
+  ✓ Test release packaging
+  ✓ Install Rust
+  ✓ Rust cache
+  ✓ Setup Bun
+  ✓ Test model catalog and config URLs
+  ✓ Bun cache
+  ✓ Build CLI web UI
+  * Install wasm-bindgen-cli
+  * Install wasm-opt
+  * Build wasm package
+  * Package GitHub Pages site
+  * Smoke-test packaged WASM initialization
+  * Package and smoke-test release archive
+  * Upload release package
+  * Upload build artifact
+  * Upload Pages artifact
+  * Post Bun cache
+  * Post Setup Bun
+  * Post Rust cache
+  * Post Run actions/checkout@v4
+Refreshing run status every 20 seconds. Press Ctrl+C to quit.
+
+* v4.0.0 Release WASM · 39476592551
+Triggered via push about 1 minute ago
+
+JOBS
+* Build release WASM / Build WASM UI (ID 118814021799)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Test site version stamping
+  ✓ Test release packaging
+  ✓ Install Rust
+  ✓ Rust cache
+  ✓ Setup Bun
+  ✓ Test model catalog and config URLs
+  ✓ Bun cache
+  ✓ Build CLI web UI
+  * Install wasm-bindgen-cli
+  * Install wasm-opt
+  * Build wasm package
+  * Package GitHub Pages site
+  * Smoke-test packaged WASM initialization
+  * Package and smoke-test release archive
+  * Upload release package
+  * Upload build artifact
+  * Upload Pages artifact
+  * Post Bun cache
+  * Post Setup Bun
+  * Post Rust cache
+  * Post Run actions/checkout@v4
+Refreshing run status every 20 seconds. Press Ctrl+C to quit.
+
+* v4.0.0 Release WASM · 39476592551
+Triggered via push about 1 minute ago
+
+JOBS
+* Build release WASM / Build WASM UI (ID 118814021799)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Test site version stamping
+  ✓ Test release packaging
+  ✓ Install Rust
+  ✓ Rust cache
+  ✓ Setup Bun
+  ✓ Test model catalog and config URLs
+  ✓ Bun cache
+  ✓ Build CLI web UI
+  * Install wasm-bindgen-cli
+  * Install wasm-opt
+  * Build wasm package
+  * Package GitHub Pages site
+  * Smoke-test packaged WASM initialization
+  * Package and smoke-test release archive
+  * Upload release package
+  * Upload build artifact
+  * Upload Pages artifact
+  * Post Bun cache
+  * Post Setup Bun
+  * Post Rust cache
+  * Post Run actions/checkout@v4
+Refreshing run status every 20 seconds. Press Ctrl+C to quit.
+
+* v4.0.0 Release WASM · 39476592551
+Triggered via push about 2 minutes ago
+
+JOBS
+* Build release WASM / Build WASM UI (ID 118814021799)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Test site version stamping
+  ✓ Test release packaging
+  ✓ Install Rust
+  ✓ Rust cache
+  ✓ Setup Bun
+  ✓ Test model catalog and config URLs
+  ✓ Bun cache
+  ✓ Build CLI web UI
+  ✓ Install wasm-bindgen-cli
+  ✓ Install wasm-opt
+  * Build wasm package
+  * Package GitHub Pages site
+  * Smoke-test packaged WASM initialization
+  * Package and smoke-test release archive
+  * Upload release package
+  * Upload build artifact
+  * Upload Pages artifact
+  * Post Bun cache
+  * Post Setup Bun
+  * Post Rust cache
+  * Post Run actions/checkout@v4
+Refreshing run status every 20 seconds. Press Ctrl+C to quit.
+
+* v4.0.0 Release WASM · 39476592551
+Triggered via push about 2 minutes ago
+
+JOBS
+* Build release WASM / Build WASM UI (ID 118814021799)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Test site version stamping
+  ✓ Test release packaging
+  ✓ Install Rust
+  ✓ Rust cache
+  ✓ Setup Bun
+  ✓ Test model catalog and config URLs
+  ✓ Bun cache
+  ✓ Build CLI web UI
+  ✓ Install wasm-bindgen-cli
+  ✓ Install wasm-opt
+  * Build wasm package
+  * Package GitHub Pages site
+  * Smoke-test packaged WASM initialization
+  * Package and smoke-test release archive
+  * Upload release package
+  * Upload build artifact
+  * Upload Pages artifact
+  * Post Bun cache
+  * Post Setup Bun
+  * Post Rust cache
+  * Post Run actions/checkout@v4
+Refreshing run status every 20 seconds. Press Ctrl+C to quit.
+
+* v4.0.0 Release WASM · 39476592551
+Triggered via push about 2 minutes ago
+
+JOBS
+* Build release WASM / Build WASM UI (ID 118814021799)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Test site version stamping
+  ✓ Test release packaging
+  ✓ Install Rust
+  ✓ Rust cache
+  ✓ Setup Bun
+  ✓ Test model catalog and config URLs
+  ✓ Bun cache
+  ✓ Build CLI web UI
+  ✓ Install wasm-bindgen-cli
+  ✓ Install wasm-opt
+  * Build wasm package
+  * Package GitHub Pages site
+  * Smoke-test packaged WASM initialization
+  * Package and smoke-test release archive
+  * Upload release package
+  * Upload build artifact
+  * Upload Pages artifact
+  * Post Bun cache
+  * Post Setup Bun
+  * Post Rust cache
+  * Post Run actions/checkout@v4
+Refreshing run status every 20 seconds. Press Ctrl+C to quit.
+
+* v4.0.0 Release WASM · 39476592551
+Triggered via push about 3 minutes ago
+
+JOBS
+* Build release WASM / Build WASM UI (ID 118814021799)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Test site version stamping
+  ✓ Test release packaging
+  ✓ Install Rust
+  ✓ Rust cache
+  ✓ Setup Bun
+  ✓ Test model catalog and config URLs
+  ✓ Bun cache
+  ✓ Build CLI web UI
+  ✓ Install wasm-bindgen-cli
+  ✓ Install wasm-opt
+  * Build wasm package
+  * Package GitHub Pages site
+  * Smoke-test packaged WASM initialization
+  * Package and smoke-test release archive
+  * Upload release package
+  * Upload build artifact
+  * Upload Pages artifact
+  * Post Bun cache
+  * Post Setup Bun
+  * Post Rust cache
+  * Post Run actions/checkout@v4
+Refreshing run status every 20 seconds. Press Ctrl+C to quit.
+
+* v4.0.0 Release WASM · 39476592551
+Triggered via push about 3 minutes ago
+
+JOBS
+* Build release WASM / Build WASM UI (ID 118814021799)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Test site version stamping
+  ✓ Test release packaging
+  ✓ Install Rust
+  ✓ Rust cache
+  ✓ Setup Bun
+  ✓ Test model catalog and config URLs
+  ✓ Bun cache
+  ✓ Build CLI web UI
+  ✓ Install wasm-bindgen-cli
+  ✓ Install wasm-opt
+  * Build wasm package
+  * Package GitHub Pages site
+  * Smoke-test packaged WASM initialization
+  * Package and smoke-test release archive
+  * Upload release package
+  * Upload build artifact
+  * Upload Pages artifact
+  * Post Bun cache
+  * Post Setup Bun
+  * Post Rust cache
+  * Post Run actions/checkout@v4
+Refreshing run status every 20 seconds. Press Ctrl+C to quit.
+
+* v4.0.0 Release WASM · 39476592551
+Triggered via push about 3 minutes ago
+
+JOBS
+* Build release WASM / Build WASM UI (ID 118814021799)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Test site version stamping
+  ✓ Test release packaging
+  ✓ Install Rust
+  ✓ Rust cache
+  ✓ Setup Bun
+  ✓ Test model catalog and config URLs
+  ✓ Bun cache
+  ✓ Build CLI web UI
+  ✓ Install wasm-bindgen-cli
+  ✓ Install wasm-opt
+  * Build wasm package
+  * Package GitHub Pages site
+  * Smoke-test packaged WASM initialization
+  * Package and smoke-test release archive
+  * Upload release package
+  * Upload build artifact
+  * Upload Pages artifact
+  * Post Bun cache
+  * Post Setup Bun
+  * Post Rust cache
+  * Post Run actions/checkout@v4
+Refreshing run status every 20 seconds. Press Ctrl+C to quit.
+
+* v4.0.0 Release WASM · 39476592551
+Triggered via push about 4 minutes ago
+
+JOBS
+* Build release WASM / Build WASM UI (ID 118814021799)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Test site version stamping
+  ✓ Test release packaging
+  ✓ Install Rust
+  ✓ Rust cache
+  ✓ Setup Bun
+  ✓ Test model catalog and config URLs
+  ✓ Bun cache
+  ✓ Build CLI web UI
+  ✓ Install wasm-bindgen-cli
+  ✓ Install wasm-opt
+  * Build wasm package
+  * Package GitHub Pages site
+  * Smoke-test packaged WASM initialization
+  * Package and smoke-test release archive
+  * Upload release package
+  * Upload build artifact
+  * Upload Pages artifact
+  * Post Bun cache
+  * Post Setup Bun
+  * Post Rust cache
+  * Post Run actions/checkout@v4
+Refreshing run status every 20 seconds. Press Ctrl+C to quit.
+
+* v4.0.0 Release WASM · 39476592551
+Triggered via push about 4 minutes ago
+
+JOBS
+* Build release WASM / Build WASM UI (ID 118814021799)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Test site version stamping
+  ✓ Test release packaging
+  ✓ Install Rust
+  ✓ Rust cache
+  ✓ Setup Bun
+  ✓ Test model catalog and config URLs
+  ✓ Bun cache
+  ✓ Build CLI web UI
+  ✓ Install wasm-bindgen-cli
+  ✓ Install wasm-opt
+  ✓ Build wasm package
+  ✓ Package GitHub Pages site
+  ✓ Smoke-test packaged WASM initialization
+  ✓ Package and smoke-test release archive
+  ✓ Upload release package
+  ✓ Upload build artifact
+  - Upload Pages artifact
+  ✓ Post Bun cache
+  ✓ Post Setup Bun
+  * Post Rust cache
+  * Post Run actions/checkout@v4
+✓ v4.0.0 Release WASM · 39476592551
+Triggered via push about 5 minutes ago
+
+JOBS
+✓ Build release WASM / Build WASM UI in 4m40s (ID 118814021799)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Test site version stamping
+  ✓ Test release packaging
+  ✓ Install Rust
+  ✓ Rust cache
+  ✓ Setup Bun
+  ✓ Test model catalog and config URLs
+  ✓ Bun cache
+  ✓ Build CLI web UI
+  ✓ Install wasm-bindgen-cli
+  ✓ Install wasm-opt
+  ✓ Build wasm package
+  ✓ Package GitHub Pages site
+  ✓ Smoke-test packaged WASM initialization
+  ✓ Package and smoke-test release archive
+  ✓ Upload release package
+  ✓ Upload build artifact
+  - Upload Pages artifact
+  ✓ Post Bun cache
+  ✓ Post Setup Bun
+  ✓ Post Rust cache
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+✓ Publish GitHub Release in 14s (ID 118816369735)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Download WASM release package
+  ✓ Verify WASM release checksum
+  ✓ Create GitHub Release
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+- Build release WASM / Deploy WASM UI to GitHub Pages (ID 118816371768)
+
+ANNOTATIONS
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/cache@v4, actions/checkout@v4, actions/upload-artifact@v4, oven-sh/setup-bun@v1. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+Build release WASM / Build WASM UI: .github#2
+
+- "The ubuntu-latest label will migrate to Ubuntu 26 beginning October 19, 2026. For more information, see https://github.com/actions/runner-images/issues/14748"
+Build release WASM / Build WASM UI: .github#1
+
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/download-artifact@v4, softprops/action-gh-release@v2. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+Publish GitHub Release: .github#2
+
+- "The ubuntu-latest label will migrate to Ubuntu 26 beginning October 19, 2026. For more information, see https://github.com/actions/runner-images/issues/14748"
+Publish GitHub Release: .github#1
+

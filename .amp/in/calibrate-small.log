@@ -1,0 +1,27 @@
+18m-0-alba ASR matched 9 / 9
+18m-0-anna ASR matched 9 / 9
+18m-1-alba ASR matched 15 / 15
+18m-1-anna ASR matched 15 / 15
+18m-2-alba ASR matched 17 / 17
+18m-2-anna ASR matched 17 / 17
+18m-3-alba ASR matched 15 / 16
+18m-3-anna ASR matched 16 / 16
+18m [{"heads": [[5, 3]], "train": {"mae": 0.08583333333333336, "p90": 0.16, "missing": 0}, "holdout": {"mae": 0.0824615384615385, "p90": 0.18400000000000016, "missing": 0}}, {"heads": [[5, 3], [3, 4]], "train": {"mae": 0.08583333333333336, "p90": 0.16, "missing": 0}, "holdout": {"mae": 0.08184615384615389, "p90": 0.18400000000000016, "missing": 0}}, {"heads": [[5, 3], [4, 5]], "train": {"mae": 0.08583333333333336, "p90": 0.16, "missing": 0}, "holdout": {"mae": 0.08184615384615389, "p90": 0.18400000000000016, "missing": 0}}, {"heads": [[5, 3], [7, 4]], "train": {"mae": 0.08583333333333336, "p90": 0.16, "missing": 0}, "holdout": {"mae": 0.07938461538461546, "p90": 0.18400000000000016, "missing": 0}}, {"heads": [[5, 3], [2, 4]], "train": {"mae": 0.08583333333333336, "p90": 0.16, "missing": 0}, "holdout": {"mae": 0.0824615384615385, "p90": 0.18400000000000016, "missing": 0}}]
+7m-0-alba ASR matched 9 / 9
+7m-0-anna ASR matched 9 / 9
+7m-1-alba ASR matched 15 / 15
+7m-1-anna ASR matched 15 / 15
+7m-2-alba ASR matched 17 / 17
+7m-2-anna ASR matched 17 / 17
+7m-3-alba ASR matched 16 / 16
+7m-3-anna ASR matched 16 / 16
+7m [{"heads": [[5, 3], [4, 3]], "train": {"mae": 0.09333333333333338, "p90": 0.16, "missing": 0}, "holdout": {"mae": 0.10090909090909093, "p90": 0.19000000000000017, "missing": 0}}, {"heads": [[5, 3], [3, 3]], "train": {"mae": 0.09583333333333338, "p90": 0.1660000000000001, "missing": 0}, "holdout": {"mae": 0.08575757575757575, "p90": 0.1600000000000001, "missing": 0}}, {"heads": [[5, 3], [5, 2]], "train": {"mae": 0.09583333333333338, "p90": 0.1660000000000001, "missing": 0}, "holdout": {"mae": 0.08696969696969699, "p90": 0.1600000000000001, "missing": 0}}, {"heads": [[3, 3], [2, 5]], "train": {"mae": 0.09666666666666668, "p90": 0.1660000000000001, "missing": 0}, "holdout": {"mae": 0.2051515151515151, "p90": 0.7199999999999998, "missing": 0}}, {"heads": [[5, 3]], "train": {"mae": 0.09666666666666672, "p90": 0.1660000000000001, "missing": 0}, "holdout": {"mae": 0.08575757575757578, "p90": 0.1600000000000001, "missing": 0}}]
+2m-0-alba ASR matched 9 / 9
+2m-0-anna ASR matched 9 / 9
+2m-1-alba ASR matched 15 / 15
+2m-1-anna ASR matched 15 / 15
+2m-2-alba ASR matched 17 / 17
+2m-2-anna ASR matched 17 / 17
+2m-3-alba ASR matched 16 / 16
+2m-3-anna ASR matched 15 / 16
+2m [{"heads": [[5, 2], [5, 0]], "train": {"mae": 0.09458333333333331, "p90": 0.19800000000000037, "missing": 0}, "holdout": {"mae": 0.08584615384615384, "p90": 0.11200000000000031, "missing": 0}}, {"heads": [[5, 2], [2, 0]], "train": {"mae": 0.10875000000000003, "p90": 0.24, "missing": 0}, "holdout": {"mae": 0.07661538461538464, "p90": 0.1640000000000002, "missing": 0}}, {"heads": [[5, 2]], "train": {"mae": 0.11125000000000003, "p90": 0.24, "missing": 0}, "holdout": {"mae": 0.20892307692307696, "p90": 0.8840000000000001, "missing": 0}}, {"heads": [[5, 2], [6, 1]], "train": {"mae": 0.11125000000000003, "p90": 0.24, "missing": 0}, "holdout": {"mae": 0.19600000000000004, "p90": 0.8840000000000001, "missing": 0}}, {"heads": [[5, 2], [6, 0]], "train": {"mae": 0.11125000000000003, "p90": 0.24, "missing": 0}, "holdout": {"mae": 0.08830769230769232, "p90": 0.20399999999999996, "missing": 0}}]

@@ -1,0 +1,92 @@
+default_eos_threshold: -1.0
+default_temperature: 0.3
+flow_lm:
+  dtype: float32
+  flow:
+    depth: 4
+    dim: 64
+    type: pointwise
+  insert_bos_before_voice: true
+  lookup_table:
+    dim: 112
+    n_bins: 4000
+    rank: 32
+    tokenizer: sentencepiece
+    tokenizer_path: /Users/dmg/projects/pocket-speechify/.amp/in/xn-pocket/models/english_2m_2026-10/tokenizer.model
+  transformer:
+    attn_dim: 192
+    d_model: 112
+    dim_feedforward: 96
+    hidden_scale: 1
+    max_period: 10000
+    num_heads: 3
+    num_kv_heads: 1
+    num_layers: 8
+  z_dim: 64
+mimi:
+  channels: 1
+  decoder_seanet:
+    channels: 1
+    compress: 2
+    dilation_base: 2
+    dimension: 128
+    kernel_size: 3
+    last_kernel_size: 3
+    n_filters: 24
+    n_residual_layers: 1
+    pad_mode: constant
+    ratios:
+    - 6
+    - 5
+    - 4
+    residual_kernel_size: 3
+  decoder_transformer:
+    context: 50
+    d_model: 128
+    dim_feedforward: 384
+    input_dimension: 128
+    layer_scale: 0.01
+    num_heads: 4
+    num_layers: 4
+    output_dimensions:
+    - 128
+  dtype: float32
+  frame_rate: 12.5
+  inner_dim: 32
+  outer_dim: 128
+  quantizer:
+    dimension: 32
+    output_dimension: 128
+  sample_rate: 24000
+  seanet:
+    channels: 1
+    compress: 2
+    dilation_base: 2
+    dimension: 512
+    kernel_size: 7
+    last_kernel_size: 3
+    n_filters: 64
+    n_residual_layers: 1
+    pad_mode: constant
+    ratios:
+    - 6
+    - 5
+    - 4
+    residual_kernel_size: 3
+  transformer:
+    context: 250
+    d_model: 512
+    dim_feedforward: 2048
+    input_dimension: 512
+    layer_scale: 0.01
+    num_heads: 8
+    num_layers: 2
+    output_dimensions:
+    - 512
+replace_characters:
+  "\u2013": ','
+  "\u2014": ','
+  "\u2018": ''''
+  "\u2019": ''''
+weights_path: /Users/dmg/projects/pocket-speechify/.amp/in/xn-pocket/models/english_2m_2026-10/model.safetensors
+weights_path_without_voice_cloning: /Users/dmg/projects/pocket-speechify/.amp/in/xn-pocket/models/english_2m_2026-10/model.safetensors

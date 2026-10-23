@@ -1,0 +1,77 @@
+[
+  {
+    "word": "A",
+    "start": 0.0,
+    "end": 0.26
+  },
+  {
+    "word": "small",
+    "start": 0.26,
+    "end": 0.48
+  },
+  {
+    "word": "library",
+    "start": 0.48,
+    "end": 0.8
+  },
+  {
+    "word": "keeps",
+    "start": 0.8,
+    "end": 1.18
+  },
+  {
+    "word": "its",
+    "start": 1.18,
+    "end": 1.36
+  },
+  {
+    "word": "windows",
+    "start": 1.36,
+    "end": 1.52
+  },
+  {
+    "word": "open",
+    "start": 1.52,
+    "end": 1.92
+  },
+  {
+    "word": "in",
+    "start": 1.92,
+    "end": 2.14
+  },
+  {
+    "word": "summer.",
+    "start": 2.14,
+    "end": 2.4
+  },
+  {
+    "word": "Readers",
+    "start": 2.96,
+    "end": 3.16
+  },
+  {
+    "word": "settle",
+    "start": 3.16,
+    "end": 3.46
+  },
+  {
+    "word": "in",
+    "start": 3.46,
+    "end": 3.66
+  },
+  {
+    "word": "for",
+    "start": 3.66,
+    "end": 3.78
+  },
+  {
+    "word": "quiet",
+    "start": 3.78,
+    "end": 4.02
+  },
+  {
+    "word": "afternoons.",
+    "start": 4.02,
+    "end": 4.74
+  }
+]

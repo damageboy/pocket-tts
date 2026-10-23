@@ -1,0 +1,82 @@
+[
+  {
+    "word": "Engineers",
+    "start": 0.0,
+    "end": 0.3
+  },
+  {
+    "word": "inspect",
+    "start": 0.3,
+    "end": 0.8
+  },
+  {
+    "word": "the",
+    "start": 0.8,
+    "end": 1.02
+  },
+  {
+    "word": "old",
+    "start": 1.02,
+    "end": 1.16
+  },
+  {
+    "word": "stone",
+    "start": 1.16,
+    "end": 1.4
+  },
+  {
+    "word": "bridge",
+    "start": 1.4,
+    "end": 1.76
+  },
+  {
+    "word": "each",
+    "start": 1.76,
+    "end": 2.12
+  },
+  {
+    "word": "winter.",
+    "start": 2.12,
+    "end": 2.4
+  },
+  {
+    "word": "Their",
+    "start": 3.04,
+    "end": 3.06
+  },
+  {
+    "word": "notebooks",
+    "start": 3.06,
+    "end": 3.3
+  },
+  {
+    "word": "record",
+    "start": 3.3,
+    "end": 3.76
+  },
+  {
+    "word": "every",
+    "start": 3.76,
+    "end": 4.06
+  },
+  {
+    "word": "crack",
+    "start": 4.06,
+    "end": 4.42
+  },
+  {
+    "word": "and",
+    "start": 4.42,
+    "end": 4.68
+  },
+  {
+    "word": "every",
+    "start": 4.68,
+    "end": 4.9
+  },
+  {
+    "word": "repair.",
+    "start": 4.9,
+    "end": 5.22
+  }
+]

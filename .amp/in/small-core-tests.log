@@ -1,0 +1,191 @@
+    Blocking waiting for file lock on build directory
+   Compiling pocket-tts v0.8.1 (/Users/dmg/projects/pocket-tts/crates/pocket-tts)
+    Finished `release` profile [optimized] target(s) in 3m 29s
+     Running unittests src/lib.rs (target/release/deps/pocket_tts-d26ba83327316447)
+
+running 77 tests
+test conditioners::text::tests::test_read_varint_multibyte ... ok
+test audio::tests::test_pcm_i16_le_bytes_clamp_and_interleave ... ok
+test conditioners::text::tests::test_parse_sentencepiece_vocab_extracts_pieces_and_unk ... ok
+test conditioners::text::tests::test_parse_sentencepiece_vocab_rejects_empty_vocab ... ok
+test audio::tests::test_resample ... ok
+test audio::tests::test_normalize_peak ... ok
+test audio::tests::test_wav_io ... ok
+test config::tests::test_load_config ... ok
+test config::tests::explicit_temperature_overrides_model_recommendation ... ok
+test config::tests::timestamp_validation_rejects_empty_duplicate_and_out_of_range_heads ... ok
+test config::tests::timestamp_validation_is_not_applied_during_deserialization ... ok
+test config::tests::timestamp_heads_are_optional_for_ordinary_configs ... ok
+test conditioners::text::tests::byte_loading_rejects_mismatched_vocabulary_before_embedding_lookup ... ok
+test config::tests::unknown_sampler_is_not_silently_loaded_as_lsd ... ok
+test config::tests::english_configs_declare_recommended_temperature ... ok
+test config::tests::v3_defaults_apply_without_an_explicit_temperature ... ok
+test modules::attention::tests::gqa_rejects_invalid_head_dimensions ... ok
+test models::mimi::tests::test_mimi_shapes ... ok
+test config::tests::config_deserializes_model_temperature_with_v3_fallback ... ok
+test modules::mlp::tests::test_rmsnorm_parity ... ok
+test modules::sdpa::tests::test_can_skip_mask_for_single_query ... ok
+test modules::sdpa::tests::gqa_capture_keeps_upper_query_head_and_text_only_softmax ... ok
+test modules::sdpa::tests::test_generate_mask_chunk_window ... ok
+test modules::sdpa::tests::test_generate_mask_chunk_causal ... ok
+test modules::rope::tests::test_rope_shape ... ok
+test pause::tests::test_parse_comma ... ok
+test pause::tests::test_parse_ellipsis ... ok
+test pause::tests::test_comma_in_number_ignored ... ok
+test pause::tests::test_silence_samples ... ok
+test pause::tests::test_parse_explicit_pause_ms ... ok
+test pause::tests::test_parse_text_with_pauses ... ok
+test pause::tests::test_parse_explicit_pause_seconds ... ok
+test pause::tests::test_strip_pause_markers ... ok
+test quantize::tests::test_quantize_config_skip_layers ... ok
+test timestamps::alignment::tests::silence_never_opens_words_and_punctuation_closes_them ... ok
+test models::transformer::tests::gqa_transformer_propagates_dimensions_and_streaming_positions ... ok
+test timestamps::alignment::tests::transitions_are_monotonic_and_finish_does_not_invent_unspoken_words ... ok
+test quantize::tests::test_theoretical_savings ... ok
+test quantize::tests::test_quantize_tensor ... ok
+test quantize::tests::test_quantize_large_tensor ... ok
+test timestamps::alignment::tests::voiced_gate_uses_energy_not_mean_and_strict_threshold ... ok
+test timestamps::attention::tests::normalizes_only_text_keys_and_weights_heads_not_layers ... ok
+test timestamps::batch::tests::batching_preserves_word_events_including_final_metadata_only_batch ... ok
+test modules::sdpa::tests::test_sdpa_chunked_handles_non_contiguous_value_chunks ... ok
+test config::tests::checkpoint_timestamp_selections_match_verified_upstream_models ... ok
+test timestamps::text::tests::fractional_overlap_and_zero_length_special_tokens ... ok
+test timestamps::text::tests::terminal_punctuation_and_ambiguous_omissions ... ok
+test timestamps::text::tests::compatibility_word_split_and_scalar_split_rejection ... ok
+test tts_model::tests::test_estimate_frames_after_eos ... ok
+test timestamps::text::tests::curated_source_words_and_exact_generation_prompts ... ok
+test tts_model::tests::test_find_config_path_by_language ... ok
+test tts_model::tests::test_find_config_path_by_yaml_path ... ok
+test timestamps::text::tests::chunk_boundaries_and_text_options_preserve_source_indices ... ok
+test timestamps::text::tests::every_byte_fallback_piece_in_unicode_words_is_mapped ... ok
+test tts_model::tests::test_prepare_text_prompt_handles_multiple_pauses ... ok
+test tts_model::tests::test_prepare_text_prompt_remove_semicolons ... ok
+test tts_model::tests::test_prepare_text_prompt_strips_pause_markers ... ok
+test tts_model::tests::test_prepare_text_prompt_with_padding ... ok
+test tts_model::tests::test_prepare_text_prompt_without_padding ... ok
+test tts_model::tests::open_weights_reject_audio_cloning_but_accept_precomputed_prompts ... ok
+test voice_state::tests::test_get_or_create_state ... ok
+test voice_state::tests::test_init_states ... ok
+test voice_state::tests::test_offset_operations ... ok
+test weights::tests::model_download_fallback_tracks_capability_and_preserves_errors ... ok
+test weights::tests::test_download_if_necessary_local ... ok
+test weights::tests::test_invalid_hf_path ... ok
+test timestamps::text::tests::empty_inputs_reject_like_ordinary_text ... ok
+test tts_model::tests::dropping_a_stream_preserves_voice_cache_with_spare_capacity ... ok
+test tts_model::tests::timestamped_requests_validate_before_generation_and_fail_terminally ... ok
+test tts_model::tests::stream_errors_are_terminal_across_text_chunks_and_pauses ... ok
+test tts_model::tests::v3_stream_ignores_early_eos_and_does_not_decode_cutoff ... ok
+test tts_model::tests::v3_generation_bound_uses_tokens_and_rejects_empty_text ... ok
+test tts_model::tests::timestamped_stream_preserves_audio_and_segment_sample_clock ... ok
+test modules::sdpa::tests::test_sdpa_handles_non_contiguous_inputs ... ok
+test modules::attention::tests::gqa_projection_streaming_growth_and_ring_match_dense ... ok
+test modules::sdpa::tests::gqa_matches_dense_prefill_decode_tiled_and_chunked ... ok
+test weights::tests::test_parse_revision ... ok
+
+test result: ok. 77 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.44s
+
+     Running tests/integration_tests.rs (target/release/deps/integration_tests-6aa6fe8c2f580768)
+
+running 9 tests
+test test_audio_generation_produces_valid_output ... ok
+test test_generate_with_pauses_adds_silence ... ok
+test test_download_gated_weights ... ok
+test test_tts_model_load ... ok
+test test_voice_state_from_embedding ... ok
+test test_mimi_encode_decode_roundtrip ... ok
+test test_quantize_module_integration ... ok
+test test_pause_module_integration ... ok
+test test_download_non_gated_tokenizer ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/memory_usage.rs (target/release/deps/memory_usage-ddefec1eabe46f86)
+
+running 1 test
+test tests::test_long_audio_prompt_memory ... ignored
+
+test result: ok. 0 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/streaming_tests.rs (target/release/deps/streaming_tests-16619561dd5ab29d)
+
+running 3 tests
+test tests::test_long_text_handling ... ignored
+test tests::test_streaming_matches_batch ... ok
+test tests::test_streaming_yields_multiple_chunks ... ok
+
+test result: ok. 2 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 4.90s
+
+     Running tests/timestamps_model.rs (target/release/deps/timestamps_model-31985dfb9e4f9d16)
+
+running 1 test
+test timestamps_preserve_audio_and_identify_original_words ... ignored, requires a released English model, tokenizer and matching voice manifest
+
+test result: ok. 0 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/upstream_fixtures.rs (target/release/deps/upstream_fixtures-4487e2054d491f6a)
+
+running 2 tests
+test normalization_activation_and_samplers_match_python_tensors ... ok
+test text_and_native_byte_tokenizers_match_python_in_all_languages ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.70s
+
+     Running tests/upstream_model.rs (target/release/deps/upstream_model-25b2d355703c4a9d)
+
+running 1 test
+test teacher_forced_noise_matches_python_prefill_latents_and_decoder ... ignored, requires explicitly generated upstream model fixtures
+
+test result: ok. 0 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/upstream_operators.rs (target/release/deps/upstream_operators-27e08ef4f9f5bb97)
+
+running 6 tests
+test unsupported_time_counts_are_rejected ... ok
+test zero_steps_are_rejected ... ok
+test one_step_heads_have_no_time_condition_or_step_dependence ... ok
+test one_condition_euler_schedule_and_cache ... ok
+test two_condition_lsd_schedule_and_cache ... ok
+test explicit_noise_is_used_verbatim_by_both_samplers ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/upstream_text.rs (target/release/deps/upstream_text-162c8ff81f4481f4)
+
+running 8 tests
+test default_preparation_and_tail_guess ... ok
+test options_control_preparation_without_consuming_pause_markers ... ok
+test terminal_punctuation_matches_closers_and_weak_marks ... ok
+test boundaries_are_token_ids_not_raw_punctuation_and_padding_is_stripped ... ok
+test fallback_only_refines_oversized_sentences_and_limits_stay_soft ... ok
+test splitting_uses_token_counts_and_keeps_boundary_runs ... ok
+test decimal_detection_decodes_prefix_and_suffix_and_uses_python_digits ... ok
+test translation_is_simultaneous_and_retidies_before_capitalization ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/v2_parity_test.rs (target/release/deps/v2_parity_test-dba7a238d222e305)
+
+running 4 tests
+test test_v2_german_parity ... ok
+test test_v2_tokenization ... ok
+test test_v2_voice_state_import ... ok
+test test_v2_first_generation_step ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.95s
+
+     Running tests/wasm_path_parity.rs (target/release/deps/wasm_path_parity-0a5cb09a15d2a0ff)
+
+running 1 test
+test test_german_wasm_vs_cli_path ... ignored, requires released German weights and preset; missing assets are fatal
+
+test result: ok. 0 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests pocket_tts
+
+running 2 tests
+test crates/pocket-tts/src/tts_model.rs - tts_model::TTSModel::generate_with_pauses (line 1000) ... ignored
+test crates/pocket-tts/src/pause.rs - pause::parse_explicit_pauses (line 44) ... ok
+
+test result: ok. 1 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+all doctests ran in 16.51s; merged doctests compilation took 16.22s

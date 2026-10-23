@@ -1,0 +1,1053 @@
+ Downloading crates ...
+  Downloaded pyo3-macros v0.29.2
+  Downloaded termtree v0.5.1
+  Downloaded ctrlc v3.5.2
+  Downloaded http-range-header v0.4.2
+  Downloaded rust-embed-utils v8.12.0
+  Downloaded predicates-core v1.0.10
+  Downloaded difflib v0.4.0
+  Downloaded httpdate v1.0.3
+  Downloaded predicates-tree v1.0.13
+  Downloaded rust-embed-impl v8.12.0
+  Downloaded serde_path_to_error v0.1.20
+  Downloaded num-rational v0.4.2
+  Downloaded owo-colors v4.3.0
+  Downloaded wait-timeout v0.2.1
+  Downloaded multer v3.1.0
+  Downloaded objc2-core-audio v0.3.2
+  Downloaded objc2-core-audio-types v0.3.2
+  Downloaded assert_cmd v2.2.2
+  Downloaded target-lexicon v0.13.5
+  Downloaded axum-core v0.5.6
+  Downloaded mach2 v0.5.0
+  Downloaded matchit v0.8.4
+  Downloaded spin v0.9.9
+  Downloaded num-bigint v0.4.8
+  Downloaded predicates v3.1.4
+  Downloaded tokio-stream v0.1.19
+  Downloaded clap_derive v4.6.4
+  Downloaded coreaudio-rs v0.14.2
+  Downloaded pyo3-build-config v0.29.2
+  Downloaded pyo3-ffi v0.29.2
+  Downloaded base64 v0.23.1
+  Downloaded pyo3-macros-backend v0.29.2
+  Downloaded crossterm v0.29.0
+  Downloaded rodio v0.22.2
+  Downloaded cpal v0.17.3
+  Downloaded axum v0.8.9
+  Downloaded tower-http v0.7.0
+  Downloaded objc2-audio-toolbox v0.3.2
+  Downloaded nix v0.31.3
+  Downloaded pyo3 v0.29.2
+  Downloaded rust-embed v8.12.0
+warning: output filename collision at /Users/dmg/projects/pocket-tts/target/release/deps/libpocket_tts.dylib
+  |
+  = note: the lib target `pocket_tts` in package `pocket-tts v0.8.1 (/Users/dmg/projects/pocket-tts/crates/pocket-tts)` has the same output filename as the lib target `pocket_tts` in package `pocket-tts v0.8.1 (/Users/dmg/projects/pocket-tts/crates/pocket-tts)`
+  = note: this may become a hard error in the future; see <https://github.com/rust-lang/cargo/issues/6313>
+  = help: consider changing their names to be unique or compiling them separately
+warning: output filename collision at /Users/dmg/projects/pocket-tts/target/release/deps/libpocket_tts.dylib.dSYM
+  |
+  = note: the lib target `pocket_tts` in package `pocket-tts v0.8.1 (/Users/dmg/projects/pocket-tts/crates/pocket-tts)` has the same output filename as the lib target `pocket_tts` in package `pocket-tts v0.8.1 (/Users/dmg/projects/pocket-tts/crates/pocket-tts)`
+  = note: this may become a hard error in the future; see <https://github.com/rust-lang/cargo/issues/6313>
+  = help: consider changing their names to be unique or compiling them separately
+warning: output filename collision at /Users/dmg/projects/pocket-tts/target/release/deps/libpocket_tts.rlib
+  |
+  = note: the lib target `pocket_tts` in package `pocket-tts v0.8.1 (/Users/dmg/projects/pocket-tts/crates/pocket-tts)` has the same output filename as the lib target `pocket_tts` in package `pocket-tts v0.8.1 (/Users/dmg/projects/pocket-tts/crates/pocket-tts)`
+  = note: this may become a hard error in the future; see <https://github.com/rust-lang/cargo/issues/6313>
+  = help: consider changing their names to be unique or compiling them separately
+   Compiling libc v0.2.189
+   Compiling serde_core v1.0.229
+   Compiling cfg-if v1.0.4
+   Compiling parking_lot_core v0.9.12
+   Compiling objc2 v0.6.4
+   Compiling serde_json v1.0.151
+   Compiling mime_guess v2.0.5
+   Compiling bitflags v2.13.1
+   Compiling scopeguard v1.2.0
+   Compiling once_cell v1.21.4
+   Compiling objc2-encode v4.1.0
+   Compiling memchr v2.8.3
+   Compiling lock_api v0.4.14
+   Compiling tracing v0.1.44
+   Compiling rustix v1.1.4
+   Compiling libm v0.2.16
+   Compiling smallvec v1.15.2
+   Compiling itoa v1.0.18
+   Compiling httpdate v1.0.3
+   Compiling log v0.4.33
+   Compiling pin-project-lite v0.2.17
+   Compiling num-integer v0.1.47
+   Compiling stable_deref_trait v1.2.1
+   Compiling zerofrom v0.1.8
+   Compiling bytes v1.12.1
+   Compiling futures-core v0.3.34
+   Compiling yoke v0.8.3
+   Compiling num-traits v0.2.19
+   Compiling crossbeam-utils v0.8.22
+   Compiling transpose v0.2.3
+   Compiling primal-check v0.3.4
+   Compiling clap_derive v4.6.4
+   Compiling utf8parse v0.2.2
+   Compiling rustfft v6.4.1
+   Compiling anstyle-parse v1.0.0
+   Compiling tracing-core v0.1.36
+   Compiling bytemuck v1.25.2
+   Compiling anstyle-query v1.1.5
+   Compiling block2 v0.6.2
+   Compiling colorchoice v1.0.5
+   Compiling is_terminal_polyfill v1.70.2
+   Compiling zerovec v0.11.7
+   Compiling anstream v1.0.0
+   Compiling errno v0.3.14
+   Compiling getrandom v0.3.4
+   Compiling signal-hook-registry v1.4.8
+   Compiling socket2 v0.6.5
+   Compiling rand_core v0.9.5
+   Compiling mio v1.2.2
+   Compiling parking_lot v0.12.5
+   Compiling dispatch2 v0.3.1
+   Compiling rand_chacha v0.9.0
+   Compiling getrandom v0.2.17
+   Compiling core-foundation v0.9.4
+   Compiling system-configuration-sys v0.6.0
+   Compiling rand v0.9.5
+   Compiling ring v0.17.14
+   Compiling tokio v1.53.1
+   Compiling objc2-core-foundation v0.3.2
+   Compiling serde v1.0.229
+   Compiling system-configuration v0.7.0
+   Compiling getrandom v0.4.3
+   Compiling sysctl v0.6.0
+   Compiling rand_distr v0.5.1
+   Compiling core-foundation v0.10.1
+   Compiling security-framework-sys v2.17.0
+   Compiling dirs-sys v0.5.0
+   Compiling serde_urlencoded v0.7.1
+   Compiling dirs v6.0.0
+   Compiling half v2.7.1
+   Compiling security-framework v3.7.0
+   Compiling tracing-serde v0.2.0
+   Compiling rand v0.10.2
+   Compiling shellexpand v3.1.2
+   Compiling tracing-subscriber v0.3.23
+   Compiling rustls-webpki v0.103.14
+   Compiling gemm-common v0.19.0
+   Compiling cpufeatures v0.3.0
+   Compiling sha2 v0.11.0
+   Compiling compact_str v0.9.1
+   Compiling rustls v0.23.43
+   Compiling objc2-io-kit v0.3.2
+   Compiling objc2-system-configuration v0.3.2
+   Compiling whoami v2.1.3
+   Compiling sysinfo v0.38.4
+   Compiling gemm-f32 v0.19.0
+   Compiling dary_heap v0.3.9
+   Compiling tracing-appender v0.2.5
+   Compiling spm_precompiled v0.1.4
+   Compiling ahash v0.8.12
+   Compiling uuid v1.24.1
+   Compiling monostate v0.1.18
+   Compiling gemm-f16 v0.19.0
+   Compiling tempfile v3.27.0
+   Compiling gemm-f64 v0.19.0
+   Compiling gemm-c32 v0.19.0
+   Compiling gemm-c64 v0.19.0
+   Compiling tokio-util v0.7.19
+   Compiling tower v0.5.3
+   Compiling h2 v0.4.15
+   Compiling tower-http v0.6.11
+   Compiling tokio-retry v0.3.2
+   Compiling hashbrown v0.16.1
+   Compiling gemm v0.19.0
+   Compiling tokenizers v0.22.2
+   Compiling float8 v0.7.0
+   Compiling console v0.15.11
+   Compiling safetensors v0.7.0
+   Compiling socks v0.3.4
+   Compiling memmap2 v0.9.11
+   Compiling num_cpus v1.17.0
+   Compiling tokio-rustls v0.26.4
+   Compiling rustls-platform-verifier v0.7.0
+   Compiling ureq v2.12.1
+   Compiling indicatif v0.17.11
+   Compiling console v0.16.4
+   Compiling indicatif v0.18.6
+   Compiling hf-hub v0.4.3
+   Compiling realfft v3.5.0
+   Compiling serde_plain v1.0.2
+   Compiling strsim v0.11.1
+   Compiling futures-sink v0.3.34
+   Compiling clap_builder v4.6.6
+   Compiling tokenizers v0.23.1
+   Compiling serde_yaml v0.9.34+deprecated
+   Compiling rubato v5.0.0
+   Compiling hyper v1.11.0
+   Compiling rand_distr v0.6.0
+   Compiling http v1.5.0
+   Compiling candle-core v0.10.2
+   Compiling hyper-util v0.1.20
+   Compiling equivalent v1.0.2
+   Compiling clap v4.6.6
+   Compiling hyper-rustls v0.27.9
+   Compiling reqwest v0.13.4
+   Compiling aho-corasick v1.1.5
+   Compiling zmij v1.0.23
+   Compiling zerocopy v0.8.56
+   Compiling either v1.17.0
+   Compiling zeroize v1.9.0
+   Compiling slab v0.4.12
+   Compiling regex-syntax v0.8.11
+   Compiling core-foundation-sys v0.8.7
+   Compiling xet-runtime v1.6.0
+   Compiling reqwest-middleware v0.5.2
+   Compiling regex-automata v0.4.18
+   Compiling futures-channel v0.3.34
+   Compiling tinystr v0.8.4
+   Compiling futures-io v0.3.34
+   Compiling litemap v0.8.3
+   Compiling percent-encoding v2.3.2
+   Compiling hashbrown v0.17.1
+   Compiling writeable v0.6.4
+   Compiling candle-nn v0.10.2
+   Compiling indexmap v2.14.0
+   Compiling xet-core-structures v1.6.0
+   Compiling candle-transformers v0.10.2
+   Compiling icu_locale_core v2.3.0
+   Compiling xet-client v1.6.0
+   Compiling ppv-lite86 v0.2.21
+   Compiling rustls-pki-types v1.15.1
+   Compiling potential_utf v0.1.6
+   Compiling zerotrie v0.2.5
+   Compiling futures-task v0.3.34
+   Compiling utf8_iter v1.0.4
+   Compiling icu_collections v2.3.0
+   Compiling futures-util v0.3.34
+   Compiling icu_provider v2.3.0
+   Compiling aws-lc-sys v0.44.0
+   Compiling ryu v1.0.23
+   Compiling untrusted v0.9.0
+   Compiling aws-lc-rs v1.18.0
+   Compiling ciborium-ll v0.2.2
+   Compiling http-body v1.1.0
+   Compiling crossbeam-epoch v0.9.20
+   Compiling xet-data v1.6.0
+   Compiling icu_normalizer_data v2.3.0
+   Compiling icu_properties_data v2.3.0
+   Compiling icu_properties v2.3.0
+   Compiling icu_normalizer v2.3.0
+   Compiling crossbeam-deque v0.8.7
+   Compiling ciborium v0.2.2
+   Compiling form_urlencoded v1.2.2
+   Compiling tinytemplate v1.2.1
+   Compiling page_size v0.6.0
+   Compiling thiserror v2.0.20
+   Compiling tower-service v0.3.3
+   Compiling byteorder v1.5.0
+   Compiling subtle v2.6.1
+   Compiling criterion v0.8.2
+   Compiling idna_adapter v1.2.2
+   Compiling rayon-core v1.13.0
+   Compiling num-complex v0.4.6
+   Compiling base64 v0.22.1
+   Compiling rayon v1.12.0
+   Compiling hf-xet v1.6.0
+   Compiling idna v1.1.0
+   Compiling httparse v1.10.1
+   Compiling atomic-waker v1.1.2
+   Compiling tower-layer v0.3.3
+   Compiling fnv v1.0.7
+   Compiling try-lock v0.2.5
+   Compiling mime v0.3.17
+   Compiling rand_core v0.10.1
+   Compiling want v0.3.1
+   Compiling url v2.5.8
+   Compiling hf-hub v1.0.0
+   Compiling sync_wrapper v1.0.2
+   Compiling crc32fast v1.5.0
+   Compiling typenum v1.20.1
+   Compiling hybrid-array v0.4.14
+   Compiling http-body-util v0.1.5
+   Compiling itertools v0.14.0
+   Compiling thiserror v1.0.69
+   Compiling pulp-wasm-simd-flag v0.1.1
+   Compiling reborrow v0.5.5
+   Compiling ipnet v2.12.1
+   Compiling option-ext v0.2.0
+   Compiling static_assertions v1.1.0
+   Compiling pulp v0.22.3
+   Compiling regex v1.13.1
+   Compiling dyn-stack v0.13.2
+   Compiling raw-cpuid v11.6.0
+   Compiling encoding_rs v0.8.35
+   Compiling unicase v2.9.0
+   Compiling block-buffer v0.12.1
+   Compiling crypto-common v0.2.2
+   Compiling chacha20 v0.10.1
+   Compiling lazy_static v1.5.0
+   Compiling cfg_aliases v0.2.2
+   Compiling const-oid v0.10.2
+   Compiling nix v0.31.3
+   Compiling digest v0.11.3
+   Compiling sharded-slab v0.1.7
+   Compiling bstr v1.13.1
+   Compiling matchers v0.2.0
+   Compiling tracing-log v0.2.0
+   Compiling thread_local v1.1.10
+   Compiling multer v3.1.0
+   Compiling powerfmt v0.2.0
+   Compiling time-core v0.1.9
+   Compiling typewit v1.15.2
+   Compiling deranged v0.5.8
+   Compiling cpal v0.17.3
+   Compiling nu-ansi-term v0.50.3
+   Compiling same-file v1.0.6
+   Compiling num-conv v0.2.2
+   Compiling walkdir v2.5.0
+   Compiling const_panic v0.2.15
+   Compiling time v0.3.55
+   Compiling futures-executor v0.3.34
+   Compiling iana-time-zone v0.1.65
+   Compiling crossbeam-channel v0.5.16
+   Compiling os_str_bytes v6.6.1
+   Compiling anyhow v1.0.104
+   Compiling link-section v0.19.3
+   Compiling symlink v0.1.0
+   Compiling minimal-lexical v0.2.1
+   Compiling ctor v1.0.13
+   Compiling nom v7.1.3
+   Compiling chrono v0.4.45
+   Compiling futures v0.3.34
+   Compiling rust-embed-utils v8.12.0
+   Compiling konst v0.4.3
+   Compiling objc2-foundation v0.3.2
+   Compiling objc2-core-audio-types v0.3.2
+   Compiling git-version v0.3.9
+   Compiling pin-project v1.1.13
+   Compiling onig_sys v69.9.3
+   Compiling castaway v0.2.4
+   Compiling unicode-segmentation v1.13.3
+   Compiling const-str v1.1.0
+   Compiling oneshot v0.1.13
+   Compiling target-lexicon v0.13.5
+   Compiling unicode-width v0.2.2
+   Compiling litrs v1.0.0
+   Compiling humantime v2.4.0
+   Compiling arrayref v0.3.9
+   Compiling base64 v0.13.1
+   Compiling twox-hash v2.1.3
+   Compiling owo-colors v4.3.0
+   Compiling arrayvec v0.7.8
+   Compiling constant_time_eq v0.4.2
+   Compiling more-asserts v0.3.1
+   Compiling colored v3.1.1
+   Compiling blake3 v1.8.6
+   Compiling document-features v0.2.12
+   Compiling lz4_flex v0.13.1
+   Compiling onig v6.5.3
+   Compiling rust-embed-impl v8.12.0
+   Compiling rayon-cond v0.4.0
+   Compiling countio v0.3.0
+   Compiling approx v0.5.1
+   Compiling unicode-normalization-alignments v0.1.12
+   Compiling macro_rules_attribute v0.2.3
+   Compiling derive_builder v0.20.2
+   Compiling esaxx-rs v0.1.10
+   Compiling heapify v0.2.0
+   Compiling allocator-api2 v0.2.21
+   Compiling adler2 v2.0.1
+   Compiling foldhash v0.2.0
+   Compiling unicode_categories v0.1.1
+   Compiling fastrand v2.5.0
+   Compiling simd-adler32 v0.3.10
+   Compiling safe-transmute v0.11.3
+   Compiling miniz_oxide v0.8.9
+   Compiling statrs v0.18.0
+   Compiling webpki-roots v1.0.9
+   Compiling portable-atomic v1.15.0
+   Compiling redb v3.1.3
+   Compiling urlencoding v2.1.3
+   Compiling strength_reduce v0.2.4
+   Compiling pocket-tts-cli v0.8.1 (/Users/dmg/projects/pocket-tts/crates/pocket-tts-cli)
+   Compiling typed-path v0.12.3
+   Compiling cfg-if v0.1.10
+   Compiling bit-vec v0.8.0
+   Compiling bit-set v0.8.0
+   Compiling gearhash v0.1.3
+   Compiling webpki-roots v0.26.11
+   Compiling zip v7.2.0
+   Compiling pyo3-build-config v0.29.2
+   Compiling flate2 v1.1.9
+   Compiling mach2 v0.5.0
+   Compiling objc2-core-audio v0.3.2
+   Compiling objc2-audio-toolbox v0.3.2
+   Compiling num-bigint v0.4.8
+   Compiling coreaudio-rs v0.14.2
+   Compiling number_prefix v0.4.0
+   Compiling predicates-core v1.0.10
+   Compiling dasp_sample v0.11.0
+   Compiling spin v0.9.9
+   Compiling semver v1.0.28
+   Compiling lenient_semver_version_builder v0.4.2
+   Compiling num-rational v0.4.2
+   Compiling fancy-regex v0.17.0
+   Compiling serde_path_to_error v0.1.20
+   Compiling audioadapter-sample v5.1.0
+   Compiling axum-core v0.5.6
+   Compiling anstyle v1.0.14
+   Compiling http-range-header v0.4.2
+   Compiling audioadapter v5.0.0
+   Compiling matchit v0.8.4
+   Compiling termtree v0.5.1
+   Compiling assert_cmd v2.2.2
+   Compiling unit-prefix v0.5.2
+   Compiling difflib v0.4.0
+   Compiling axum v0.8.9
+   Compiling predicates v3.1.4
+   Compiling predicates-tree v1.0.13
+   Compiling audioadapter-buffers v5.1.0
+   Compiling tower-http v0.7.0
+   Compiling ctrlc v3.5.2
+   Compiling rust-embed v8.12.0
+   Compiling rodio v0.22.2
+   Compiling lenient_semver_parser v0.4.2
+   Compiling pyo3-ffi v0.29.2
+   Compiling crossterm v0.29.0
+   Compiling globset v0.4.20
+   Compiling tokio-stream v0.1.19
+   Compiling wait-timeout v0.2.1
+   Compiling windowfunctions v0.1.1
+   Compiling bon v3.9.3
+   Compiling unsafe-libyaml v0.2.11
+   Compiling clap_lex v1.1.0
+   Compiling daachorse v1.0.1
+   Compiling base64 v0.23.1
+   Compiling pathdiff v0.2.3
+   Compiling lenient_semver v0.4.2
+   Compiling hound v3.5.1
+   Compiling unicode-casefold v0.2.0
+   Compiling pyo3 v0.29.2
+   Compiling pyo3-macros-backend v0.29.2
+   Compiling pyo3-macros v0.29.2
+   Compiling pocket-tts v0.8.1 (/Users/dmg/projects/pocket-tts/crates/pocket-tts)
+   Compiling pocket-tts-bindings v0.8.1 (/Users/dmg/projects/pocket-tts/crates/pocket-tts-bindings)
+error: the crate `pocket_tts` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `candle_core` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `half` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `bytemuck` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `zerocopy` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `num_traits` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `rand` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `rand_core` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `getrandom` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `cfg_if` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `libc` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `rand_chacha` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `ppv_lite86` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `rand_distr` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `byteorder` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `float8` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `rayon` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `either` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `rayon_core` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `crossbeam_deque` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `crossbeam_epoch` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `crossbeam_utils` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `gemm` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `gemm_common` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `sysctl` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `bitflags` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `thiserror` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `dyn_stack` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `pulp` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `num_complex` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `once_cell` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `gemm_f16` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `gemm_f32` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `gemm_f64` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `gemm_c64` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `gemm_c32` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `tokenizers` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `log` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `derive_builder` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `ahash` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `serde` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `serde_core` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `onig` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `onig_sys` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `rayon_cond` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `itertools` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `macro_rules_attribute` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `monostate` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `serde_json` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `zmij` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `itoa` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `memchr` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `compact_str` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `castaway` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `static_assertions` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `ryu` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `dary_heap` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `unicode_categories` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `spm_precompiled` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `nom` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `unicode_segmentation` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `base64` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `unicode_normalization_alignments` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `smallvec` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `regex` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `regex_automata` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `regex_syntax` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `aho_corasick` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `esaxx_rs` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `safetensors` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `yoke` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `stable_deref_trait` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `zerofrom` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `libm` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `zip` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `crc32fast` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `typed_path` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `indexmap` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `hashbrown` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `equivalent` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `memmap2` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `num_cpus` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `hound` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `rubato` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `audioadapter` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `audioadapter_buffers` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `audioadapter_sample` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `realfft` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `rustfft` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `num_integer` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `strength_reduce` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `transpose` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `primal_check` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `windowfunctions` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `candle_nn` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `hf_hub` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `indicatif` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `console` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `unicode_width` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `number_prefix` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `portable_atomic` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `http` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `bytes` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `ureq` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `rustls` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `rustls_pki_types` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `zeroize` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `ring` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `untrusted` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `webpki` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `aws_lc_rs` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `aws_lc_sys` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `subtle` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `url` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `form_urlencoded` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `percent_encoding` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `idna` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `idna_adapter` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `icu_normalizer` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `icu_provider` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `zerotrie` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `zerovec` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `writeable` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `icu_locale_core` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `litemap` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `tinystr` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `icu_collections` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `potential_utf` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `utf8_iter` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `icu_normalizer_data` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `icu_properties` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `icu_properties_data` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `flate2` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `miniz_oxide` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `simd_adler32` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `socks` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `webpki_roots` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `dirs` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `dirs_sys` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `option_ext` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `unit_prefix` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `daachorse` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `anyhow` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `unicode_casefold` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `reqwest` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `futures_core` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `sync_wrapper` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `http_body` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `http_body_util` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `pin_project_lite` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `tokio` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `parking_lot` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `lock_api` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `scopeguard` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `parking_lot_core` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `mio` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `socket2` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `signal_hook_registry` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `errno` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `tokio_util` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `futures_sink` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `futures_util` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `futures_task` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `futures_channel` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `slab` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `futures_io` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `hyper_util` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `hyper` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `httpdate` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `atomic_waker` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `h2` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `fnv` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `tracing` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `tracing_core` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `httparse` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `want` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `try_lock` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `tower_service` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `ipnet` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `system_configuration` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `core_foundation` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `core_foundation_sys` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `system_configuration_sys` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `tower` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `tower_layer` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `tower_http` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `mime_guess` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `mime` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `unicase` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `encoding_rs` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `tokio_rustls` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `hyper_rustls` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `rustls_platform_verifier` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `security_framework` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `security_framework_sys` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `serde_urlencoded` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `futures` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `futures_executor` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `tokio_retry` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `chacha20` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `bon` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `globset` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `bstr` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `sha2` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `digest` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `block_buffer` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `hybrid_array` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `typenum` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `crypto_common` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `const_oid` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `cpufeatures` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `xet` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `xet_client` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `xet_core_structures` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `safe_transmute` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `xet_runtime` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `colored` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `more_asserts` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `ctor` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `link_section` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `chrono` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `iana_time_zone` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `pin_project` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `sysinfo` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `objc2_core_foundation` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `objc2` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `objc2_encode` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `dispatch2` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `block2` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `objc2_io_kit` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `tracing_appender` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `crossbeam_channel` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `tracing_subscriber` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `tracing_log` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `thread_local` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `nu_ansi_term` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `matchers` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `sharded_slab` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `lazy_static` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `tracing_serde` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `time` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `time_core` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `deranged` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `num_conv` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `powerfmt` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `symlink` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `const_str` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `git_version` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `whoami` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `objc2_system_configuration` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `humantime` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `shellexpand` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `os_str_bytes` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `konst` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `typewit` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `const_panic` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `oneshot` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `uuid` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `heapify` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `lz4_flex` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `twox_hash` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `blake3` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `arrayref` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `arrayvec` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `constant_time_eq` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `countio` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `statrs` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `approx` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `reqwest_middleware` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `redb` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `tempfile` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `rustix` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `fastrand` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `urlencoding` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `xet_data` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `gearhash` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `pathdiff` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `serde_yaml` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: the crate `unsafe_libyaml` requires panic strategy `abort` which is incompatible with this crate's strategy of `unwind`
+
+error: could not compile `pocket-tts` (example "verify_sdpa") due to 279 previous errors
+warning: build failed, waiting for other jobs to finish...
+error: linking with `cc` failed: exit status: 1
+  |
+  = note:  "cc" "<1 object files omitted>" "/Users/dmg/projects/pocket-tts/target/release/deps/rustcthVK47/{libblake3-f73a3498d3f0da56,libaws_lc_sys-ea5716528077ed67,libring-491777ec758affb6,libonig_sys-f8deaaa713b7fa48}.rlib" "<sysroot>/lib/rustlib/aarch64-apple-darwin/lib/libcompiler_builtins-*.rlib" "-framework" "SystemConfiguration" "-lobjc" "-framework" "IOKit" "-framework" "IOKit" "-framework" "CoreFoundation" "-lSystem" "-lSystem" "-lobjc" "-framework" "Foundation" "-framework" "Security" "-framework" "SystemConfiguration" "-framework" "CoreFoundation" "-liconv" "-lSystem" "-lc" "-lm" "-arch" "arm64" "-mmacosx-version-min=11.0.0" "-L" "/Users/dmg/projects/pocket-tts/target/release/build/onig_sys-fe1124e357cfa406/out" "-L" "/Users/dmg/projects/pocket-tts/target/release/build/alloca-b40844274a33ed89/out" "-L" "/Users/dmg/projects/pocket-tts/target/release/build/aws-lc-sys-008942eb236d7067/out" "-L" "/Users/dmg/projects/pocket-tts/target/release/build/ring-729848862f8e1ca5/out" "-L" "/Users/dmg/projects/pocket-tts/target/release/build/blake3-54334b014355348a/out" "-o" "/Users/dmg/projects/pocket-tts/target/release/deps/upstream_fixtures-5029ba9ef5038368" "-Wl,-dead_strip" "-nodefaultlibs"
+  = note: some arguments are omitted. use `--verbose` to show all linker arguments
+  = note: ld: warning: ignoring duplicate libraries: '-lSystem', '-lobjc'
+          ld: warning: object file (/Users/dmg/projects/pocket-tts/target/release/deps/rustcthVK47/libonig_sys-f8deaaa713b7fa48.rlib[2](a445302c6d3dcb51-regexec.o)) was built for newer 'macOS' version (27.0) than being linked (11.0)
+          ld: warning: object file (/Users/dmg/projects/pocket-tts/target/release/deps/rustcthVK47/libonig_sys-f8deaaa713b7fa48.rlib[3](a445302c6d3dcb51-regerror.o)) was built for newer 'macOS' version (27.0) than being linked (11.0)
+          ld: warning: object file (/Users/dmg/projects/pocket-tts/target/release/deps/rustcthVK47/libonig_sys-f8deaaa713b7fa48.rlib[4](a445302c6d3dcb51-regparse.o)) was built for newer 'macOS' version (27.0) than being linked (11.0)
+          ld: warning: object file (/Users/dmg/projects/pocket-tts/target/release/deps/rustcthVK47/libonig_sys-f8deaaa713b7fa48.rlib[6](a445302c6d3dcb51-regcomp.o)) was built for newer 'macOS' version (27.0) than being linked (11.0)
+          ld: warning: object file (/Users/dmg/projects/pocket-tts/target/release/deps/rustcthVK47/libonig_sys-f8deaaa713b7fa48.rlib[8](a445302c6d3dcb51-regenc.o)) was built for newer 'macOS' version (27.0) than being linked (11.0)
+          ld: warning: object file (/Users/dmg/projects/pocket-tts/target/release/deps/rustcthVK47/libonig_sys-f8deaaa713b7fa48.rlib[12](a445302c6d3dcb51-st.o)) was built for newer 'macOS' version (27.0) than being linked (11.0)
+          ld: warning: object file (/Users/dmg/projects/pocket-tts/target/release/deps/rustcthVK47/libonig_sys-f8deaaa713b7fa48.rlib[14](a445302c6d3dcb51-unicode.o)) was built for newer 'macOS' version (27.0) than being linked (11.0)
+          ld: warning: object file (/Users/dmg/projects/pocket-tts/target/release/deps/rustcthVK47/libonig_sys-f8deaaa713b7fa48.rlib[15](a445302c6d3dcb51-ascii.o)) was built for newer 'macOS' version (27.0) than being linked (11.0)
+          ld: warning: object file (/Users/dmg/projects/pocket-tts/target/release/deps/rustcthVK47/libonig_sys-f8deaaa713b7fa48.rlib[16](a445302c6d3dcb51-utf8.o)) was built for newer 'macOS' version (27.0) than being linked (11.0)
+          ld: warning: object file (/Users/dmg/projects/pocket-tts/target/release/deps/rustcthVK47/libonig_sys-f8deaaa713b7fa48.rlib[46](a445302c6d3dcb51-unicode_unfold_key.o)) was built for newer 'macOS' version (27.0) than being linked (11.0)
+          ld: warning: object file (/Users/dmg/projects/pocket-tts/target/release/deps/rustcthVK47/libonig_sys-f8deaaa713b7fa48.rlib[47](a445302c6d3dcb51-unicode_fold1_key.o)) was built for newer 'macOS' version (27.0) than being linked (11.0)
+          ld: warning: object file (/Users/dmg/projects/pocket-tts/target/release/deps/rustcthVK47/libonig_sys-f8deaaa713b7fa48.rlib[48](a445302c6d3dcb51-unicode_fold2_key.o)) was built for newer 'macOS' version (27.0) than being linked (11.0)
+          ld: warning: object file (/Users/dmg/projects/pocket-tts/target/release/deps/rustcthVK47/libonig_sys-f8deaaa713b7fa48.rlib[49](a445302c6d3dcb51-unicode_fold3_key.o)) was built for newer 'macOS' version (27.0) than being linked (11.0)
+          Undefined symbols for architecture arm64:
+            "__RINvMs6_NtCsib8wo0YhOiF_9hashbrown3rawINtB6_8RawTableTcNtNtCs6zY7rJBZy9D_5alloc6string6StringEE14reserve_rehashNCINvNtB8_3map11make_hashercBR_NtNtNtCs1SSuMAdGM58_3std4hash6random11RandomStateE0ECsaoOy36MfmsQ_10pocket_tts", referenced from:
+                __RINvXs3_NtCshHXOxdqfTLV_10serde_core2deINtNtCsjIpoRzUjyHQ_4core6marker11PhantomDataINtNtNtNtCs1SSuMAdGM58_3std11collections4hash3map7HashMapcNtNtCs6zY7rJBZy9D_5alloc6string6StringEENtB6_15DeserializeSeed11deserializeQINtNtCs1psbJ570Nmv_10serde_json2de12DeserializerNtNtB3y_4read9SliceReadEECsgsCcMdVLD1i_17upstream_fixtures in upstream_fixtures-5029ba9ef5038368.upstream_fixtures.bfbce598707e6766-cgu.0.rcgu.o
+            "__RNvMNtNtCsaoOy36MfmsQ_10pocket_tts12conditioners4textNtB2_14LUTConditioner14new_from_bytes", referenced from:
+                __RNvCsgsCcMdVLD1i_17upstream_fixturess_61text_and_native_byte_tokenizers_match_python_in_all_languages in upstream_fixtures-5029ba9ef5038368.upstream_fixtures.bfbce598707e6766-cgu.0.rcgu.o
+            "__RNvMNtNtCsaoOy36MfmsQ_10pocket_tts12conditioners4textNtB2_14LUTConditioner3new", referenced from:
+                __RNvCsgsCcMdVLD1i_17upstream_fixturess_61text_and_native_byte_tokenizers_match_python_in_all_languages in upstream_fixtures-5029ba9ef5038368.upstream_fixtures.bfbce598707e6766-cgu.0.rcgu.o
+            "__RNvMNtNtCsaoOy36MfmsQ_10pocket_tts12conditioners4textNtB2_14LUTConditioner7prepare", referenced from:
+                __RNvCsgsCcMdVLD1i_17upstream_fixturess_61text_and_native_byte_tokenizers_match_python_in_all_languages in upstream_fixtures-5029ba9ef5038368.upstream_fixtures.bfbce598707e6766-cgu.0.rcgu.o
+            "__RNvMNtNtCsaoOy36MfmsQ_10pocket_tts7modules3mlpNtB2_7RMSNorm3new", referenced from:
+                __RNvYNCNvCsgsCcMdVLD1i_17upstream_fixtures58normalization_activation_and_samplers_match_python_tensors0INtNtNtCsjIpoRzUjyHQ_4core3ops8function6FnOnceuE9call_onceB6_ in upstream_fixtures-5029ba9ef5038368.upstream_fixtures.bfbce598707e6766-cgu.0.rcgu.o
+            "__RNvMNtNtCsaoOy36MfmsQ_10pocket_tts7modules3mlpNtB2_7RMSNorm7forward", referenced from:
+                __RNvYNCNvCsgsCcMdVLD1i_17upstream_fixtures58normalization_activation_and_samplers_match_python_tensors0INtNtNtCsjIpoRzUjyHQ_4core3ops8function6FnOnceuE9call_onceB6_ in upstream_fixtures-5029ba9ef5038368.upstream_fixtures.bfbce598707e6766-cgu.0.rcgu.o
+            "__RNvMs4_NtNtCsaoOy36MfmsQ_10pocket_tts7modules3mlpNtB5_14SimpleMLPAdaLN15embed_condition", referenced from:
+                __RNvYNCNvCsgsCcMdVLD1i_17upstream_fixtures58normalization_activation_and_samplers_match_python_tensors0INtNtNtCsjIpoRzUjyHQ_4core3ops8function6FnOnceuE9call_onceB6_ in upstream_fixtures-5029ba9ef5038368.upstream_fixtures.bfbce598707e6766-cgu.0.rcgu.o
+            "__RNvMs4_NtNtCsaoOy36MfmsQ_10pocket_tts7modules3mlpNtB5_14SimpleMLPAdaLN3new", referenced from:
+                __RNvYNCNvCsgsCcMdVLD1i_17upstream_fixtures58normalization_activation_and_samplers_match_python_tensors0INtNtNtCsjIpoRzUjyHQ_4core3ops8function6FnOnceuE9call_onceB6_ in upstream_fixtures-5029ba9ef5038368.upstream_fixtures.bfbce598707e6766-cgu.0.rcgu.o
+            "__RNvMs5_NtNtCsaoOy36MfmsQ_10pocket_tts7modules3mlpNtB5_14SimpleMLPAdaLN22precompute_modulations", referenced from:
+                __RNvYNCNvCsgsCcMdVLD1i_17upstream_fixtures58normalization_activation_and_samplers_match_python_tensors0INtNtNtCsjIpoRzUjyHQ_4core3ops8function6FnOnceuE9call_onceB6_ in upstream_fixtures-5029ba9ef5038368.upstream_fixtures.bfbce598707e6766-cgu.0.rcgu.o
+            "__RNvMs5_NtNtCsaoOy36MfmsQ_10pocket_tts7modules3mlpNtB5_14SimpleMLPAdaLN23compute_time_embeddings", referenced from:
+                __RNvYNCNvCsgsCcMdVLD1i_17upstream_fixtures58normalization_activation_and_samplers_match_python_tensors0INtNtNtCsjIpoRzUjyHQ_4core3ops8function6FnOnceuE9call_onceB6_ in upstream_fixtures-5029ba9ef5038368.upstream_fixtures.bfbce598707e6766-cgu.0.rcgu.o
+            "__RNvMs_NtCsaoOy36MfmsQ_10pocket_tts4textNtB4_11TextOptions5split", referenced from:
+                __RNvCsgsCcMdVLD1i_17upstream_fixturess_61text_and_native_byte_tokenizers_match_python_in_all_languages in upstream_fixtures-5029ba9ef5038368.upstream_fixtures.bfbce598707e6766-cgu.0.rcgu.o
+            "__RNvMs_NtCsaoOy36MfmsQ_10pocket_tts4textNtB4_11TextOptions7prepare", referenced from:
+                __RNvCsgsCcMdVLD1i_17upstream_fixturess_61text_and_native_byte_tokenizers_match_python_in_all_languages in upstream_fixtures-5029ba9ef5038368.upstream_fixtures.bfbce598707e6766-cgu.0.rcgu.o
+            "__RNvMs_NtNtCsaoOy36MfmsQ_10pocket_tts7modules3mlpNtB4_9LayerNorm3new", referenced from:
+                __RNvYNCNvCsgsCcMdVLD1i_17upstream_fixtures58normalization_activation_and_samplers_match_python_tensors0INtNtNtCsjIpoRzUjyHQ_4core3ops8function6FnOnceuE9call_onceB6_ in upstream_fixtures-5029ba9ef5038368.upstream_fixtures.bfbce598707e6766-cgu.0.rcgu.o
+            "__RNvMs_NtNtCsaoOy36MfmsQ_10pocket_tts7modules3mlpNtB4_9LayerNorm7forward", referenced from:
+                __RNvYNCNvCsgsCcMdVLD1i_17upstream_fixtures58normalization_activation_and_samplers_match_python_tensors0INtNtNtCsjIpoRzUjyHQ_4core3ops8function6FnOnceuE9call_onceB6_ in upstream_fixtures-5029ba9ef5038368.upstream_fixtures.bfbce598707e6766-cgu.0.rcgu.o
+            "__RNvMsn_NtCs6zY7rJBZy9D_5alloc4syncINtB5_3ArcNtNtCsdzFo6hNdsuj_10tokenizers9tokenizer9TokenizerE9drop_slowCsaoOy36MfmsQ_10pocket_tts", referenced from:
+                __RINvNtCsjIpoRzUjyHQ_4core3ptr9drop_glueNtNtNtCsaoOy36MfmsQ_10pocket_tts12conditioners4text14LUTConditionerECsgsCcMdVLD1i_17upstream_fixtures in upstream_fixtures-5029ba9ef5038368.upstream_fixtures.bfbce598707e6766-cgu.0.rcgu.o
+            "__RNvNtNtCsaoOy36MfmsQ_10pocket_tts6models7flow_lm10lsd_decode", referenced from:
+                __RNvYNCNvCsgsCcMdVLD1i_17upstream_fixtures58normalization_activation_and_samplers_match_python_tensors0INtNtNtCsjIpoRzUjyHQ_4core3ops8function6FnOnceuE9call_onceB6_ in upstream_fixtures-5029ba9ef5038368.upstream_fixtures.bfbce598707e6766-cgu.0.rcgu.o
+            "__RNvXNtCsaoOy36MfmsQ_10pocket_tts4textNtB2_11TextOptionsNtNtCsjIpoRzUjyHQ_4core7default7Default7default", referenced from:
+                __RINvXs3_NtCshHXOxdqfTLV_10serde_core2deINtNtCsjIpoRzUjyHQ_4core6marker11PhantomDataNtNtCsaoOy36MfmsQ_10pocket_tts4text11TextOptionsENtB6_15DeserializeSeed11deserializeQINtNtCs1psbJ570Nmv_10serde_json2de12DeserializerNtNtB2L_4read9SliceReadEECsgsCcMdVLD1i_17upstream_fixtures in upstream_fixtures-5029ba9ef5038368.upstream_fixtures.bfbce598707e6766-cgu.0.rcgu.o
+                __RINvXs3_NtCshHXOxdqfTLV_10serde_core2deINtNtCsjIpoRzUjyHQ_4core6marker11PhantomDataNtNtCsaoOy36MfmsQ_10pocket_tts4text11TextOptionsENtB6_15DeserializeSeed11deserializeQINtNtCs1psbJ570Nmv_10serde_json2de12DeserializerNtNtB2L_4read9SliceReadEECsgsCcMdVLD1i_17upstream_fixtures in upstream_fixtures-5029ba9ef5038368.upstream_fixtures.bfbce598707e6766-cgu.0.rcgu.o
+            "__RNvXs0_NvXNvNtCsaoOy36MfmsQ_10pocket_tts4text1__NtBa_11TextOptionsNtNtCshHXOxdqfTLV_10serde_core2de11Deserialize11deserializeNtB5_9___VisitorNtB14_7Visitor9expecting", referenced from:
+                __RNvXs_NtCshHXOxdqfTLV_10serde_core2deNtNvXNvNtCsaoOy36MfmsQ_10pocket_tts4text1__NtBG_11TextOptionsNtB4_11Deserialize11deserialize9___VisitorNtB4_8Expected3fmtCsgsCcMdVLD1i_17upstream_fixtures in upstream_fixtures-5029ba9ef5038368.upstream_fixtures.bfbce598707e6766-cgu.0.rcgu.o
+          ld: symbol(s) not found for architecture arm64
+          clang: error: linker command failed with exit code 1 (use -v to see invocation)
+          
+
+error: could not compile `pocket-tts` (test "upstream_fixtures") due to 1 previous error
