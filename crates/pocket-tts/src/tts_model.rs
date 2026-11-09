@@ -68,12 +68,16 @@ pub struct TTSModel {
     pub origin: Option<std::path::PathBuf>,
     /// Calibrated zero-based (layer, head) pairs for this checkpoint.
     pub timestamp_heads: Vec<(usize, usize)>,
+    /// Immutable stock voice revision; absent for historical/custom configs.
+    pub preset_voice_revision: Option<String>,
     timestamp_dimensions: (usize, usize),
 }
 
 pub(crate) struct GeneratedFrame {
     pub audio: Tensor,
     pub unit_scores: Option<Vec<f32>>,
+    #[cfg(test)]
+    pub head_scores: Option<Vec<Vec<f32>>>,
 }
 
 impl TTSModel {
@@ -579,6 +583,7 @@ impl TTSModel {
             model_recommended_frames_after_eos: config.model_recommended_frames_after_eos,
             origin: None, // Set by the caller after construction
             timestamp_heads: config.timestamp_heads,
+            preset_voice_revision: config.preset_voice_revision,
             timestamp_dimensions: (
                 config.flow_lm.transformer.num_layers,
                 config.flow_lm.transformer.num_heads,
@@ -1309,6 +1314,8 @@ impl TTSModel {
                 }
             };
             Some(Ok(GeneratedFrame {
+                #[cfg(test)]
+                head_scores: capture.as_ref().map(|c| c.head_scores.clone()),
                 audio: audio_frame,
                 unit_scores,
             }))
@@ -1956,3 +1963,7 @@ mod tests {
         // Actual model loading requires HF_TOKEN
     }
 }
+
+#[cfg(test)]
+#[path = "timestamp_calibration.rs"]
+mod timestamp_calibration;

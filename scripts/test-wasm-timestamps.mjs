@@ -49,6 +49,7 @@ if (manifest.schema_version >= 2) {
   assert(normative && typeof normative === "object" && !Array.isArray(normative), "Selected config must be a YAML mapping");
   // The only documented Rust-only config metadata in these fixtures.
   delete normative.timestamp_heads;
+  delete normative.preset_voice_revision;
   assert.deepEqual(normative, manifest.config, "Selected config/asset identity mismatch");
 }
 if ((manifest.schema_version ?? 1) < 2 && !/^timestamp_heads:/m.test(yaml)

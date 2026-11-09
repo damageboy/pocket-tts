@@ -70,6 +70,10 @@ pub fn config(directory: &Path, manifest: &serde_json::Value) -> Result<Vec<u8>>
     if let Some(expected) = manifest.get("config") {
         let mut actual: serde_json::Value = serde_yaml::from_slice(&bytes)?;
         actual.as_object_mut().unwrap().remove("timestamp_heads");
+        actual
+            .as_object_mut()
+            .unwrap()
+            .remove("preset_voice_revision");
         ensure!(
             &actual == expected,
             "fixture config/asset identity mismatch"

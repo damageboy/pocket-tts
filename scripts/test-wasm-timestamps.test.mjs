@@ -77,7 +77,7 @@ test("rejects selected temperature drift before the zero-temperature override", 
 
 test("accepts authenticated normative config with documented Rust calibration metadata", async () => {
   await fixture(async ({ run, selected }) => {
-    await selected(source + "timestamp_heads: [[3, 8], [2, 0]]\n");
+    await selected(source + "timestamp_heads: [[3, 8], [2, 0]]\npreset_voice_revision: fixed\n");
     const result = await run();
     assert.equal(result.status, 0, result.stderr);
     assert.match(result.stdout, /Fixture config and assets validated/);

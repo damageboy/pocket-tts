@@ -1,0 +1,2279 @@
+{
+  "configs": {
+    "dutch": {
+      "flow_lm": {
+        "dtype": "float32",
+        "flow": {
+          "depth": 6,
+          "dim": 512
+        },
+        "insert_bos_before_voice": true,
+        "lookup_table": {
+          "dim": 1024,
+          "n_bins": 4000,
+          "tokenizer": "tokenizers",
+          "tokenizer_path": "hf://kyutai/pocket-tts-without-voice-cloning/languages/dutch/tokenizer.json@4e1e0a3e611c51c0b4ed8174fc10f32a54644303"
+        },
+        "transformer": {
+          "d_model": 1024,
+          "hidden_scale": 4,
+          "max_period": 10000,
+          "num_heads": 16,
+          "num_layers": 6
+        }
+      },
+      "mimi": {
+        "channels": 1,
+        "dtype": "float32",
+        "frame_rate": 12.5,
+        "inner_dim": 32,
+        "outer_dim": 512,
+        "quantizer": {
+          "dimension": 32,
+          "output_dimension": 512
+        },
+        "sample_rate": 24000,
+        "seanet": {
+          "channels": 1,
+          "compress": 2,
+          "dilation_base": 2,
+          "dimension": 512,
+          "kernel_size": 7,
+          "last_kernel_size": 3,
+          "n_filters": 64,
+          "n_residual_layers": 1,
+          "pad_mode": "constant",
+          "ratios": [
+            6,
+            5,
+            4
+          ],
+          "residual_kernel_size": 3
+        },
+        "transformer": {
+          "context": 250,
+          "d_model": 512,
+          "dim_feedforward": 2048,
+          "input_dimension": 512,
+          "layer_scale": 0.01,
+          "num_heads": 8,
+          "num_layers": 2,
+          "output_dimensions": [
+            512
+          ]
+        }
+      },
+      "replace_characters": {
+        "\"": "",
+        "(": "",
+        ")": "",
+        "[": "",
+        "]": "",
+        "\u00ab": "",
+        "\u00bb": "",
+        "\u2013": ",",
+        "\u2018": "'",
+        "\u2019": "'",
+        "\u201c": "",
+        "\u201d": "",
+        "\u201e": ""
+      },
+      "weights_path": "hf://kyutai/pocket-tts/languages/dutch/model.safetensors@3e82814a68665eec246ff649b14c71331f955c06",
+      "weights_path_without_voice_cloning": "hf://kyutai/pocket-tts-without-voice-cloning/languages/dutch/model.safetensors@1e08e6a23401048648a9fdcfde2f89348215c2a7"
+    },
+    "dutch_24l": {
+      "flow_lm": {
+        "dtype": "float32",
+        "flow": {
+          "depth": 6,
+          "dim": 512
+        },
+        "insert_bos_before_voice": true,
+        "lookup_table": {
+          "dim": 1024,
+          "n_bins": 4000,
+          "tokenizer": "tokenizers",
+          "tokenizer_path": "hf://kyutai/pocket-tts-without-voice-cloning/languages/dutch_24l/tokenizer.json@4e1e0a3e611c51c0b4ed8174fc10f32a54644303"
+        },
+        "transformer": {
+          "d_model": 1024,
+          "hidden_scale": 4,
+          "max_period": 10000,
+          "num_heads": 16,
+          "num_layers": 24
+        }
+      },
+      "mimi": {
+        "channels": 1,
+        "dtype": "float32",
+        "frame_rate": 12.5,
+        "inner_dim": 32,
+        "outer_dim": 512,
+        "quantizer": {
+          "dimension": 32,
+          "output_dimension": 512
+        },
+        "sample_rate": 24000,
+        "seanet": {
+          "channels": 1,
+          "compress": 2,
+          "dilation_base": 2,
+          "dimension": 512,
+          "kernel_size": 7,
+          "last_kernel_size": 3,
+          "n_filters": 64,
+          "n_residual_layers": 1,
+          "pad_mode": "constant",
+          "ratios": [
+            6,
+            5,
+            4
+          ],
+          "residual_kernel_size": 3
+        },
+        "transformer": {
+          "context": 250,
+          "d_model": 512,
+          "dim_feedforward": 2048,
+          "input_dimension": 512,
+          "layer_scale": 0.01,
+          "num_heads": 8,
+          "num_layers": 2,
+          "output_dimensions": [
+            512
+          ]
+        }
+      },
+      "replace_characters": {
+        "\"": "",
+        "(": "",
+        ")": "",
+        "[": "",
+        "]": "",
+        "\u00ab": "",
+        "\u00bb": "",
+        "\u2013": ",",
+        "\u2018": "'",
+        "\u2019": "'",
+        "\u201c": "",
+        "\u201d": "",
+        "\u201e": ""
+      },
+      "weights_path": "hf://kyutai/pocket-tts/languages/dutch_24l/model.safetensors@2dd944b099d06bb9edbd221fef138685711d9bf0",
+      "weights_path_without_voice_cloning": "hf://kyutai/pocket-tts-without-voice-cloning/languages/dutch_24l/model.safetensors@4e1e0a3e611c51c0b4ed8174fc10f32a54644303"
+    },
+    "english": {
+      "default_temperature": 0.3,
+      "flow_lm": {
+        "dtype": "float32",
+        "flow": {
+          "depth": 6,
+          "dim": 512
+        },
+        "insert_bos_before_voice": true,
+        "lookup_table": {
+          "dim": 1024,
+          "n_bins": 4000,
+          "tokenizer": "tokenizers",
+          "tokenizer_path": "hf://kyutai/pocket-tts-without-voice-cloning/languages/english/tokenizer.json@00eac05ed3d16bdc3f6b5d598874019c34a89214"
+        },
+        "transformer": {
+          "d_model": 1024,
+          "hidden_scale": 4,
+          "max_period": 10000,
+          "num_heads": 16,
+          "num_layers": 6
+        }
+      },
+      "mimi": {
+        "channels": 1,
+        "dtype": "float32",
+        "frame_rate": 12.5,
+        "inner_dim": 32,
+        "outer_dim": 512,
+        "quantizer": {
+          "dimension": 32,
+          "output_dimension": 512
+        },
+        "sample_rate": 24000,
+        "seanet": {
+          "channels": 1,
+          "compress": 2,
+          "dilation_base": 2,
+          "dimension": 512,
+          "kernel_size": 7,
+          "last_kernel_size": 3,
+          "n_filters": 64,
+          "n_residual_layers": 1,
+          "pad_mode": "constant",
+          "ratios": [
+            6,
+            5,
+            4
+          ],
+          "residual_kernel_size": 3
+        },
+        "transformer": {
+          "context": 250,
+          "d_model": 512,
+          "dim_feedforward": 2048,
+          "input_dimension": 512,
+          "layer_scale": 0.01,
+          "num_heads": 8,
+          "num_layers": 2,
+          "output_dimensions": [
+            512
+          ]
+        }
+      },
+      "replace_characters": {
+        "\u2018": "'",
+        "\u2019": "'"
+      },
+      "weights_path": "hf://kyutai/pocket-tts/languages/english/model.safetensors@db04f0e653473e5c7333c69686ac92b7460b0c1d",
+      "weights_path_without_voice_cloning": "hf://kyutai/pocket-tts-without-voice-cloning/languages/english/model.safetensors@a7056f505a4a8ca72d8b5fb1440071d6f1a35739"
+    },
+    "english_18m_2026-10": {
+      "default_eos_threshold": -1.0,
+      "default_temperature": 0.3,
+      "flow_lm": {
+        "dtype": "float32",
+        "flow": {
+          "depth": 4,
+          "dim": 192,
+          "type": "drifting"
+        },
+        "insert_bos_before_voice": true,
+        "lookup_table": {
+          "dim": 512,
+          "n_bins": 4000,
+          "rank": null,
+          "tokenizer": "sentencepiece",
+          "tokenizer_path": "hf://kyutai/pocket-tts-without-voice-cloning/languages/english_18m_2026-10/tokenizer.model@08ffc58775e62aad9409511b9591c9af626270f3"
+        },
+        "transformer": {
+          "attn_dim": null,
+          "d_model": 512,
+          "hidden_scale": 1,
+          "max_period": 10000,
+          "num_heads": 8,
+          "num_kv_heads": null,
+          "num_layers": 8
+        },
+        "z_dim": 64
+      },
+      "mimi": {
+        "channels": 1,
+        "decoder_seanet": {
+          "channels": 1,
+          "compress": 2,
+          "dilation_base": 2,
+          "dimension": 128,
+          "kernel_size": 3,
+          "last_kernel_size": 3,
+          "n_filters": 32,
+          "n_residual_layers": 1,
+          "pad_mode": "constant",
+          "ratios": [
+            6,
+            5,
+            4
+          ],
+          "residual_kernel_size": 3
+        },
+        "decoder_transformer": {
+          "context": 50,
+          "d_model": 128,
+          "dim_feedforward": 384,
+          "input_dimension": 128,
+          "layer_scale": 0.01,
+          "num_heads": 4,
+          "num_layers": 12,
+          "output_dimensions": [
+            128
+          ]
+        },
+        "dtype": "float32",
+        "frame_rate": 12.5,
+        "inner_dim": 32,
+        "outer_dim": 128,
+        "quantizer": {
+          "dimension": 32,
+          "output_dimension": 128
+        },
+        "sample_rate": 24000,
+        "seanet": {
+          "channels": 1,
+          "compress": 2,
+          "dilation_base": 2,
+          "dimension": 512,
+          "kernel_size": 7,
+          "last_kernel_size": 3,
+          "n_filters": 64,
+          "n_residual_layers": 1,
+          "pad_mode": "constant",
+          "ratios": [
+            6,
+            5,
+            4
+          ],
+          "residual_kernel_size": 3
+        },
+        "transformer": {
+          "context": 250,
+          "d_model": 512,
+          "dim_feedforward": 2048,
+          "input_dimension": 512,
+          "layer_scale": 0.01,
+          "num_heads": 8,
+          "num_layers": 2,
+          "output_dimensions": [
+            512
+          ]
+        }
+      },
+      "replace_characters": {
+        "\u2013": ",",
+        "\u2014": ",",
+        "\u2018": "'",
+        "\u2019": "'"
+      },
+      "weights_path": "hf://kyutai/pocket-tts/languages/english_18m_2026-10/model.safetensors@db04f0e653473e5c7333c69686ac92b7460b0c1d",
+      "weights_path_without_voice_cloning": "hf://kyutai/pocket-tts-without-voice-cloning/languages/english_18m_2026-10/model.safetensors@a7056f505a4a8ca72d8b5fb1440071d6f1a35739"
+    },
+    "english_18m_refl_2026-10": {
+      "default_eos_threshold": -1.0,
+      "default_temperature": 0.3,
+      "flow_lm": {
+        "dtype": "float32",
+        "flow": {
+          "depth": 4,
+          "dim": 192,
+          "type": "drifting"
+        },
+        "insert_bos_before_voice": true,
+        "lookup_table": {
+          "dim": 512,
+          "n_bins": 4000,
+          "rank": null,
+          "tokenizer": "sentencepiece",
+          "tokenizer_path": "hf://kyutai/pocket-tts-without-voice-cloning/languages/english_18m_refl_2026-10/tokenizer.model@08ffc58775e62aad9409511b9591c9af626270f3"
+        },
+        "transformer": {
+          "attn_dim": null,
+          "d_model": 512,
+          "hidden_scale": 1,
+          "max_period": 10000,
+          "num_heads": 8,
+          "num_kv_heads": null,
+          "num_layers": 8
+        },
+        "z_dim": 64
+      },
+      "mimi": {
+        "channels": 1,
+        "decoder_seanet": {
+          "channels": 1,
+          "compress": 2,
+          "dilation_base": 2,
+          "dimension": 128,
+          "kernel_size": 3,
+          "last_kernel_size": 3,
+          "n_filters": 32,
+          "n_residual_layers": 1,
+          "pad_mode": "constant",
+          "ratios": [
+            6,
+            5,
+            4
+          ],
+          "residual_kernel_size": 3
+        },
+        "decoder_transformer": {
+          "context": 50,
+          "d_model": 128,
+          "dim_feedforward": 384,
+          "input_dimension": 128,
+          "layer_scale": 0.01,
+          "num_heads": 4,
+          "num_layers": 12,
+          "output_dimensions": [
+            128
+          ]
+        },
+        "dtype": "float32",
+        "frame_rate": 12.5,
+        "inner_dim": 32,
+        "outer_dim": 128,
+        "quantizer": {
+          "dimension": 32,
+          "output_dimension": 128
+        },
+        "sample_rate": 24000,
+        "seanet": {
+          "channels": 1,
+          "compress": 2,
+          "dilation_base": 2,
+          "dimension": 512,
+          "kernel_size": 7,
+          "last_kernel_size": 3,
+          "n_filters": 64,
+          "n_residual_layers": 1,
+          "pad_mode": "constant",
+          "ratios": [
+            6,
+            5,
+            4
+          ],
+          "residual_kernel_size": 3
+        },
+        "transformer": {
+          "context": 250,
+          "d_model": 512,
+          "dim_feedforward": 2048,
+          "input_dimension": 512,
+          "layer_scale": 0.01,
+          "num_heads": 8,
+          "num_layers": 2,
+          "output_dimensions": [
+            512
+          ]
+        }
+      },
+      "replace_characters": {
+        "\u2013": ",",
+        "\u2014": ",",
+        "\u2018": "'",
+        "\u2019": "'"
+      },
+      "weights_path": "hf://kyutai/pocket-tts/languages/english_18m_refl_2026-10/model.safetensors@db04f0e653473e5c7333c69686ac92b7460b0c1d",
+      "weights_path_without_voice_cloning": "hf://kyutai/pocket-tts-without-voice-cloning/languages/english_18m_refl_2026-10/model.safetensors@a7056f505a4a8ca72d8b5fb1440071d6f1a35739"
+    },
+    "english_2026-01": {
+      "flow_lm": {
+        "dtype": "float32",
+        "flow": {
+          "depth": 6,
+          "dim": 512
+        },
+        "insert_bos_before_voice": false,
+        "lookup_table": {
+          "dim": 1024,
+          "n_bins": 4000,
+          "tokenizer": "tokenizers",
+          "tokenizer_path": "hf://kyutai/pocket-tts-without-voice-cloning/tokenizer.json@00eac05ed3d16bdc3f6b5d598874019c34a89214"
+        },
+        "transformer": {
+          "d_model": 1024,
+          "hidden_scale": 4,
+          "max_period": 10000,
+          "num_heads": 16,
+          "num_layers": 6
+        }
+      },
+      "mimi": {
+        "channels": 1,
+        "dtype": "float32",
+        "frame_rate": 12.5,
+        "inner_dim": 512,
+        "outer_dim": 512,
+        "quantizer": {
+          "dimension": 32,
+          "output_dimension": 512
+        },
+        "sample_rate": 24000,
+        "seanet": {
+          "channels": 1,
+          "compress": 2,
+          "dilation_base": 2,
+          "dimension": 512,
+          "kernel_size": 7,
+          "last_kernel_size": 3,
+          "n_filters": 64,
+          "n_residual_layers": 1,
+          "pad_mode": "constant",
+          "ratios": [
+            6,
+            5,
+            4
+          ],
+          "residual_kernel_size": 3
+        },
+        "transformer": {
+          "context": 250,
+          "d_model": 512,
+          "dim_feedforward": 2048,
+          "input_dimension": 512,
+          "layer_scale": 0.01,
+          "num_heads": 8,
+          "num_layers": 2,
+          "output_dimensions": [
+            512
+          ]
+        }
+      },
+      "pad_with_spaces_for_short_inputs": true,
+      "replace_characters": {
+        "\u2018": "'",
+        "\u2019": "'"
+      },
+      "weights_path": "hf://kyutai/pocket-tts/languages/english_2026-01/model.safetensors@39592ff23c9ef80098bb74895d104c26275fe2c9",
+      "weights_path_without_voice_cloning": "hf://kyutai/pocket-tts-without-voice-cloning/languages/english_2026-01/model.safetensors@d29db7978e464fb90cb3359ee0c69a273b9142cc"
+    },
+    "english_2026-04": {
+      "default_temperature": 0.3,
+      "flow_lm": {
+        "dtype": "float32",
+        "flow": {
+          "depth": 6,
+          "dim": 512
+        },
+        "insert_bos_before_voice": true,
+        "lookup_table": {
+          "dim": 1024,
+          "n_bins": 4000,
+          "tokenizer": "tokenizers",
+          "tokenizer_path": "hf://kyutai/pocket-tts-without-voice-cloning/languages/english_2026-04/tokenizer.json@00eac05ed3d16bdc3f6b5d598874019c34a89214"
+        },
+        "transformer": {
+          "d_model": 1024,
+          "hidden_scale": 4,
+          "max_period": 10000,
+          "num_heads": 16,
+          "num_layers": 6
+        }
+      },
+      "mimi": {
+        "channels": 1,
+        "dtype": "float32",
+        "frame_rate": 12.5,
+        "inner_dim": 32,
+        "outer_dim": 512,
+        "quantizer": {
+          "dimension": 32,
+          "output_dimension": 512
+        },
+        "sample_rate": 24000,
+        "seanet": {
+          "channels": 1,
+          "compress": 2,
+          "dilation_base": 2,
+          "dimension": 512,
+          "kernel_size": 7,
+          "last_kernel_size": 3,
+          "n_filters": 64,
+          "n_residual_layers": 1,
+          "pad_mode": "constant",
+          "ratios": [
+            6,
+            5,
+            4
+          ],
+          "residual_kernel_size": 3
+        },
+        "transformer": {
+          "context": 250,
+          "d_model": 512,
+          "dim_feedforward": 2048,
+          "input_dimension": 512,
+          "layer_scale": 0.01,
+          "num_heads": 8,
+          "num_layers": 2,
+          "output_dimensions": [
+            512
+          ]
+        }
+      },
+      "replace_characters": {
+        "\u2018": "'",
+        "\u2019": "'"
+      },
+      "weights_path": "hf://kyutai/pocket-tts/languages/english_2026-04/model.safetensors@19f95fe2df36e79fbd9f10008595cc4c977a0fcc",
+      "weights_path_without_voice_cloning": "hf://kyutai/pocket-tts-without-voice-cloning/languages/english_2026-04/model.safetensors@d29db7978e464fb90cb3359ee0c69a273b9142cc"
+    },
+    "english_2026-04_24l": {
+      "default_temperature": 0.3,
+      "flow_lm": {
+        "dtype": "float32",
+        "flow": {
+          "depth": 6,
+          "dim": 512
+        },
+        "insert_bos_before_voice": true,
+        "lookup_table": {
+          "dim": 1024,
+          "n_bins": 4000,
+          "tokenizer": "tokenizers",
+          "tokenizer_path": "hf://kyutai/pocket-tts-without-voice-cloning/languages/english_2026-04_24l/tokenizer.json@00eac05ed3d16bdc3f6b5d598874019c34a89214"
+        },
+        "transformer": {
+          "d_model": 1024,
+          "hidden_scale": 4,
+          "max_period": 10000,
+          "num_heads": 16,
+          "num_layers": 24
+        }
+      },
+      "mimi": {
+        "channels": 1,
+        "dtype": "float32",
+        "frame_rate": 12.5,
+        "inner_dim": 32,
+        "outer_dim": 512,
+        "quantizer": {
+          "dimension": 32,
+          "output_dimension": 512
+        },
+        "sample_rate": 24000,
+        "seanet": {
+          "channels": 1,
+          "compress": 2,
+          "dilation_base": 2,
+          "dimension": 512,
+          "kernel_size": 7,
+          "last_kernel_size": 3,
+          "n_filters": 64,
+          "n_residual_layers": 1,
+          "pad_mode": "constant",
+          "ratios": [
+            6,
+            5,
+            4
+          ],
+          "residual_kernel_size": 3
+        },
+        "transformer": {
+          "context": 250,
+          "d_model": 512,
+          "dim_feedforward": 2048,
+          "input_dimension": 512,
+          "layer_scale": 0.01,
+          "num_heads": 8,
+          "num_layers": 2,
+          "output_dimensions": [
+            512
+          ]
+        }
+      },
+      "replace_characters": {
+        "\u2018": "'",
+        "\u2019": "'"
+      },
+      "weights_path": "hf://kyutai/pocket-tts/languages/english_2026-04_24l/model.safetensors@492522650173a0653b7575cdc25ae09810e5d741",
+      "weights_path_without_voice_cloning": "hf://kyutai/pocket-tts-without-voice-cloning/languages/english_2026-04_24l/model.safetensors@e81d79e8194ad4c7ce879c87a4258ef20cbf2487"
+    },
+    "english_2026-09": {
+      "default_temperature": 0.3,
+      "flow_lm": {
+        "dtype": "float32",
+        "flow": {
+          "depth": 6,
+          "dim": 512
+        },
+        "insert_bos_before_voice": true,
+        "lookup_table": {
+          "dim": 1024,
+          "n_bins": 4000,
+          "tokenizer": "tokenizers",
+          "tokenizer_path": "hf://kyutai/pocket-tts-without-voice-cloning/languages/english_2026-09/tokenizer.json@00eac05ed3d16bdc3f6b5d598874019c34a89214"
+        },
+        "transformer": {
+          "d_model": 1024,
+          "hidden_scale": 4,
+          "max_period": 10000,
+          "num_heads": 16,
+          "num_layers": 6
+        }
+      },
+      "mimi": {
+        "channels": 1,
+        "dtype": "float32",
+        "frame_rate": 12.5,
+        "inner_dim": 32,
+        "outer_dim": 512,
+        "quantizer": {
+          "dimension": 32,
+          "output_dimension": 512
+        },
+        "sample_rate": 24000,
+        "seanet": {
+          "channels": 1,
+          "compress": 2,
+          "dilation_base": 2,
+          "dimension": 512,
+          "kernel_size": 7,
+          "last_kernel_size": 3,
+          "n_filters": 64,
+          "n_residual_layers": 1,
+          "pad_mode": "constant",
+          "ratios": [
+            6,
+            5,
+            4
+          ],
+          "residual_kernel_size": 3
+        },
+        "transformer": {
+          "context": 250,
+          "d_model": 512,
+          "dim_feedforward": 2048,
+          "input_dimension": 512,
+          "layer_scale": 0.01,
+          "num_heads": 8,
+          "num_layers": 2,
+          "output_dimensions": [
+            512
+          ]
+        }
+      },
+      "replace_characters": {
+        "\u2018": "'",
+        "\u2019": "'"
+      },
+      "weights_path": "hf://kyutai/pocket-tts/languages/english_2026-09/model.safetensors@983151f13aaeab1b13c1e5e3c2c383d49a9edf3f",
+      "weights_path_without_voice_cloning": "hf://kyutai/pocket-tts-without-voice-cloning/languages/english_2026-09/model.safetensors@e7205b6ee50e654a5ea19f0e9df2b0813b05e921"
+    },
+    "english_2026-09_2": {
+      "default_temperature": 0.3,
+      "flow_lm": {
+        "dtype": "float32",
+        "flow": {
+          "depth": 6,
+          "dim": 512
+        },
+        "insert_bos_before_voice": true,
+        "lookup_table": {
+          "dim": 1024,
+          "n_bins": 4000,
+          "tokenizer": "tokenizers",
+          "tokenizer_path": "hf://kyutai/pocket-tts-without-voice-cloning/languages/english_2026-09/tokenizer.json@00eac05ed3d16bdc3f6b5d598874019c34a89214"
+        },
+        "transformer": {
+          "d_model": 1024,
+          "hidden_scale": 4,
+          "max_period": 10000,
+          "num_heads": 16,
+          "num_layers": 6
+        }
+      },
+      "mimi": {
+        "channels": 1,
+        "dtype": "float32",
+        "frame_rate": 12.5,
+        "inner_dim": 32,
+        "outer_dim": 512,
+        "quantizer": {
+          "dimension": 32,
+          "output_dimension": 512
+        },
+        "sample_rate": 24000,
+        "seanet": {
+          "channels": 1,
+          "compress": 2,
+          "dilation_base": 2,
+          "dimension": 512,
+          "kernel_size": 7,
+          "last_kernel_size": 3,
+          "n_filters": 64,
+          "n_residual_layers": 1,
+          "pad_mode": "constant",
+          "ratios": [
+            6,
+            5,
+            4
+          ],
+          "residual_kernel_size": 3
+        },
+        "transformer": {
+          "context": 250,
+          "d_model": 512,
+          "dim_feedforward": 2048,
+          "input_dimension": 512,
+          "layer_scale": 0.01,
+          "num_heads": 8,
+          "num_layers": 2,
+          "output_dimensions": [
+            512
+          ]
+        }
+      },
+      "replace_characters": {
+        "\u2018": "'",
+        "\u2019": "'"
+      },
+      "weights_path": "hf://kyutai/pocket-tts/languages/english_2026-09_2/model.safetensors@7f364c05d1be3faf2b234cdbe4cbb68a026d4218",
+      "weights_path_without_voice_cloning": "hf://kyutai/pocket-tts-without-voice-cloning/languages/english_2026-09_2/model.safetensors@575d14372df89a4534bcb989870a34e77544b09f"
+    },
+    "english_2026-09_24l": {
+      "default_temperature": 0.3,
+      "flow_lm": {
+        "dtype": "float32",
+        "flow": {
+          "depth": 6,
+          "dim": 512
+        },
+        "insert_bos_before_voice": true,
+        "lookup_table": {
+          "dim": 1024,
+          "n_bins": 4000,
+          "tokenizer": "tokenizers",
+          "tokenizer_path": "hf://kyutai/pocket-tts-without-voice-cloning/languages/english_2026-09_24l/tokenizer.json@00eac05ed3d16bdc3f6b5d598874019c34a89214"
+        },
+        "transformer": {
+          "d_model": 1024,
+          "hidden_scale": 4,
+          "max_period": 10000,
+          "num_heads": 16,
+          "num_layers": 24
+        }
+      },
+      "mimi": {
+        "channels": 1,
+        "dtype": "float32",
+        "frame_rate": 12.5,
+        "inner_dim": 32,
+        "outer_dim": 512,
+        "quantizer": {
+          "dimension": 32,
+          "output_dimension": 512
+        },
+        "sample_rate": 24000,
+        "seanet": {
+          "channels": 1,
+          "compress": 2,
+          "dilation_base": 2,
+          "dimension": 512,
+          "kernel_size": 7,
+          "last_kernel_size": 3,
+          "n_filters": 64,
+          "n_residual_layers": 1,
+          "pad_mode": "constant",
+          "ratios": [
+            6,
+            5,
+            4
+          ],
+          "residual_kernel_size": 3
+        },
+        "transformer": {
+          "context": 250,
+          "d_model": 512,
+          "dim_feedforward": 2048,
+          "input_dimension": 512,
+          "layer_scale": 0.01,
+          "num_heads": 8,
+          "num_layers": 2,
+          "output_dimensions": [
+            512
+          ]
+        }
+      },
+      "replace_characters": {
+        "\u2018": "'",
+        "\u2019": "'"
+      },
+      "weights_path": "hf://kyutai/pocket-tts/languages/english_2026-09_24l/model.safetensors@983151f13aaeab1b13c1e5e3c2c383d49a9edf3f",
+      "weights_path_without_voice_cloning": "hf://kyutai/pocket-tts-without-voice-cloning/languages/english_2026-09_24l/model.safetensors@e7205b6ee50e654a5ea19f0e9df2b0813b05e921"
+    },
+    "english_2026-10": {
+      "default_temperature": 0.3,
+      "flow_lm": {
+        "dtype": "float32",
+        "flow": {
+          "depth": 6,
+          "dim": 512
+        },
+        "insert_bos_before_voice": true,
+        "lookup_table": {
+          "dim": 1024,
+          "n_bins": 4000,
+          "tokenizer": "tokenizers",
+          "tokenizer_path": "hf://kyutai/pocket-tts-without-voice-cloning/languages/english_2026-09/tokenizer.json@00eac05ed3d16bdc3f6b5d598874019c34a89214"
+        },
+        "transformer": {
+          "d_model": 1024,
+          "hidden_scale": 4,
+          "max_period": 10000,
+          "num_heads": 16,
+          "num_layers": 6
+        }
+      },
+      "mimi": {
+        "channels": 1,
+        "dtype": "float32",
+        "frame_rate": 12.5,
+        "inner_dim": 32,
+        "outer_dim": 512,
+        "quantizer": {
+          "dimension": 32,
+          "output_dimension": 512
+        },
+        "sample_rate": 24000,
+        "seanet": {
+          "channels": 1,
+          "compress": 2,
+          "dilation_base": 2,
+          "dimension": 512,
+          "kernel_size": 7,
+          "last_kernel_size": 3,
+          "n_filters": 64,
+          "n_residual_layers": 1,
+          "pad_mode": "constant",
+          "ratios": [
+            6,
+            5,
+            4
+          ],
+          "residual_kernel_size": 3
+        },
+        "transformer": {
+          "context": 250,
+          "d_model": 512,
+          "dim_feedforward": 2048,
+          "input_dimension": 512,
+          "layer_scale": 0.01,
+          "num_heads": 8,
+          "num_layers": 2,
+          "output_dimensions": [
+            512
+          ]
+        }
+      },
+      "replace_characters": {
+        "\u2018": "'",
+        "\u2019": "'"
+      },
+      "weights_path": "hf://kyutai/pocket-tts/languages/english_2026-10/model.safetensors@db04f0e653473e5c7333c69686ac92b7460b0c1d",
+      "weights_path_without_voice_cloning": "hf://kyutai/pocket-tts-without-voice-cloning/languages/english_2026-10/model.safetensors@a7056f505a4a8ca72d8b5fb1440071d6f1a35739"
+    },
+    "english_2m_2026-10": {
+      "default_eos_threshold": -1.0,
+      "default_temperature": 0.3,
+      "flow_lm": {
+        "dtype": "float32",
+        "flow": {
+          "depth": 4,
+          "dim": 64,
+          "type": "pointwise"
+        },
+        "insert_bos_before_voice": true,
+        "lookup_table": {
+          "dim": 112,
+          "n_bins": 4000,
+          "rank": 32,
+          "tokenizer": "sentencepiece",
+          "tokenizer_path": "hf://kyutai/pocket-tts-without-voice-cloning/languages/english_2m_2026-10/tokenizer.model@08ffc58775e62aad9409511b9591c9af626270f3"
+        },
+        "transformer": {
+          "attn_dim": 192,
+          "d_model": 112,
+          "dim_feedforward": 96,
+          "hidden_scale": 1,
+          "max_period": 10000,
+          "num_heads": 3,
+          "num_kv_heads": 1,
+          "num_layers": 8
+        },
+        "z_dim": 64
+      },
+      "mimi": {
+        "channels": 1,
+        "decoder_seanet": {
+          "channels": 1,
+          "compress": 2,
+          "dilation_base": 2,
+          "dimension": 128,
+          "kernel_size": 3,
+          "last_kernel_size": 3,
+          "n_filters": 24,
+          "n_residual_layers": 1,
+          "pad_mode": "constant",
+          "ratios": [
+            6,
+            5,
+            4
+          ],
+          "residual_kernel_size": 3
+        },
+        "decoder_transformer": {
+          "context": 50,
+          "d_model": 128,
+          "dim_feedforward": 384,
+          "input_dimension": 128,
+          "layer_scale": 0.01,
+          "num_heads": 4,
+          "num_layers": 4,
+          "output_dimensions": [
+            128
+          ]
+        },
+        "dtype": "float32",
+        "frame_rate": 12.5,
+        "inner_dim": 32,
+        "outer_dim": 128,
+        "quantizer": {
+          "dimension": 32,
+          "output_dimension": 128
+        },
+        "sample_rate": 24000,
+        "seanet": {
+          "channels": 1,
+          "compress": 2,
+          "dilation_base": 2,
+          "dimension": 512,
+          "kernel_size": 7,
+          "last_kernel_size": 3,
+          "n_filters": 64,
+          "n_residual_layers": 1,
+          "pad_mode": "constant",
+          "ratios": [
+            6,
+            5,
+            4
+          ],
+          "residual_kernel_size": 3
+        },
+        "transformer": {
+          "context": 250,
+          "d_model": 512,
+          "dim_feedforward": 2048,
+          "input_dimension": 512,
+          "layer_scale": 0.01,
+          "num_heads": 8,
+          "num_layers": 2,
+          "output_dimensions": [
+            512
+          ]
+        }
+      },
+      "replace_characters": {
+        "\u2013": ",",
+        "\u2014": ",",
+        "\u2018": "'",
+        "\u2019": "'"
+      },
+      "weights_path": "hf://kyutai/pocket-tts/languages/english_2m_2026-10/model.safetensors@db04f0e653473e5c7333c69686ac92b7460b0c1d",
+      "weights_path_without_voice_cloning": "hf://kyutai/pocket-tts-without-voice-cloning/languages/english_2m_2026-10/model.safetensors@a7056f505a4a8ca72d8b5fb1440071d6f1a35739"
+    },
+    "english_2m_refl_2026-10": {
+      "default_eos_threshold": -1.0,
+      "default_temperature": 0.3,
+      "flow_lm": {
+        "dtype": "float32",
+        "flow": {
+          "depth": 4,
+          "dim": 64,
+          "type": "pointwise"
+        },
+        "insert_bos_before_voice": true,
+        "lookup_table": {
+          "dim": 112,
+          "n_bins": 4000,
+          "rank": 32,
+          "tokenizer": "sentencepiece",
+          "tokenizer_path": "hf://kyutai/pocket-tts-without-voice-cloning/languages/english_2m_refl_2026-10/tokenizer.model@08ffc58775e62aad9409511b9591c9af626270f3"
+        },
+        "transformer": {
+          "attn_dim": 192,
+          "d_model": 112,
+          "dim_feedforward": 96,
+          "hidden_scale": 1,
+          "max_period": 10000,
+          "num_heads": 3,
+          "num_kv_heads": 1,
+          "num_layers": 8
+        },
+        "z_dim": 64
+      },
+      "mimi": {
+        "channels": 1,
+        "decoder_seanet": {
+          "channels": 1,
+          "compress": 2,
+          "dilation_base": 2,
+          "dimension": 128,
+          "kernel_size": 3,
+          "last_kernel_size": 3,
+          "n_filters": 24,
+          "n_residual_layers": 1,
+          "pad_mode": "constant",
+          "ratios": [
+            6,
+            5,
+            4
+          ],
+          "residual_kernel_size": 3
+        },
+        "decoder_transformer": {
+          "context": 50,
+          "d_model": 128,
+          "dim_feedforward": 384,
+          "input_dimension": 128,
+          "layer_scale": 0.01,
+          "num_heads": 4,
+          "num_layers": 4,
+          "output_dimensions": [
+            128
+          ]
+        },
+        "dtype": "float32",
+        "frame_rate": 12.5,
+        "inner_dim": 32,
+        "outer_dim": 128,
+        "quantizer": {
+          "dimension": 32,
+          "output_dimension": 128
+        },
+        "sample_rate": 24000,
+        "seanet": {
+          "channels": 1,
+          "compress": 2,
+          "dilation_base": 2,
+          "dimension": 512,
+          "kernel_size": 7,
+          "last_kernel_size": 3,
+          "n_filters": 64,
+          "n_residual_layers": 1,
+          "pad_mode": "constant",
+          "ratios": [
+            6,
+            5,
+            4
+          ],
+          "residual_kernel_size": 3
+        },
+        "transformer": {
+          "context": 250,
+          "d_model": 512,
+          "dim_feedforward": 2048,
+          "input_dimension": 512,
+          "layer_scale": 0.01,
+          "num_heads": 8,
+          "num_layers": 2,
+          "output_dimensions": [
+            512
+          ]
+        }
+      },
+      "replace_characters": {
+        "\u2013": ",",
+        "\u2014": ",",
+        "\u2018": "'",
+        "\u2019": "'"
+      },
+      "weights_path": "hf://kyutai/pocket-tts/languages/english_2m_refl_2026-10/model.safetensors@db04f0e653473e5c7333c69686ac92b7460b0c1d",
+      "weights_path_without_voice_cloning": "hf://kyutai/pocket-tts-without-voice-cloning/languages/english_2m_refl_2026-10/model.safetensors@a7056f505a4a8ca72d8b5fb1440071d6f1a35739"
+    },
+    "english_7m_2026-10": {
+      "default_eos_threshold": -1.0,
+      "default_temperature": 0.3,
+      "flow_lm": {
+        "dtype": "float32",
+        "flow": {
+          "depth": 4,
+          "dim": 192,
+          "type": "drifting"
+        },
+        "insert_bos_before_voice": true,
+        "lookup_table": {
+          "dim": 224,
+          "n_bins": 4000,
+          "rank": 64,
+          "tokenizer": "sentencepiece",
+          "tokenizer_path": "hf://kyutai/pocket-tts-without-voice-cloning/languages/english_7m_2026-10/tokenizer.model@08ffc58775e62aad9409511b9591c9af626270f3"
+        },
+        "transformer": {
+          "attn_dim": 512,
+          "d_model": 224,
+          "hidden_scale": 1,
+          "max_period": 10000,
+          "num_heads": 8,
+          "num_kv_heads": 2,
+          "num_layers": 8
+        },
+        "z_dim": 64
+      },
+      "mimi": {
+        "channels": 1,
+        "decoder_seanet": {
+          "channels": 1,
+          "compress": 2,
+          "dilation_base": 2,
+          "dimension": 128,
+          "kernel_size": 3,
+          "last_kernel_size": 3,
+          "n_filters": 32,
+          "n_residual_layers": 1,
+          "pad_mode": "constant",
+          "ratios": [
+            6,
+            5,
+            4
+          ],
+          "residual_kernel_size": 3
+        },
+        "decoder_transformer": {
+          "context": 50,
+          "d_model": 128,
+          "dim_feedforward": 384,
+          "input_dimension": 128,
+          "layer_scale": 0.01,
+          "num_heads": 4,
+          "num_layers": 12,
+          "output_dimensions": [
+            128
+          ]
+        },
+        "dtype": "float32",
+        "frame_rate": 12.5,
+        "inner_dim": 32,
+        "outer_dim": 128,
+        "quantizer": {
+          "dimension": 32,
+          "output_dimension": 128
+        },
+        "sample_rate": 24000,
+        "seanet": {
+          "channels": 1,
+          "compress": 2,
+          "dilation_base": 2,
+          "dimension": 512,
+          "kernel_size": 7,
+          "last_kernel_size": 3,
+          "n_filters": 64,
+          "n_residual_layers": 1,
+          "pad_mode": "constant",
+          "ratios": [
+            6,
+            5,
+            4
+          ],
+          "residual_kernel_size": 3
+        },
+        "transformer": {
+          "context": 250,
+          "d_model": 512,
+          "dim_feedforward": 2048,
+          "input_dimension": 512,
+          "layer_scale": 0.01,
+          "num_heads": 8,
+          "num_layers": 2,
+          "output_dimensions": [
+            512
+          ]
+        }
+      },
+      "replace_characters": {
+        "\u2013": ",",
+        "\u2014": ",",
+        "\u2018": "'",
+        "\u2019": "'"
+      },
+      "weights_path": "hf://kyutai/pocket-tts/languages/english_7m_2026-10/model.safetensors@db04f0e653473e5c7333c69686ac92b7460b0c1d",
+      "weights_path_without_voice_cloning": "hf://kyutai/pocket-tts-without-voice-cloning/languages/english_7m_2026-10/model.safetensors@a7056f505a4a8ca72d8b5fb1440071d6f1a35739"
+    },
+    "english_7m_refl_2026-10": {
+      "default_eos_threshold": -1.0,
+      "default_temperature": 0.3,
+      "flow_lm": {
+        "dtype": "float32",
+        "flow": {
+          "depth": 4,
+          "dim": 192,
+          "type": "drifting"
+        },
+        "insert_bos_before_voice": true,
+        "lookup_table": {
+          "dim": 224,
+          "n_bins": 4000,
+          "rank": 64,
+          "tokenizer": "sentencepiece",
+          "tokenizer_path": "hf://kyutai/pocket-tts-without-voice-cloning/languages/english_7m_refl_2026-10/tokenizer.model@08ffc58775e62aad9409511b9591c9af626270f3"
+        },
+        "transformer": {
+          "attn_dim": 512,
+          "d_model": 224,
+          "hidden_scale": 1,
+          "max_period": 10000,
+          "num_heads": 8,
+          "num_kv_heads": 2,
+          "num_layers": 8
+        },
+        "z_dim": 64
+      },
+      "mimi": {
+        "channels": 1,
+        "decoder_seanet": {
+          "channels": 1,
+          "compress": 2,
+          "dilation_base": 2,
+          "dimension": 128,
+          "kernel_size": 3,
+          "last_kernel_size": 3,
+          "n_filters": 32,
+          "n_residual_layers": 1,
+          "pad_mode": "constant",
+          "ratios": [
+            6,
+            5,
+            4
+          ],
+          "residual_kernel_size": 3
+        },
+        "decoder_transformer": {
+          "context": 50,
+          "d_model": 128,
+          "dim_feedforward": 384,
+          "input_dimension": 128,
+          "layer_scale": 0.01,
+          "num_heads": 4,
+          "num_layers": 12,
+          "output_dimensions": [
+            128
+          ]
+        },
+        "dtype": "float32",
+        "frame_rate": 12.5,
+        "inner_dim": 32,
+        "outer_dim": 128,
+        "quantizer": {
+          "dimension": 32,
+          "output_dimension": 128
+        },
+        "sample_rate": 24000,
+        "seanet": {
+          "channels": 1,
+          "compress": 2,
+          "dilation_base": 2,
+          "dimension": 512,
+          "kernel_size": 7,
+          "last_kernel_size": 3,
+          "n_filters": 64,
+          "n_residual_layers": 1,
+          "pad_mode": "constant",
+          "ratios": [
+            6,
+            5,
+            4
+          ],
+          "residual_kernel_size": 3
+        },
+        "transformer": {
+          "context": 250,
+          "d_model": 512,
+          "dim_feedforward": 2048,
+          "input_dimension": 512,
+          "layer_scale": 0.01,
+          "num_heads": 8,
+          "num_layers": 2,
+          "output_dimensions": [
+            512
+          ]
+        }
+      },
+      "replace_characters": {
+        "\u2013": ",",
+        "\u2014": ",",
+        "\u2018": "'",
+        "\u2019": "'"
+      },
+      "weights_path": "hf://kyutai/pocket-tts/languages/english_7m_refl_2026-10/model.safetensors@db04f0e653473e5c7333c69686ac92b7460b0c1d",
+      "weights_path_without_voice_cloning": "hf://kyutai/pocket-tts-without-voice-cloning/languages/english_7m_refl_2026-10/model.safetensors@a7056f505a4a8ca72d8b5fb1440071d6f1a35739"
+    },
+    "english_drifting_26-09": {
+      "default_temperature": 0.3,
+      "flow_lm": {
+        "dtype": "float32",
+        "flow": {
+          "depth": 6,
+          "dim": 512,
+          "type": "drifting"
+        },
+        "insert_bos_before_voice": true,
+        "lookup_table": {
+          "dim": 1024,
+          "n_bins": 4000,
+          "tokenizer": "tokenizers",
+          "tokenizer_path": "hf://kyutai/pocket-tts-without-voice-cloning/languages/english_2026-09/tokenizer.json@00eac05ed3d16bdc3f6b5d598874019c34a89214"
+        },
+        "transformer": {
+          "d_model": 1024,
+          "hidden_scale": 4,
+          "max_period": 10000,
+          "num_heads": 16,
+          "num_layers": 6
+        }
+      },
+      "mimi": {
+        "channels": 1,
+        "dtype": "float32",
+        "frame_rate": 12.5,
+        "inner_dim": 32,
+        "outer_dim": 512,
+        "quantizer": {
+          "dimension": 32,
+          "output_dimension": 512
+        },
+        "sample_rate": 24000,
+        "seanet": {
+          "channels": 1,
+          "compress": 2,
+          "dilation_base": 2,
+          "dimension": 512,
+          "kernel_size": 7,
+          "last_kernel_size": 3,
+          "n_filters": 64,
+          "n_residual_layers": 1,
+          "pad_mode": "constant",
+          "ratios": [
+            6,
+            5,
+            4
+          ],
+          "residual_kernel_size": 3
+        },
+        "transformer": {
+          "context": 250,
+          "d_model": 512,
+          "dim_feedforward": 2048,
+          "input_dimension": 512,
+          "layer_scale": 0.01,
+          "num_heads": 8,
+          "num_layers": 2,
+          "output_dimensions": [
+            512
+          ]
+        }
+      },
+      "replace_characters": {
+        "\u2018": "'",
+        "\u2019": "'"
+      },
+      "weights_path": "hf://kyutai/pocket-tts/languages/english_drifting_26-09/model.safetensors@75cfe24e3142233bb81887fed3482e9652bb4a6e",
+      "weights_path_without_voice_cloning": "hf://kyutai/pocket-tts-without-voice-cloning/languages/english_drifting_26-09/model.safetensors@a5ce31f3eba7a3b0cb9c24ba2015b098f278eaae"
+    },
+    "french": {
+      "flow_lm": {
+        "dtype": "float32",
+        "flow": {
+          "depth": 6,
+          "dim": 512
+        },
+        "insert_bos_before_voice": true,
+        "lookup_table": {
+          "dim": 1024,
+          "n_bins": 4000,
+          "tokenizer": "tokenizers",
+          "tokenizer_path": "hf://kyutai/pocket-tts-without-voice-cloning/languages/french/tokenizer.json@8843db76457a91db32077edf8dfcd1c0e3e755fd"
+        },
+        "transformer": {
+          "d_model": 1024,
+          "hidden_scale": 4,
+          "max_period": 10000,
+          "num_heads": 16,
+          "num_layers": 6
+        }
+      },
+      "mimi": {
+        "channels": 1,
+        "dtype": "float32",
+        "frame_rate": 12.5,
+        "inner_dim": 32,
+        "outer_dim": 512,
+        "quantizer": {
+          "dimension": 32,
+          "output_dimension": 512
+        },
+        "sample_rate": 24000,
+        "seanet": {
+          "channels": 1,
+          "compress": 2,
+          "dilation_base": 2,
+          "dimension": 512,
+          "kernel_size": 7,
+          "last_kernel_size": 3,
+          "n_filters": 64,
+          "n_residual_layers": 1,
+          "pad_mode": "constant",
+          "ratios": [
+            6,
+            5,
+            4
+          ],
+          "residual_kernel_size": 3
+        },
+        "transformer": {
+          "context": 250,
+          "d_model": 512,
+          "dim_feedforward": 2048,
+          "input_dimension": 512,
+          "layer_scale": 0.01,
+          "num_heads": 8,
+          "num_layers": 2,
+          "output_dimensions": [
+            512
+          ]
+        }
+      },
+      "remove_semicolons": true,
+      "replace_characters": {
+        "\"": "",
+        "(": "",
+        ")": "",
+        ":": ",",
+        "[": "",
+        "]": "",
+        "\u00ab": "",
+        "\u00bb": "",
+        "\u2013": ",",
+        "\u2018": "'",
+        "\u2019": "'",
+        "\u201c": "",
+        "\u201d": "",
+        "\u201e": ""
+      },
+      "weights_path": "hf://kyutai/pocket-tts/languages/french/model.safetensors@3e82814a68665eec246ff649b14c71331f955c06",
+      "weights_path_without_voice_cloning": "hf://kyutai/pocket-tts-without-voice-cloning/languages/french/model.safetensors@1e08e6a23401048648a9fdcfde2f89348215c2a7"
+    },
+    "french_24l": {
+      "flow_lm": {
+        "dtype": "float32",
+        "flow": {
+          "depth": 6,
+          "dim": 512
+        },
+        "insert_bos_before_voice": true,
+        "lookup_table": {
+          "dim": 1024,
+          "n_bins": 4000,
+          "tokenizer": "tokenizers",
+          "tokenizer_path": "hf://kyutai/pocket-tts-without-voice-cloning/languages/french_24l/tokenizer.json@8843db76457a91db32077edf8dfcd1c0e3e755fd"
+        },
+        "transformer": {
+          "d_model": 1024,
+          "hidden_scale": 4,
+          "max_period": 10000,
+          "num_heads": 16,
+          "num_layers": 24
+        }
+      },
+      "mimi": {
+        "channels": 1,
+        "dtype": "float32",
+        "frame_rate": 12.5,
+        "inner_dim": 32,
+        "outer_dim": 512,
+        "quantizer": {
+          "dimension": 32,
+          "output_dimension": 512
+        },
+        "sample_rate": 24000,
+        "seanet": {
+          "channels": 1,
+          "compress": 2,
+          "dilation_base": 2,
+          "dimension": 512,
+          "kernel_size": 7,
+          "last_kernel_size": 3,
+          "n_filters": 64,
+          "n_residual_layers": 1,
+          "pad_mode": "constant",
+          "ratios": [
+            6,
+            5,
+            4
+          ],
+          "residual_kernel_size": 3
+        },
+        "transformer": {
+          "context": 250,
+          "d_model": 512,
+          "dim_feedforward": 2048,
+          "input_dimension": 512,
+          "layer_scale": 0.01,
+          "num_heads": 8,
+          "num_layers": 2,
+          "output_dimensions": [
+            512
+          ]
+        }
+      },
+      "remove_semicolons": true,
+      "replace_characters": {
+        "\"": "",
+        "(": "",
+        ")": "",
+        ":": ",",
+        "[": "",
+        "]": "",
+        "\u00ab": "",
+        "\u00bb": "",
+        "\u2013": ",",
+        "\u2018": "'",
+        "\u2019": "'",
+        "\u201c": "",
+        "\u201d": "",
+        "\u201e": ""
+      },
+      "weights_path": "hf://kyutai/pocket-tts/languages/french_24l/model.safetensors@3e82814a68665eec246ff649b14c71331f955c06",
+      "weights_path_without_voice_cloning": "hf://kyutai/pocket-tts-without-voice-cloning/languages/french_24l/model.safetensors@1e08e6a23401048648a9fdcfde2f89348215c2a7"
+    },
+    "german": {
+      "flow_lm": {
+        "dtype": "float32",
+        "flow": {
+          "depth": 6,
+          "dim": 512
+        },
+        "insert_bos_before_voice": true,
+        "lookup_table": {
+          "dim": 1024,
+          "n_bins": 4000,
+          "tokenizer": "tokenizers",
+          "tokenizer_path": "hf://kyutai/pocket-tts-without-voice-cloning/languages/german/tokenizer.json@4e1e0a3e611c51c0b4ed8174fc10f32a54644303"
+        },
+        "transformer": {
+          "d_model": 1024,
+          "hidden_scale": 4,
+          "max_period": 10000,
+          "num_heads": 16,
+          "num_layers": 6
+        }
+      },
+      "mimi": {
+        "channels": 1,
+        "dtype": "float32",
+        "frame_rate": 12.5,
+        "inner_dim": 32,
+        "outer_dim": 512,
+        "quantizer": {
+          "dimension": 32,
+          "output_dimension": 512
+        },
+        "sample_rate": 24000,
+        "seanet": {
+          "channels": 1,
+          "compress": 2,
+          "dilation_base": 2,
+          "dimension": 512,
+          "kernel_size": 7,
+          "last_kernel_size": 3,
+          "n_filters": 64,
+          "n_residual_layers": 1,
+          "pad_mode": "constant",
+          "ratios": [
+            6,
+            5,
+            4
+          ],
+          "residual_kernel_size": 3
+        },
+        "transformer": {
+          "context": 250,
+          "d_model": 512,
+          "dim_feedforward": 2048,
+          "input_dimension": 512,
+          "layer_scale": 0.01,
+          "num_heads": 8,
+          "num_layers": 2,
+          "output_dimensions": [
+            512
+          ]
+        }
+      },
+      "remove_semicolons": true,
+      "replace_characters": {
+        "\"": "",
+        "(": "",
+        ")": "",
+        "[": "",
+        "]": "",
+        "\u00ab": "",
+        "\u00bb": "",
+        "\u2013": ",",
+        "\u2014": ",",
+        "\u2018": "'",
+        "\u2019": "'",
+        "\u201c": "",
+        "\u201d": "",
+        "\u201e": ""
+      },
+      "weights_path": "hf://kyutai/pocket-tts/languages/german/model.safetensors@3e82814a68665eec246ff649b14c71331f955c06",
+      "weights_path_without_voice_cloning": "hf://kyutai/pocket-tts-without-voice-cloning/languages/german/model.safetensors@1e08e6a23401048648a9fdcfde2f89348215c2a7"
+    },
+    "german_24l": {
+      "flow_lm": {
+        "dtype": "float32",
+        "flow": {
+          "depth": 6,
+          "dim": 512
+        },
+        "insert_bos_before_voice": true,
+        "lookup_table": {
+          "dim": 1024,
+          "n_bins": 4000,
+          "tokenizer": "tokenizers",
+          "tokenizer_path": "hf://kyutai/pocket-tts-without-voice-cloning/languages/german_24l/tokenizer.json@4e1e0a3e611c51c0b4ed8174fc10f32a54644303"
+        },
+        "transformer": {
+          "d_model": 1024,
+          "hidden_scale": 4,
+          "max_period": 10000,
+          "num_heads": 16,
+          "num_layers": 24
+        }
+      },
+      "mimi": {
+        "channels": 1,
+        "dtype": "float32",
+        "frame_rate": 12.5,
+        "inner_dim": 32,
+        "outer_dim": 512,
+        "quantizer": {
+          "dimension": 32,
+          "output_dimension": 512
+        },
+        "sample_rate": 24000,
+        "seanet": {
+          "channels": 1,
+          "compress": 2,
+          "dilation_base": 2,
+          "dimension": 512,
+          "kernel_size": 7,
+          "last_kernel_size": 3,
+          "n_filters": 64,
+          "n_residual_layers": 1,
+          "pad_mode": "constant",
+          "ratios": [
+            6,
+            5,
+            4
+          ],
+          "residual_kernel_size": 3
+        },
+        "transformer": {
+          "context": 250,
+          "d_model": 512,
+          "dim_feedforward": 2048,
+          "input_dimension": 512,
+          "layer_scale": 0.01,
+          "num_heads": 8,
+          "num_layers": 2,
+          "output_dimensions": [
+            512
+          ]
+        }
+      },
+      "remove_semicolons": true,
+      "replace_characters": {
+        "\"": "",
+        "(": "",
+        ")": "",
+        "[": "",
+        "]": "",
+        "\u00ab": "",
+        "\u00bb": "",
+        "\u2013": ",",
+        "\u2014": ",",
+        "\u2018": "'",
+        "\u2019": "'",
+        "\u201c": "",
+        "\u201d": "",
+        "\u201e": ""
+      },
+      "weights_path": "hf://kyutai/pocket-tts/languages/german_24l/model.safetensors@2dd944b099d06bb9edbd221fef138685711d9bf0",
+      "weights_path_without_voice_cloning": "hf://kyutai/pocket-tts-without-voice-cloning/languages/german_24l/model.safetensors@4e1e0a3e611c51c0b4ed8174fc10f32a54644303"
+    },
+    "italian": {
+      "flow_lm": {
+        "dtype": "float32",
+        "flow": {
+          "depth": 6,
+          "dim": 512
+        },
+        "insert_bos_before_voice": true,
+        "lookup_table": {
+          "dim": 1024,
+          "n_bins": 4000,
+          "tokenizer": "tokenizers",
+          "tokenizer_path": "hf://kyutai/pocket-tts-without-voice-cloning/languages/italian/tokenizer.json@4e1e0a3e611c51c0b4ed8174fc10f32a54644303"
+        },
+        "transformer": {
+          "d_model": 1024,
+          "hidden_scale": 4,
+          "max_period": 10000,
+          "num_heads": 16,
+          "num_layers": 6
+        }
+      },
+      "mimi": {
+        "channels": 1,
+        "dtype": "float32",
+        "frame_rate": 12.5,
+        "inner_dim": 32,
+        "outer_dim": 512,
+        "quantizer": {
+          "dimension": 32,
+          "output_dimension": 512
+        },
+        "sample_rate": 24000,
+        "seanet": {
+          "channels": 1,
+          "compress": 2,
+          "dilation_base": 2,
+          "dimension": 512,
+          "kernel_size": 7,
+          "last_kernel_size": 3,
+          "n_filters": 64,
+          "n_residual_layers": 1,
+          "pad_mode": "constant",
+          "ratios": [
+            6,
+            5,
+            4
+          ],
+          "residual_kernel_size": 3
+        },
+        "transformer": {
+          "context": 250,
+          "d_model": 512,
+          "dim_feedforward": 2048,
+          "input_dimension": 512,
+          "layer_scale": 0.01,
+          "num_heads": 8,
+          "num_layers": 2,
+          "output_dimensions": [
+            512
+          ]
+        }
+      },
+      "replace_characters": {
+        "\"": "",
+        "(": "",
+        ")": "",
+        "[": "",
+        "]": "",
+        "\u00ab": "",
+        "\u00bb": "",
+        "\u2013": ",",
+        "\u2018": "'",
+        "\u2019": "'",
+        "\u201c": "",
+        "\u201d": "",
+        "\u201e": ""
+      },
+      "weights_path": "hf://kyutai/pocket-tts/languages/italian/model.safetensors@3e82814a68665eec246ff649b14c71331f955c06",
+      "weights_path_without_voice_cloning": "hf://kyutai/pocket-tts-without-voice-cloning/languages/italian/model.safetensors@1e08e6a23401048648a9fdcfde2f89348215c2a7"
+    },
+    "italian_24l": {
+      "flow_lm": {
+        "dtype": "float32",
+        "flow": {
+          "depth": 6,
+          "dim": 512
+        },
+        "insert_bos_before_voice": true,
+        "lookup_table": {
+          "dim": 1024,
+          "n_bins": 4000,
+          "tokenizer": "tokenizers",
+          "tokenizer_path": "hf://kyutai/pocket-tts-without-voice-cloning/languages/italian_24l/tokenizer.json@4e1e0a3e611c51c0b4ed8174fc10f32a54644303"
+        },
+        "transformer": {
+          "d_model": 1024,
+          "hidden_scale": 4,
+          "max_period": 10000,
+          "num_heads": 16,
+          "num_layers": 24
+        }
+      },
+      "mimi": {
+        "channels": 1,
+        "dtype": "float32",
+        "frame_rate": 12.5,
+        "inner_dim": 32,
+        "outer_dim": 512,
+        "quantizer": {
+          "dimension": 32,
+          "output_dimension": 512
+        },
+        "sample_rate": 24000,
+        "seanet": {
+          "channels": 1,
+          "compress": 2,
+          "dilation_base": 2,
+          "dimension": 512,
+          "kernel_size": 7,
+          "last_kernel_size": 3,
+          "n_filters": 64,
+          "n_residual_layers": 1,
+          "pad_mode": "constant",
+          "ratios": [
+            6,
+            5,
+            4
+          ],
+          "residual_kernel_size": 3
+        },
+        "transformer": {
+          "context": 250,
+          "d_model": 512,
+          "dim_feedforward": 2048,
+          "input_dimension": 512,
+          "layer_scale": 0.01,
+          "num_heads": 8,
+          "num_layers": 2,
+          "output_dimensions": [
+            512
+          ]
+        }
+      },
+      "replace_characters": {
+        "\"": "",
+        "(": "",
+        ")": "",
+        "[": "",
+        "]": "",
+        "\u00ab": "",
+        "\u00bb": "",
+        "\u2013": ",",
+        "\u2018": "'",
+        "\u2019": "'",
+        "\u201c": "",
+        "\u201d": "",
+        "\u201e": ""
+      },
+      "weights_path": "hf://kyutai/pocket-tts/languages/italian_24l/model.safetensors@3e82814a68665eec246ff649b14c71331f955c06",
+      "weights_path_without_voice_cloning": "hf://kyutai/pocket-tts-without-voice-cloning/languages/italian_24l/model.safetensors@1e08e6a23401048648a9fdcfde2f89348215c2a7"
+    },
+    "portuguese": {
+      "flow_lm": {
+        "dtype": "float32",
+        "flow": {
+          "depth": 6,
+          "dim": 512
+        },
+        "insert_bos_before_voice": true,
+        "lookup_table": {
+          "dim": 1024,
+          "n_bins": 4000,
+          "tokenizer": "tokenizers",
+          "tokenizer_path": "hf://kyutai/pocket-tts-without-voice-cloning/languages/portuguese/tokenizer.json@4e1e0a3e611c51c0b4ed8174fc10f32a54644303"
+        },
+        "transformer": {
+          "d_model": 1024,
+          "hidden_scale": 4,
+          "max_period": 10000,
+          "num_heads": 16,
+          "num_layers": 6
+        }
+      },
+      "mimi": {
+        "channels": 1,
+        "dtype": "float32",
+        "frame_rate": 12.5,
+        "inner_dim": 32,
+        "outer_dim": 512,
+        "quantizer": {
+          "dimension": 32,
+          "output_dimension": 512
+        },
+        "sample_rate": 24000,
+        "seanet": {
+          "channels": 1,
+          "compress": 2,
+          "dilation_base": 2,
+          "dimension": 512,
+          "kernel_size": 7,
+          "last_kernel_size": 3,
+          "n_filters": 64,
+          "n_residual_layers": 1,
+          "pad_mode": "constant",
+          "ratios": [
+            6,
+            5,
+            4
+          ],
+          "residual_kernel_size": 3
+        },
+        "transformer": {
+          "context": 250,
+          "d_model": 512,
+          "dim_feedforward": 2048,
+          "input_dimension": 512,
+          "layer_scale": 0.01,
+          "num_heads": 8,
+          "num_layers": 2,
+          "output_dimensions": [
+            512
+          ]
+        }
+      },
+      "replace_characters": {
+        "\"": "",
+        "(": "",
+        ")": "",
+        "[": "",
+        "]": "",
+        "\u00ab": "",
+        "\u00bb": "",
+        "\u2013": ",",
+        "\u2018": "'",
+        "\u2019": "'",
+        "\u201c": "",
+        "\u201d": "",
+        "\u201e": ""
+      },
+      "weights_path": "hf://kyutai/pocket-tts/languages/portuguese/model.safetensors@3e82814a68665eec246ff649b14c71331f955c06",
+      "weights_path_without_voice_cloning": "hf://kyutai/pocket-tts-without-voice-cloning/languages/portuguese/model.safetensors@1e08e6a23401048648a9fdcfde2f89348215c2a7"
+    },
+    "portuguese_24l": {
+      "flow_lm": {
+        "dtype": "float32",
+        "flow": {
+          "depth": 6,
+          "dim": 512
+        },
+        "insert_bos_before_voice": true,
+        "lookup_table": {
+          "dim": 1024,
+          "n_bins": 4000,
+          "tokenizer": "tokenizers",
+          "tokenizer_path": "hf://kyutai/pocket-tts-without-voice-cloning/languages/portuguese_24l/tokenizer.json@4e1e0a3e611c51c0b4ed8174fc10f32a54644303"
+        },
+        "transformer": {
+          "d_model": 1024,
+          "hidden_scale": 4,
+          "max_period": 10000,
+          "num_heads": 16,
+          "num_layers": 24
+        }
+      },
+      "mimi": {
+        "channels": 1,
+        "dtype": "float32",
+        "frame_rate": 12.5,
+        "inner_dim": 32,
+        "outer_dim": 512,
+        "quantizer": {
+          "dimension": 32,
+          "output_dimension": 512
+        },
+        "sample_rate": 24000,
+        "seanet": {
+          "channels": 1,
+          "compress": 2,
+          "dilation_base": 2,
+          "dimension": 512,
+          "kernel_size": 7,
+          "last_kernel_size": 3,
+          "n_filters": 64,
+          "n_residual_layers": 1,
+          "pad_mode": "constant",
+          "ratios": [
+            6,
+            5,
+            4
+          ],
+          "residual_kernel_size": 3
+        },
+        "transformer": {
+          "context": 250,
+          "d_model": 512,
+          "dim_feedforward": 2048,
+          "input_dimension": 512,
+          "layer_scale": 0.01,
+          "num_heads": 8,
+          "num_layers": 2,
+          "output_dimensions": [
+            512
+          ]
+        }
+      },
+      "replace_characters": {
+        "\"": "",
+        "(": "",
+        ")": "",
+        "[": "",
+        "]": "",
+        "\u00ab": "",
+        "\u00bb": "",
+        "\u2013": ",",
+        "\u2018": "'",
+        "\u2019": "'",
+        "\u201c": "",
+        "\u201d": "",
+        "\u201e": ""
+      },
+      "weights_path": "hf://kyutai/pocket-tts/languages/portuguese_24l/model.safetensors@2dd944b099d06bb9edbd221fef138685711d9bf0",
+      "weights_path_without_voice_cloning": "hf://kyutai/pocket-tts-without-voice-cloning/languages/portuguese_24l/model.safetensors@4e1e0a3e611c51c0b4ed8174fc10f32a54644303"
+    },
+    "spanish": {
+      "flow_lm": {
+        "dtype": "float32",
+        "flow": {
+          "depth": 6,
+          "dim": 512
+        },
+        "insert_bos_before_voice": true,
+        "lookup_table": {
+          "dim": 1024,
+          "n_bins": 4000,
+          "tokenizer": "tokenizers",
+          "tokenizer_path": "hf://kyutai/pocket-tts-without-voice-cloning/languages/spanish/tokenizer.json@4e1e0a3e611c51c0b4ed8174fc10f32a54644303"
+        },
+        "transformer": {
+          "d_model": 1024,
+          "hidden_scale": 4,
+          "max_period": 10000,
+          "num_heads": 16,
+          "num_layers": 6
+        }
+      },
+      "mimi": {
+        "channels": 1,
+        "dtype": "float32",
+        "frame_rate": 12.5,
+        "inner_dim": 32,
+        "outer_dim": 512,
+        "quantizer": {
+          "dimension": 32,
+          "output_dimension": 512
+        },
+        "sample_rate": 24000,
+        "seanet": {
+          "channels": 1,
+          "compress": 2,
+          "dilation_base": 2,
+          "dimension": 512,
+          "kernel_size": 7,
+          "last_kernel_size": 3,
+          "n_filters": 64,
+          "n_residual_layers": 1,
+          "pad_mode": "constant",
+          "ratios": [
+            6,
+            5,
+            4
+          ],
+          "residual_kernel_size": 3
+        },
+        "transformer": {
+          "context": 250,
+          "d_model": 512,
+          "dim_feedforward": 2048,
+          "input_dimension": 512,
+          "layer_scale": 0.01,
+          "num_heads": 8,
+          "num_layers": 2,
+          "output_dimensions": [
+            512
+          ]
+        }
+      },
+      "replace_characters": {
+        "\"": "",
+        "(": "",
+        ")": "",
+        "[": "",
+        "]": "",
+        "\u00a1": "",
+        "\u00ab": "",
+        "\u00bb": "",
+        "\u00bf": "",
+        "\u2013": ",",
+        "\u2018": "'",
+        "\u2019": "'",
+        "\u201c": "",
+        "\u201d": "",
+        "\u201e": ""
+      },
+      "weights_path": "hf://kyutai/pocket-tts/languages/spanish/model.safetensors@3e82814a68665eec246ff649b14c71331f955c06",
+      "weights_path_without_voice_cloning": "hf://kyutai/pocket-tts-without-voice-cloning/languages/spanish/model.safetensors@1e08e6a23401048648a9fdcfde2f89348215c2a7"
+    },
+    "spanish_24l": {
+      "flow_lm": {
+        "dtype": "float32",
+        "flow": {
+          "depth": 6,
+          "dim": 512
+        },
+        "insert_bos_before_voice": true,
+        "lookup_table": {
+          "dim": 1024,
+          "n_bins": 4000,
+          "tokenizer": "tokenizers",
+          "tokenizer_path": "hf://kyutai/pocket-tts-without-voice-cloning/languages/spanish_24l/tokenizer.json@4e1e0a3e611c51c0b4ed8174fc10f32a54644303"
+        },
+        "transformer": {
+          "d_model": 1024,
+          "hidden_scale": 4,
+          "max_period": 10000,
+          "num_heads": 16,
+          "num_layers": 24
+        }
+      },
+      "mimi": {
+        "channels": 1,
+        "dtype": "float32",
+        "frame_rate": 12.5,
+        "inner_dim": 32,
+        "outer_dim": 512,
+        "quantizer": {
+          "dimension": 32,
+          "output_dimension": 512
+        },
+        "sample_rate": 24000,
+        "seanet": {
+          "channels": 1,
+          "compress": 2,
+          "dilation_base": 2,
+          "dimension": 512,
+          "kernel_size": 7,
+          "last_kernel_size": 3,
+          "n_filters": 64,
+          "n_residual_layers": 1,
+          "pad_mode": "constant",
+          "ratios": [
+            6,
+            5,
+            4
+          ],
+          "residual_kernel_size": 3
+        },
+        "transformer": {
+          "context": 250,
+          "d_model": 512,
+          "dim_feedforward": 2048,
+          "input_dimension": 512,
+          "layer_scale": 0.01,
+          "num_heads": 8,
+          "num_layers": 2,
+          "output_dimensions": [
+            512
+          ]
+        }
+      },
+      "replace_characters": {
+        "\"": "",
+        "(": "",
+        ")": "",
+        "[": "",
+        "]": "",
+        "\u00a1": "",
+        "\u00ab": "",
+        "\u00bb": "",
+        "\u00bf": "",
+        "\u2013": ",",
+        "\u2018": "'",
+        "\u2019": "'",
+        "\u201c": "",
+        "\u201d": "",
+        "\u201e": ""
+      },
+      "weights_path": "hf://kyutai/pocket-tts/languages/spanish_24l/model.safetensors@2dd944b099d06bb9edbd221fef138685711d9bf0",
+      "weights_path_without_voice_cloning": "hf://kyutai/pocket-tts-without-voice-cloning/languages/spanish_24l/model.safetensors@4e1e0a3e611c51c0b4ed8174fc10f32a54644303"
+    }
+  },
+  "upstream_revision": "c91f50f38c6b914d49dbdff51b8d322edf843db2"
+}

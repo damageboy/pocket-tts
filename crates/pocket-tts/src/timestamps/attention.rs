@@ -9,6 +9,8 @@ pub(crate) struct AttentionCapture {
     token_to_unit: Vec<Vec<f32>>,
     scores: Vec<f32>,
     recorded: usize,
+    #[cfg(test)]
+    pub head_scores: Vec<Vec<f32>>,
 }
 
 impl AttentionCapture {
@@ -25,6 +27,8 @@ impl AttentionCapture {
             candle_core::bail!("Inconsistent timestamp token mapping");
         }
         Ok(Self {
+            #[cfg(test)]
+            head_scores: vec![vec![0.0; units]; heads.len()],
             heads,
             text_start,
             token_to_unit,
@@ -38,7 +42,12 @@ impl AttentionCapture {
         if batch != 1 || queries != 1 {
             candle_core::bail!("Timestamp capture requires a single decoding query");
         }
-        for &(_, head) in self.heads.iter().filter(|(l, _)| *l == layer) {
+        for (_index, &(_, head)) in self
+            .heads
+            .iter()
+            .enumerate()
+            .filter(|(_, (l, _))| *l == layer)
+        {
             // Softmax MUST be over text only, separately for each head. Normal
             // attention also includes voice and audio keys, which can dominate.
             let text = logits
@@ -47,9 +56,15 @@ impl AttentionCapture {
                 .flatten_all()?
                 .to_dtype(DType::F32)?;
             let probabilities = candle_nn::ops::softmax(&text, D::Minus1)?.to_vec1::<f32>()?;
+            #[cfg(test)]
+            self.head_scores[_index].fill(0.0);
             for (p, row) in probabilities.iter().zip(&self.token_to_unit) {
-                for (score, weight) in self.scores.iter_mut().zip(row) {
+                for (_unit, (score, weight)) in self.scores.iter_mut().zip(row).enumerate() {
                     *score += p * weight;
+                    #[cfg(test)]
+                    {
+                        self.head_scores[_index][_unit] += p * weight;
+                    }
                 }
             }
             self.recorded += 1;

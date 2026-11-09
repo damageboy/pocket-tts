@@ -1,0 +1,105 @@
+{
+  "calibration": [
+    {
+      "id": "cal-prose",
+      "text": "The quiet garden was full of birds when Alice opened the window."
+    },
+    {
+      "id": "cal-number",
+      "text": "We bought 12 apples for 5 euros in 2024."
+    },
+    {
+      "id": "cal-punctuation",
+      "text": "Wait, really? Yes; I thought so! Please come inside."
+    },
+    {
+      "id": "cal-repeat",
+      "text": "The red red door was very very old, but the door still opened."
+    },
+    {
+      "id": "cal-conversation",
+      "text": "Could you tell me where the station is? I think we should turn left."
+    },
+    {
+      "id": "cal-chunks",
+      "text": "Every morning the baker opens her shop before the sun appears. She arranges the bread in neat rows and puts fresh flowers beside the window. Her neighbors stop to talk while they wait for coffee. Later she carries a basket to the school across the square. The children always thank her before running outside to play."
+    }
+  ],
+  "evaluation": [
+    {
+      "id": "eval-prose",
+      "text": "A gentle breeze moved the curtains as Daniel placed the book on the table."
+    },
+    {
+      "id": "eval-number",
+      "text": "The museum welcomed 20 visitors in 2025."
+    },
+    {
+      "id": "eval-punctuation",
+      "text": "Oh, no! Is that yours? Perhaps; let us check the label."
+    },
+    {
+      "id": "eval-repeat",
+      "text": "Go go slowly, slowly along the road, then stop and stop again."
+    },
+    {
+      "id": "eval-conversation",
+      "text": "Would you like another cup of tea? Thanks, but I really have to leave."
+    },
+    {
+      "id": "eval-chunks",
+      "text": "On Saturday the family took a train to the coast. They walked along the beach and watched the boats returning to the harbor. At noon they found a small cafe beside an old stone bridge. After lunch they visited the lighthouse and climbed the narrow stairs. By evening everyone was tired and ready to travel home."
+    }
+  ],
+  "generation": {
+    "decode_steps": 1,
+    "fade": "5ms at every fresh decoder onset",
+    "mode": "independent_segments",
+    "noise_distribution": "Normal<f32>(0,sqrt(temperature)); rejection sampling preserved if noise_clamp configured",
+    "rng_provenance": "Cargo.lock records rand/rand_distr versions; lockfile SHA256 copied to provenance",
+    "sample_rate": 24000,
+    "seed": "first 8 SHA256 bytes of case id + colon + voice + colon + 20261109, big-endian u64",
+    "seed_reason": "test-only scoped thread-local rand 0.10 StdRng normal sampling; reset identically before capture/native/ordinary passes",
+    "temperature": 0.3,
+    "voices": [
+      "alba",
+      "anna"
+    ]
+  },
+  "normalization": {
+    "numbers": {
+      "12": [
+        "twelve"
+      ],
+      "20": [
+        "twenty"
+      ],
+      "2024": [
+        "twenty twenty four",
+        "two thousand twenty four",
+        "two thousand and twenty four"
+      ],
+      "2025": [
+        "twenty twenty five",
+        "two thousand twenty five",
+        "two thousand and twenty five"
+      ],
+      "5": [
+        "five"
+      ]
+    },
+    "orthographic_equivalence": {
+      "harbour": "harbor",
+      "neighbours": "neighbors"
+    },
+    "policy": "Apply identical exact lexical/number/orthographic equivalences to old and new. No fuzzy or phonetic matching. Unresolved speech-versus-ASR cases stay unmatched with full source-word denominator; no invented times. Orthographic correction was approved from calibration-only evidence before any heldout generation.",
+    "version": 1
+  },
+  "preset_policy": "Changed English and small checkpoint candidates use a7056f505a4a8ca72d8b5fb1440071d6f1a35739. Existing unchanged-weight timestamp bundles explicitly retain old preset revisions; their refreshed upstream states are deferred. New audio-only bundles use target presets. Failed candidates cannot replace previously supported bundles.",
+  "promotion": "No degradation versus historical bundle on the same heldout corpus in matched source-word coverage, start mean, start p95, end mean, end p95, pooled mean or pooled p95; event/PCM contract must pass. Missing and repeated ASR words reported. No epsilon or silently adjusted tolerance.",
+  "reference": "Pinned faster-whisper-base.en CPU int8 beam5 word timestamps, condition_on_previous_text=false. Transcript alignment and ambiguous numerical expansions manually inspected from textual/frame evidence. ASR boundaries are approximate, not human-certified ground truth. User listening acceptance remains pending.",
+  "schema_version": 1,
+  "selection": "All individual query heads, historical pair, and all pairs among the best six individual calibration heads. Rank by matched source-word coverage descending, then pooled absolute start/end mean error ascending, then pooled p95. Historical baseline heads are frozen. Select only on calibration split, freeze selection before heldout evaluation.",
+  "settings_correction": "Original temperature-zero/three-step calibration capture archived as plumbing-only; no heldout generated or inspected. Main protocol corrected before evaluation to upstream/CLI defaults of temperature0.3 and one sampler step. Corpus unchanged.",
+  "upstream_revision": "c91f50f38c6b914d49dbdff51b8d322edf843db2"
+}

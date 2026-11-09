@@ -44,6 +44,32 @@ pub struct FlowLMModel {
     sampler: SamplerType,
 }
 
+// Offline calibration only: normal sampling remains unchanged in release builds.
+#[cfg(test)]
+thread_local! {
+    static CALIBRATION_RNG: std::cell::RefCell<Option<rand::rngs::StdRng>> = const { std::cell::RefCell::new(None) };
+}
+
+#[cfg(test)]
+pub(crate) struct CalibrationNoiseSeed(Option<rand::rngs::StdRng>);
+
+#[cfg(test)]
+impl CalibrationNoiseSeed {
+    pub fn new(seed: u64) -> Self {
+        use rand::SeedableRng;
+        Self(CALIBRATION_RNG.with(|rng| rng.replace(Some(rand::rngs::StdRng::seed_from_u64(seed)))))
+    }
+}
+
+#[cfg(test)]
+impl Drop for CalibrationNoiseSeed {
+    fn drop(&mut self) {
+        CALIBRATION_RNG.with(|rng| {
+            rng.replace(self.0.take());
+        });
+    }
+}
+
 fn sample_noise(
     device: &candle_core::Device,
     shape: (usize, usize),
@@ -51,6 +77,25 @@ fn sample_noise(
     clamp: Option<f32>,
 ) -> Result<Tensor> {
     let std = temp.sqrt();
+    #[cfg(test)]
+    if let Some(result) = CALIBRATION_RNG.with(|slot| {
+        let mut slot = slot.borrow_mut();
+        let rng = slot.as_mut()?;
+        Some((|| {
+            let distribution = rand_distr::Normal::new(0.0f32, std)
+                .map_err(|e| candle_core::Error::Msg(e.to_string()))?;
+            let mut values = Vec::with_capacity(shape.0 * shape.1);
+            while values.len() < shape.0 * shape.1 {
+                let value = rand_distr::Distribution::sample(&distribution, rng);
+                if clamp.is_none_or(|limit| value.abs() <= limit) {
+                    values.push(value);
+                }
+            }
+            Tensor::from_vec(values, shape, device)
+        })())
+    }) {
+        return result;
+    }
     match clamp {
         None => Tensor::randn(0.0f32, std, shape, device),
         Some(limit) => {
@@ -307,5 +352,29 @@ impl FlowLMModel {
         };
 
         Ok((next_latent, is_eos))
+    }
+}
+
+#[cfg(test)]
+mod calibration_seed_tests {
+    use super::*;
+    #[test]
+    fn calibration_seed_replays_and_restores_the_enclosing_rng() -> Result<()> {
+        let sample =
+            || sample_noise(&candle_core::Device::Cpu, (1, 4), 0.3, None)?.to_vec2::<f32>();
+        let _outer = CalibrationNoiseSeed::new(42);
+        let first = sample()?;
+        let failed: Result<()> = (|| {
+            let _inner = CalibrationNoiseSeed::new(42);
+            assert_eq!(sample()?, first);
+            candle_core::bail!("exercise early-error restoration")
+        })();
+        assert!(failed.is_err());
+        let second = sample()?;
+        assert_ne!(first, second);
+        let _replay = CalibrationNoiseSeed::new(42);
+        assert_eq!(sample()?, first);
+        assert_eq!(sample()?, second);
+        Ok(())
     }
 }

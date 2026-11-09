@@ -140,6 +140,9 @@ pub struct Config {
     /// An empty selection permits ordinary synthesis but not timestamp generation.
     #[serde(default)]
     pub timestamp_heads: Vec<(usize, usize)>,
+    /// Immutable revision of precomputed stock voice states for this bundle.
+    #[serde(default)]
+    pub preset_voice_revision: Option<String>,
     #[serde(default = "default_temperature")]
     pub default_temperature: f32,
     #[serde(default = "default_eos_threshold")]
@@ -361,6 +364,23 @@ mod tests {
             serde_yaml::from_str(&std::fs::read_to_string(get_config_path()).unwrap()).unwrap();
         yaml["flow_lm"]["flow"]["type"] = "unknown_sampler".into();
         assert!(serde_yaml::from_value::<Config>(yaml).is_err());
+    }
+
+    #[test]
+    fn preset_revision_is_optional_and_preserved() {
+        let mut yaml: serde_yaml::Value =
+            serde_yaml::from_str(include_str!("../config/english.yaml")).unwrap();
+        yaml.as_mapping_mut()
+            .unwrap()
+            .remove("preset_voice_revision");
+        let legacy: Config = serde_yaml::from_value(yaml.clone()).unwrap();
+        assert_eq!(legacy.preset_voice_revision, None);
+        yaml["preset_voice_revision"] = serde_yaml::Value::String("fixed-revision".into());
+        let pinned: Config = serde_yaml::from_value(yaml).unwrap();
+        assert_eq!(
+            pinned.preset_voice_revision.as_deref(),
+            Some("fixed-revision")
+        );
     }
 
     #[test]
