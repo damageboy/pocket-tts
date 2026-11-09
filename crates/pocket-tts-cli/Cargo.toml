@@ -23,7 +23,7 @@ path = "src/lib.rs"
 
 [features]
 default = ["web-ui", "playback"]
-playback = ["dep:rodio", "dep:crossterm", "dep:ctrlc", "dep:regex", "dep:unicode-width", "dep:unicode-segmentation"]
+playback = ["dep:rodio", "dep:crossterm", "dep:ratatui", "dep:ctrlc", "dep:regex", "dep:unicode-width", "dep:unicode-segmentation"]
 external-cli-tests = []
 web-ui = [
   "rust-embed",
@@ -55,6 +55,7 @@ tracing-subscriber = { workspace = true, features = ["env-filter"] }
 owo-colors = "4.3"
 rodio = { version = "0.22.2", default-features = false, features = ["playback"], optional = true }
 crossterm = { version = "0.29", default-features = false, optional = true }
+ratatui = { version = "0.30.2", default-features = false, features = ["crossterm_0_29"], optional = true }
 ctrlc = { version = "3.5", optional = true }
 regex = { version = "1", optional = true }
 unicode-width = { version = "0.2", optional = true }

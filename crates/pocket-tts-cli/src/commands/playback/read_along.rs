@@ -1,16 +1,26 @@
 //! Terminal read-along driven by consumed source samples.
 
 use crossterm::{
-    cursor::{Hide, MoveTo, Show},
+    cursor::{Hide, Show},
     execute, queue,
-    style::{Attribute, Color, Print, ResetColor, SetAttribute, SetForegroundColor},
-    terminal::{self, Clear, ClearType, EnterAlternateScreen, LeaveAlternateScreen},
+    style::{Attribute, ResetColor, SetAttribute},
+    terminal::{
+        self, BeginSynchronizedUpdate, EndSynchronizedUpdate, EnterAlternateScreen,
+        LeaveAlternateScreen,
+    },
 };
 use pocket_tts::timestamps::WordEvent;
+use ratatui::{
+    Frame, Terminal,
+    backend::CrosstermBackend,
+    layout::Rect,
+    style::{Color, Modifier, Style},
+    text::{Line, Span},
+};
 use regex::Regex;
 use std::{
     collections::BTreeMap,
-    io::{self, Write},
+    io::{self, BufWriter, Write},
     ops::Range,
     sync::{
         LazyLock,
@@ -70,17 +80,14 @@ impl ReadAlong {
         })
     }
 
-    fn draw(&self, out: &mut impl Write, time: f64, columns: u16, rows: u16) -> io::Result<()> {
-        queue!(out, MoveTo(0, 0), Clear(ClearType::All))?;
-        if columns < 4 || rows < 8 {
-            return out.flush();
-        }
-        let width = (columns - 2) as usize;
+    fn display(&self, time: f64, columns: u16, rows: u16) -> DisplayState {
         let active = self.active(time);
+        // Only the counter is throttled; highlight boundaries use the precise audio clock.
+        let counter = (time * 10.0).floor() / 10.0;
         let status = if let Some(index) = active {
             let timing = &self.timings[&index];
             format!(
-                "{time:.2}s | word #{index} | {:.2}-{}",
+                "{counter:.1}s | word #{index} | {:.2}-{}",
                 timing.start,
                 timing
                     .end
@@ -88,72 +95,82 @@ impl ReadAlong {
             )
         } else {
             format!(
-                "{time:.2}s  |  {} timed words  |  waiting / between words",
+                "{counter:.1}s  |  {} timed words  |  waiting / between words",
                 self.timings.len()
             )
         };
-        queue!(
-            out,
-            SetForegroundColor(Color::Cyan),
-            SetAttribute(Attribute::Bold)
-        )?;
-        put(out, 1, "Pocket TTS  /  live read-along", width)?;
-        queue!(out, ResetColor, SetAttribute(Attribute::Reset))?;
-        put(out, 2, &status, width)?;
-        put(
-            out,
-            3,
-            "Ctrl-C stops  |  approximate word boundaries; device latency may apply",
-            width,
-        )?;
-
-        let wrapped = lines(&self.text, width);
         let focus = self
             .timings
             .iter()
             .rev()
             .find(|(_, t)| time >= t.start)
             .map_or(0, |(&index, _)| self.words[index].start);
+        DisplayState {
+            active,
+            focus,
+            status,
+            columns,
+            rows,
+        }
+    }
+
+    fn render(&self, frame: &mut Frame, state: &DisplayState) {
+        let area = frame.area();
+        if area.width < 4 || area.height < 8 {
+            return;
+        }
+        let width = (area.width - 2) as usize;
+        let row_area = |row| Rect::new(area.x + 1, area.y + row, width as u16, 1);
+        frame.render_widget(
+            Line::from("Pocket TTS  /  live read-along").style(
+                Style::default()
+                    .fg(Color::Cyan)
+                    .add_modifier(Modifier::BOLD),
+            ),
+            row_area(1),
+        );
+        frame.render_widget(state.status.as_str(), row_area(2));
+        frame.render_widget(
+            "Ctrl-C stops  |  approximate word boundaries; device latency may apply",
+            row_area(3),
+        );
+
+        let wrapped = lines(&self.text, width);
         let focus_line = wrapped
             .iter()
-            .position(|line| line.contains(&focus))
+            .position(|line| line.contains(&state.focus))
             .unwrap_or(0);
-        let height = (rows - 7) as usize;
+        let height = (area.height - 7) as usize;
         let top = focus_line
             .saturating_sub(height / 2)
             .min(wrapped.len().saturating_sub(height));
-        let highlight = active.map(|index| &self.words[index]);
+        let highlight = state.active.map(|index| &self.words[index]);
         for (row, line) in wrapped.iter().skip(top).take(height).enumerate() {
-            queue!(out, MoveTo(1, row as u16 + 5))?;
             let overlap = highlight.map(|span| span.start.max(line.start)..span.end.min(line.end));
-            if let Some(span) = overlap.filter(|span| span.start < span.end) {
-                queue!(
-                    out,
-                    Print(&self.text[line.start..span.start]),
+            let content = if let Some(span) = overlap.filter(|span| span.start < span.end) {
+                Line::from(vec![
+                    Span::raw(&self.text[line.start..span.start]),
                     // Reverse video remains visible when NO_COLOR disables colors.
-                    SetAttribute(Attribute::Reverse),
-                    SetAttribute(Attribute::Bold),
-                    Print(&self.text[span.clone()]),
-                    ResetColor,
-                    SetAttribute(Attribute::Reset),
-                    Print(&self.text[span.end..line.end])
-                )?;
+                    Span::styled(
+                        &self.text[span.clone()],
+                        Style::default().add_modifier(Modifier::REVERSED | Modifier::BOLD),
+                    ),
+                    Span::raw(&self.text[span.end..line.end]),
+                ])
             } else {
-                queue!(out, Print(&self.text[line.clone()]))?;
-            }
+                Line::from(&self.text[line.clone()])
+            };
+            frame.render_widget(content, row_area(row as u16 + 5));
         }
-        put(
-            out,
-            rows - 1,
-            &format!(
+        frame.render_widget(
+            format!(
                 "Lines {}-{} / {}  |  highlighting follows audio, not generation",
                 top + 1,
                 (top + height).min(wrapped.len()),
                 wrapped.len()
             ),
-            width,
-        )?;
-        out.flush()
+            row_area(area.height - 1),
+        );
     }
 }
 
@@ -187,17 +204,44 @@ fn lines(text: &str, width: usize) -> Vec<Range<usize>> {
     result
 }
 
-fn put(out: &mut impl Write, row: u16, text: &str, width: usize) -> io::Result<()> {
-    let first = lines(text, width).into_iter().next().unwrap();
-    queue!(out, MoveTo(1, row), Print(&text[first]))
+#[derive(PartialEq, Eq)]
+struct DisplayState {
+    active: Option<usize>,
+    focus: usize,
+    status: String,
+    columns: u16,
+    rows: u16,
 }
 
-struct Terminal(io::Stderr);
+fn draw_if_changed<W: Write>(
+    terminal: &mut Terminal<CrosstermBackend<W>>,
+    view: &ReadAlong,
+    state: DisplayState,
+    previous: &mut Option<DisplayState>,
+) -> io::Result<()> {
+    if previous.as_ref() == Some(&state) {
+        return Ok(());
+    }
+    // Unsupported terminals ignore these commands. On supported terminals the diff is
+    // presented atomically, including the clear Ratatui performs on a resize.
+    queue!(terminal.backend_mut(), BeginSynchronizedUpdate)?;
+    let result = terminal
+        .draw(|frame| view.render(frame, &state))
+        .map(|_| ());
+    let end = execute!(terminal.backend_mut(), EndSynchronizedUpdate);
+    result?;
+    end?;
+    *previous = Some(state);
+    Ok(())
+}
 
-impl Drop for Terminal {
+struct Screen(BufWriter<io::Stderr>);
+
+impl Drop for Screen {
     fn drop(&mut self) {
         let _ = execute!(
             self.0,
+            EndSynchronizedUpdate,
             ResetColor,
             SetAttribute(Attribute::Reset),
             Show,
@@ -214,8 +258,11 @@ pub(super) fn run(
     done: &AtomicBool,
     cancelled: &AtomicBool,
 ) -> io::Result<()> {
-    let mut terminal = Terminal(io::stderr());
-    execute!(terminal.0, EnterAlternateScreen, Hide)?;
+    let mut screen = Screen(BufWriter::new(io::stderr()));
+    execute!(screen.0, EnterAlternateScreen, Hide)?;
+    // Keep cooked input so the existing Ctrl-C cancellation handler still receives SIGINT.
+    let mut terminal = Terminal::new(CrosstermBackend::new(&mut screen.0))?;
+    let mut previous = None;
     let mut view = ReadAlong::new(text);
     while !done.load(Ordering::Relaxed) && !cancelled.load(Ordering::Relaxed) {
         for event in events.try_iter() {
@@ -223,7 +270,12 @@ pub(super) fn run(
         }
         let time = played.load(Ordering::Relaxed) as f64 / rate as f64;
         let (columns, rows) = terminal::size()?;
-        view.draw(&mut terminal.0, time, columns, rows)?;
+        draw_if_changed(
+            &mut terminal,
+            &view,
+            view.display(time, columns, rows),
+            &mut previous,
+        )?;
         thread::sleep(Duration::from_millis(33));
     }
     Ok(())
@@ -243,17 +295,195 @@ mod tests {
             start_time: 1.25,
             end_time: 1.75,
         }));
-        let mut output = Vec::new();
-        view.draw(&mut output, 1.5, 42, 10).unwrap();
-        let output = String::from_utf8(output).unwrap();
+        let mut terminal = Terminal::new(ratatui::backend::TestBackend::new(42, 10)).unwrap();
+        terminal
+            .draw(|frame| view.render(frame, &view.display(1.5, 42, 10)))
+            .unwrap();
+        let buffer = terminal.backend().buffer();
+        let status: String = (0..42).map(|x| buffer[(x, 2)].symbol()).collect();
         assert!(
-            output.contains("1.75s"),
-            "end of timestamp range was clipped: {output:?}"
+            status.contains("1.75s"),
+            "end of timestamp range was clipped: {status:?}"
+        );
+        assert!(buffer[(1, 5)].modifier.contains(Modifier::REVERSED));
+    }
+
+    #[derive(Clone, Default)]
+    struct CapturedOutput(std::rc::Rc<std::cell::RefCell<Vec<u8>>>);
+
+    impl Write for CapturedOutput {
+        fn write(&mut self, bytes: &[u8]) -> io::Result<usize> {
+            self.0.borrow_mut().extend_from_slice(bytes);
+            Ok(bytes.len())
+        }
+
+        fn flush(&mut self) -> io::Result<()> {
+            Ok(())
+        }
+    }
+
+    #[test]
+    fn unchanged_frames_write_nothing_and_clock_updates_do_not_repaint_text() {
+        let output = CapturedOutput::default();
+        let mut terminal = Terminal::with_options(
+            CrosstermBackend::new(output.clone()),
+            ratatui::TerminalOptions {
+                viewport: ratatui::Viewport::Fixed(Rect::new(0, 0, 80, 12)),
+            },
+        )
+        .unwrap();
+        let view = ReadAlong::new("one two");
+        let mut previous = None;
+        draw_if_changed(
+            &mut terminal,
+            &view,
+            view.display(0.01, 80, 12),
+            &mut previous,
+        )
+        .unwrap();
+        output.0.borrow_mut().clear();
+        draw_if_changed(
+            &mut terminal,
+            &view,
+            view.display(0.09, 80, 12),
+            &mut previous,
+        )
+        .unwrap();
+        assert!(output.0.borrow().is_empty());
+        draw_if_changed(
+            &mut terminal,
+            &view,
+            view.display(0.11, 80, 12),
+            &mut previous,
+        )
+        .unwrap();
+        let bytes = output.0.borrow();
+        let commands = std::str::from_utf8(&bytes).unwrap();
+        assert!(!commands.is_empty());
+        assert!(
+            !commands.contains("\x1b[2J"),
+            "ordinary frames must not clear the screen"
+        );
+        assert!(!commands.contains("Pocket TTS"));
+        assert!(!commands.contains("one two"));
+        assert!(commands.starts_with("\x1b[?2026h"));
+        assert!(commands.ends_with("\x1b[?2026l"));
+    }
+
+    #[test]
+    fn highlight_changes_within_a_counter_tick_and_clears_at_exclusive_end() {
+        let mut view = ReadAlong::new("one two");
+        for (word_index, word, start_time, end_time) in
+            [(0, "one", 0.01, 0.04), (1, "two", 0.04, 0.08)]
+        {
+            view.update(WordEvent::WordEnd(WordEnd {
+                word: word.into(),
+                word_index,
+                start_time,
+                end_time,
+            }));
+        }
+        let mut terminal = Terminal::new(ratatui::backend::TestBackend::new(80, 12)).unwrap();
+        let first = view.display(0.02, 80, 12);
+        let second = view.display(0.04, 80, 12);
+        assert!(first != second);
+        terminal.draw(|frame| view.render(frame, &first)).unwrap();
+        assert!(
+            terminal.backend().buffer()[(1, 5)]
+                .modifier
+                .contains(Modifier::REVERSED)
+        );
+        terminal.draw(|frame| view.render(frame, &second)).unwrap();
+        assert!(
+            !terminal.backend().buffer()[(1, 5)]
+                .modifier
+                .contains(Modifier::REVERSED)
         );
         assert!(
-            output.contains("\x1b[7m"),
-            "highlight must also work without color"
+            terminal.backend().buffer()[(5, 5)]
+                .modifier
+                .contains(Modifier::REVERSED)
         );
+        terminal
+            .draw(|frame| view.render(frame, &view.display(0.08, 80, 12)))
+            .unwrap();
+        assert!(
+            !terminal.backend().buffer()[(5, 5)]
+                .modifier
+                .contains(Modifier::REVERSED)
+        );
+    }
+
+    #[test]
+    fn scrolling_and_resizing_keep_the_active_word_visible() {
+        let mut view = ReadAlong::new("zero\none\ntwo\nthree\nfour\nfive\nsix");
+        view.update(WordEvent::WordStart(WordStart {
+            word: "five".into(),
+            word_index: 5,
+            start_time: 1.0,
+        }));
+        let mut terminal = Terminal::new(ratatui::backend::TestBackend::new(20, 10)).unwrap();
+        terminal
+            .draw(|frame| view.render(frame, &view.display(1.0, 20, 10)))
+            .unwrap();
+        assert_eq!(terminal.backend().buffer()[(1, 6)].symbol(), "f");
+        assert!(
+            terminal.backend().buffer()[(1, 6)]
+                .modifier
+                .contains(Modifier::REVERSED)
+        );
+        terminal.backend_mut().resize(4, 8);
+        terminal
+            .draw(|frame| view.render(frame, &view.display(1.0, 4, 8)))
+            .unwrap();
+        assert_eq!(terminal.backend().buffer()[(1, 5)].symbol(), "f");
+        assert!(
+            terminal.backend().buffer()[(1, 5)]
+                .modifier
+                .contains(Modifier::REVERSED)
+        );
+        terminal.backend_mut().resize(3, 7);
+        terminal
+            .draw(|frame| view.render(frame, &view.display(1.0, 3, 7)))
+            .unwrap();
+        assert!(
+            terminal
+                .backend()
+                .buffer()
+                .content
+                .iter()
+                .all(|cell| cell.symbol() == " ")
+        );
+        terminal.backend_mut().resize(20, 10);
+        terminal
+            .draw(|frame| view.render(frame, &view.display(1.0, 20, 10)))
+            .unwrap();
+        assert!(
+            terminal.backend().buffer()[(1, 6)]
+                .modifier
+                .contains(Modifier::REVERSED)
+        );
+    }
+
+    #[test]
+    fn arriving_end_event_refreshes_pending_status_even_when_clock_is_paused() {
+        let mut view = ReadAlong::new("one");
+        view.update(WordEvent::WordStart(WordStart {
+            word: "one".into(),
+            word_index: 0,
+            start_time: 1.0,
+        }));
+        let pending = view.display(1.5, 80, 12);
+        view.update(WordEvent::WordEnd(WordEnd {
+            word: "one".into(),
+            word_index: 0,
+            start_time: 1.0,
+            end_time: 2.0,
+        }));
+        let complete = view.display(1.5, 80, 12);
+        assert!(pending != complete);
+        assert!(pending.status.contains("pending"));
+        assert!(complete.status.contains("2.00s"));
     }
 
     #[test]
