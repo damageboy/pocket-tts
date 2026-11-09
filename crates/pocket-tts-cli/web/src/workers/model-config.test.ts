@@ -11,7 +11,7 @@ const configs = Object.fromEntries(readdirSync(root).filter(name => name.endsWit
 
 describe("canonical model configs", () => {
   it("selects all released configs without changing their YAML", () => {
-    assert.equal(Object.keys(configs).length, 21);
+    assert.equal(Object.keys(configs).length, 27);
     for (const [name, yaml] of Object.entries(configs)) {
       assert.equal(selectConfig(configs, name).yaml, yaml);
       const assets = configAssets(yaml);

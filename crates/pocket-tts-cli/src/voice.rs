@@ -154,7 +154,7 @@ fn resolve_voice_spec(model: &TTSModel, spec: &str) -> Result<pocket_tts::ModelS
 /// Uses per-language voice paths:
 ///   `hf://repo/languages/{language}/embeddings/{name}.safetensors@{revision}`
 fn resolve_predefined_voice(model: &TTSModel, name: &str) -> Result<pocket_tts::ModelState> {
-    let hf_path = stock_voice_url(model.origin.as_deref(), name)?;
+    let hf_path = stock_voice_url(model, name)?;
 
     let local_path = download_if_necessary(&hf_path)
         .with_context(|| format!("Failed to download stock voice '{}'", name))?;
@@ -164,7 +164,19 @@ fn resolve_predefined_voice(model: &TTSModel, name: &str) -> Result<pocket_tts::
         .with_context(|| format!("Failed to load voice embeddings from {:?}", local_path))
 }
 
-fn stock_voice_url(origin: Option<&std::path::Path>, name: &str) -> Result<String> {
+fn stock_voice_url(model: &TTSModel, name: &str) -> Result<String> {
+    stock_voice_url_for_bundle(
+        model.origin.as_deref(),
+        model.preset_voice_revision.as_deref(),
+        name,
+    )
+}
+
+fn stock_voice_url_for_bundle(
+    origin: Option<&std::path::Path>,
+    preset_revision: Option<&str>,
+    name: &str,
+) -> Result<String> {
     // Cached transformer states are weight-specific, not merely language-specific.
     // Do not infer compatibility from a custom YAML's filename (even english.yaml).
     let language = origin
@@ -186,12 +198,12 @@ fn stock_voice_url(origin: Option<&std::path::Path>, name: &str) -> Result<Strin
             name
         );
     }
-    let revision = match language {
+    let revision = preset_revision.unwrap_or(match language {
         "english_18m_2026-10" | "english_7m_2026-10" | "english_2m_2026-10" => {
             "a3055dcb533cf2ec90458008a01e7cef550bae2a"
         }
         _ => STOCK_VOICE_REVISION,
-    };
+    });
     Ok(format!(
         "hf://{}/languages/{}/embeddings/{}.safetensors@{}",
         STOCK_VOICE_REPO, language, name, revision
@@ -312,21 +324,55 @@ mod tests {
     #[test]
     fn stock_voice_resolution_requires_released_config_origin() {
         let origin = pocket_tts::tts_model::find_config_path("english").unwrap();
-        assert!(stock_voice_url(Some(&origin), "alba").unwrap().contains(
+        assert!(stock_voice_url_for_bundle(Some(&origin), None, "alba").unwrap().contains(
             "/languages/english/embeddings/alba.safetensors@4e1e0a3e611c51c0b4ed8174fc10f32a54644303"
         ));
         for size in ["18m", "7m", "2m"] {
             let language = format!("english_{size}_2026-10");
             let origin = pocket_tts::tts_model::find_config_path(&language).unwrap();
-            assert!(stock_voice_url(Some(&origin), "anna").unwrap().contains(&format!(
+            assert!(stock_voice_url_for_bundle(Some(&origin), None, "anna").unwrap().contains(&format!(
                 "/languages/{language}/embeddings/anna.safetensors@a3055dcb533cf2ec90458008a01e7cef550bae2a"
             )));
         }
-        assert!(stock_voice_url(None, "alba").is_err());
-        assert!(stock_voice_url(Some(std::path::Path::new("custom.yaml")), "alba").is_err());
+        assert!(stock_voice_url_for_bundle(None, None, "alba").is_err());
+        assert!(
+            stock_voice_url_for_bundle(Some(std::path::Path::new("custom.yaml")), None, "alba")
+                .is_err()
+        );
         // A familiar filename alone does not establish weight compatibility.
         assert!(
-            stock_voice_url(Some(std::path::Path::new("/custom/english.yaml")), "alba").is_err()
+            stock_voice_url_for_bundle(
+                Some(std::path::Path::new("/custom/english.yaml")),
+                None,
+                "alba"
+            )
+            .is_err()
+        );
+    }
+
+    #[test]
+    fn each_bundle_uses_its_declared_preset_revision() {
+        for entry in crate::commands::list::language_catalog() {
+            let origin = pocket_tts::tts_model::find_config_path(entry.name).unwrap();
+            let config = pocket_tts::config::load_config(&origin).unwrap();
+            let revision = config
+                .preset_voice_revision
+                .as_deref()
+                .expect("released bundle pin");
+            for voice in ["alba", "anna"] {
+                assert_eq!(
+                    stock_voice_url_for_bundle(Some(&origin), Some(revision), voice).unwrap(),
+                    format!(
+                        "hf://{STOCK_VOICE_REPO}/languages/{}/embeddings/{voice}.safetensors@{revision}",
+                        entry.name
+                    )
+                );
+            }
+        }
+        let origin = pocket_tts::tts_model::find_config_path("english").unwrap();
+        assert_ne!(
+            stock_voice_url_for_bundle(Some(&origin), Some("old"), "alba").unwrap(),
+            stock_voice_url_for_bundle(Some(&origin), Some("new"), "alba").unwrap()
         );
     }
 

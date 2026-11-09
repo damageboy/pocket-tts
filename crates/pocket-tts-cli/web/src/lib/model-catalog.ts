@@ -37,6 +37,12 @@ export const FALLBACK_LANGUAGES: LanguageEntry[] = [
   { name: "english_18m_2026-10", description: "English (18M, October 2026)", default_voice: "alba", layers: 8, status: "preview" },
   { name: "english_7m_2026-10", description: "English (7M, October 2026)", default_voice: "alba", layers: 8, status: "preview" },
   { name: "english_2m_2026-10", description: "English (2M, October 2026)", default_voice: "alba", layers: 8, status: "preview" },
+  { name: "english_2026-10", description: "English (October 2026)", default_voice: "alba", layers: 6, status: "preview" },
+  { name: "english_2026-09_2", description: "English (September 2026, second checkpoint)", default_voice: "alba", layers: 6, status: "preview" },
+  { name: "english_drifting_26-09", description: "English (drifting, September 2026)", default_voice: "alba", layers: 6, status: "preview" },
+  { name: "english_18m_refl_2026-10", description: "English (18M reward-tuned, October 2026)", default_voice: "alba", layers: 8, status: "preview" },
+  { name: "english_7m_refl_2026-10", description: "English (7M reward-tuned, October 2026)", default_voice: "alba", layers: 8, status: "preview" },
+  { name: "english_2m_refl_2026-10", description: "English (2M reward-tuned, October 2026)", default_voice: "alba", layers: 8, status: "preview" },
 ];
 
 // Fallback used when API is unavailable (e.g. WASM-only mode).

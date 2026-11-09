@@ -150,7 +150,7 @@ const fetchEmbedding = async (
 	voice: string,
 	hfToken: string,
 ): Promise<Uint8Array> => {
-	return fetchHF(presetVoiceUrl(currentLanguage, voice), hfToken, `preset voice "${voice}"`);
+	return fetchHF(presetVoiceUrl(currentLanguage, voice, configs[currentLanguage]), hfToken, `preset voice "${voice}"`);
 };
 
 const handleInit = async (

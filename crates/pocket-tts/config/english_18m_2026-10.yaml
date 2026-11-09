@@ -95,3 +95,6 @@ mimi:
     output_dimensions:
     - 128
 default_eos_threshold: -1.0
+
+# Immutable preset states; must change atomically with bundle validation.
+preset_voice_revision: a3055dcb533cf2ec90458008a01e7cef550bae2a

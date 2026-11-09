@@ -1,6 +1,5 @@
 weights_path: hf://kyutai/pocket-tts/languages/spanish_24l/model.safetensors@2dd944b099d06bb9edbd221fef138685711d9bf0
 weights_path_without_voice_cloning: hf://kyutai/pocket-tts-without-voice-cloning/languages/spanish_24l/model.safetensors@4e1e0a3e611c51c0b4ed8174fc10f32a54644303
-timestamp_heads: [[17, 13], [17, 11], [18, 1]]
 
 replace_characters:
   '"': ''
@@ -17,6 +16,7 @@ replace_characters:
   ']': ''
   '¡': ''
   '¿': ''
+  '–': ','
 
 flow_lm:
   insert_bos_before_voice: true
@@ -73,3 +73,9 @@ mimi:
     dimension: 32
     output_dimension: 512
   #weights_path: codec.safetensors
+
+# Retained checkpoint and preset identity; historical calibrated query heads.
+timestamp_heads: [[17, 13], [17, 11], [18, 1]]
+
+# Immutable preset states; must change atomically with bundle validation.
+preset_voice_revision: 4e1e0a3e611c51c0b4ed8174fc10f32a54644303

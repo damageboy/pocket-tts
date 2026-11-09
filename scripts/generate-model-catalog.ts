@@ -40,7 +40,7 @@ export function generateModelCatalog(
       throw new Error(`Expected public non-cloning weights: ${model.name}`);
     }
     const modelVoices = Object.fromEntries(voices
-      .map(voice => [voice.name, presetVoiceUrl(model.name, voice.name)]));
+      .map(voice => [voice.name, presetVoiceUrl(model.name, voice.name, configYaml)]));
     if (!Object.hasOwn(modelVoices, model.default_voice)) {
       throw new Error(`Missing default voice for ${model.name}: ${model.default_voice}`);
     }
