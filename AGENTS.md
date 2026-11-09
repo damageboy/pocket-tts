@@ -2,6 +2,17 @@
 
 This file provides guidance to AI agents when working with code in this repository.
 
+## Scope and effort limits
+
+- For substantial work, state the completion criteria, bounded checks and expected effort before starting. Flag a material increase before spending substantially more.
+- Implement the authorized task. Calibration campaigns, new testing infrastructure and broader investigations require approval if they expand that scope. Do not ask again for routine work already authorized.
+- Reuse existing tests, fixtures and evidence. Repeat checks only for relevant changes, failures or specific unresolved concerns; stop once the acceptance checks pass.
+- Use one focused review by default. Additional review cycles or agents must address a concrete unresolved issue; do not duplicate audits for reassurance.
+- Preserve known-working model bundles when replacements need extensive validation outside the agreed scope. Report the deferred upgrade instead of silently starting a calibration project.
+- If the user objects to scope, time or cost, immediately stop optional work, list only the necessary remaining steps and take the shortest defensible route to delivery.
+- Workflow skills do not authorize expanding the user's request. Do not add cleanup, exploratory testing or unrelated improvements while finishing.
+- Report actual verification and limitations. Do not promise an exact token cap without a way to measure and enforce it.
+
 ## Project Overview
 
 pocket-tts-candle is a Rust/Candle port of the pocket-tts CPU-based text-to-speech (TTS) model. It aims for high performance and low latency on CPU.
