@@ -26,7 +26,27 @@ pub fn config(directory: &Path, manifest: &serde_json::Value) -> Result<Vec<u8>>
             .join("config")
             .join(format!("{}.yaml", manifest["language"].as_str().unwrap()))
     };
-    let mut bytes = std::fs::read(selected)?;
+    let mut bytes = std::fs::read(&selected)?;
+    if manifest["schema_version"].as_u64().unwrap_or(1) >= 2 {
+        let selected_path = selected.canonicalize()?;
+        let files = manifest["files"]
+            .as_object()
+            .ok_or_else(|| pocket_tts::anyhow::anyhow!("missing fixture file hashes"))?;
+        let expected = files
+            .iter()
+            .find_map(|(name, digest)| {
+                let candidate = path(directory, name).canonicalize().ok()?;
+                (candidate == selected_path)
+                    .then(|| digest.as_str())
+                    .flatten()
+            })
+            .ok_or_else(|| pocket_tts::anyhow::anyhow!("missing selected config SHA-256"))?;
+        let actual: String = Sha256::digest(&bytes)
+            .iter()
+            .map(|byte| format!("{byte:02x}"))
+            .collect();
+        ensure!(actual == expected, "selected config hash mismatch");
+    }
     // Historical config_path names Python YAML, which predates timestamp heads.
     // Restore the archived Rust calibration only when the complete source
     // config matches; future catalog changes cannot change this selection.

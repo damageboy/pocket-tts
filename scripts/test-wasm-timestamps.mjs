@@ -1,18 +1,19 @@
 // Model-backed WASM acceptance, using local files described by an upstream
 // fixture manifest. Missing assets are fatal. No credentials/network required.
 // node scripts/test-wasm-timestamps.mjs <pkg-dir> <manifest.json>
+// Provenance only: node scripts/test-wasm-timestamps.mjs --validate-fixture <manifest.json>
+// Schema 2 YAML parsing needs PyYAML; POCKET_TTS_REFERENCE_PYTHON selects its interpreter.
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { createHash } from "node:crypto";
+import { execFileSync } from "node:child_process";
 
+const validationOnly = process.argv[2] === "--validate-fixture";
 const [pkg, manifestPath] = process.argv.slice(2);
-assert(pkg && manifestPath, "Pass pkg-dir and model manifest.json");
+assert(manifestPath && (validationOnly || pkg), "Pass pkg-dir and model manifest.json, or --validate-fixture manifest.json");
 const manifest = JSON.parse(await readFile(manifestPath, "utf8"));
-const js = await readFile(path.join(pkg, "pocket_tts.js"));
-const { default: init, WasmTTSModel } = await import(`data:text/javascript;base64,${js.toString("base64")}`);
-await init({ module_or_path: await readFile(path.join(pkg, "pocket_tts_bg.wasm")) });
 const fixturePath = (value) => path.resolve(path.dirname(manifestPath), value);
 if (manifest.upstream_commit) {
   assert(["3dbee45d343d7dddd0d105468d17f8dcba14db3e", "9a1b48922deb44cd4a805fde279eb33b71c1a473", "c91f50f38c6b914d49dbdff51b8d322edf843db2"].includes(manifest.upstream_commit), "Unknown reference revision");
@@ -32,7 +33,24 @@ if (manifest.schema_version >= 2) {
   }
 }
 const configPath = manifest.fixture_config_path ?? manifest.config_path;
-let yaml = await readFile(configPath ? fixturePath(configPath) : `crates/pocket-tts/config/${manifest.language}.yaml`, "utf8");
+const selectedConfigPath = configPath ? fixturePath(configPath) : path.resolve(`crates/pocket-tts/config/${manifest.language}.yaml`);
+let yaml = await readFile(selectedConfigPath, "utf8");
+if (manifest.schema_version >= 2) {
+  const selectedDigest = Object.entries(manifest.files).find(([name]) => fixturePath(name) === selectedConfigPath)?.[1];
+  assert(typeof selectedDigest === "string" && /^[0-9a-f]{64}$/.test(selectedDigest), "Selected config requires its own manifest SHA-256");
+  assert.equal(createHash("sha256").update(yaml).digest("hex"), selectedDigest, "Selected config hash mismatch");
+  let normative;
+  try {
+    normative = JSON.parse(execFileSync(process.env.POCKET_TTS_REFERENCE_PYTHON ?? "python3", ["-c",
+      "import json, sys; import yaml; json.dump(yaml.safe_load(sys.stdin), sys.stdout)"], { input: yaml, encoding: "utf8" }));
+  } catch (error) {
+    throw new Error(`Selected config YAML parsing requires Python with PyYAML. Set POCKET_TTS_REFERENCE_PYTHON to the pinned reference interpreter. ${error.stderr?.toString() ?? error.message}`, { cause: error });
+  }
+  assert(normative && typeof normative === "object" && !Array.isArray(normative), "Selected config must be a YAML mapping");
+  // The only documented Rust-only config metadata in these fixtures.
+  delete normative.timestamp_heads;
+  assert.deepEqual(normative, manifest.config, "Selected config/asset identity mismatch");
+}
 if ((manifest.schema_version ?? 1) < 2 && !/^timestamp_heads:/m.test(yaml)
     && ["english", "english_2m_2026-10", "english_7m_2026-10", "english_18m_2026-10"].includes(manifest.language)) {
   const archived = path.join(path.dirname(fileURLToPath(import.meta.url)), "../assets/upstream-2026-11-09/baseline", manifest.language);
@@ -40,6 +58,13 @@ if ((manifest.schema_version ?? 1) < 2 && !/^timestamp_heads:/m.test(yaml)
   assert.equal(createHash("sha256").update(yaml).digest("hex"), createHash("sha256").update(source).digest("hex"), "legacy config/calibration mismatch");
   yaml = await readFile(path.join(archived, "rust-config.yaml"), "utf8");
 }
+if (validationOnly) {
+  await Promise.all(["weights", "tokenizer", "voice_state"].map(readAsset));
+  console.log("Fixture config and assets validated.");
+} else {
+const js = await readFile(path.join(pkg, "pocket_tts.js"));
+const { default: init, WasmTTSModel } = await import(`data:text/javascript;base64,${js.toString("base64")}`);
+await init({ module_or_path: await readFile(path.join(pkg, "pocket_tts_bg.wasm")) });
 yaml = yaml.replace(/^default_temperature:.*$/m, "default_temperature: 0.0");
 const model = new WasmTTSModel();
 const text = "The quick brown fox jumps over the lazy dog.";
@@ -114,3 +139,4 @@ try {
   } finally { restarted.free(); }
   console.log(JSON.stringify({ samples: offset, batchCount, words, audioParity: "exact" }));
 } finally { model.free(); }
+}
