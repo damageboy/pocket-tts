@@ -67,6 +67,7 @@ name = "streaming_bench"
 harness = false
 
 [dev-dependencies]
+sha2 = "0.11"
 criterion = "0.8.2"
 anyhow.workspace = true
 [[bench]]

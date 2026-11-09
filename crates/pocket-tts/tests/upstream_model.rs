@@ -1,6 +1,8 @@
 //! Explicit model acceptance: run with POCKET_TTS_REFERENCE=<fixture directory>
 //! cargo test --release -p pocket-tts --test upstream_model -- --ignored --nocapture
 //! Unlike historical smoke tests, a missing model or fixture is an error.
+#[path = "common/fixture.rs"]
+mod fixture;
 use candle_core::{DType, Device, Tensor};
 use pocket_tts::{TTSModel, anyhow::Result};
 use std::{collections::HashMap, path::PathBuf};
@@ -23,25 +25,14 @@ fn teacher_forced_noise_matches_python_prefill_latents_and_decoder() -> Result<(
         [
             "3dbee45d343d7dddd0d105468d17f8dcba14db3e", // v3.3
             "9a1b48922deb44cd4a805fde279eb33b71c1a473", // v4 small models
+            "c91f50f38c6b914d49dbdff51b8d322edf843db2", // v4.0.1
         ]
         .contains(&manifest["upstream_commit"].as_str().unwrap())
     );
-    let path = |key: &str| -> &str { manifest[key]["path"].as_str().unwrap() };
+    let path = |key: &str| fixture::path(&directory, manifest[key]["path"].as_str().unwrap());
     let reference =
         candle_core::safetensors::load(directory.join("model.safetensors"), &Device::Cpu)?;
-    let config = std::fs::read(
-        PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-            .join("config")
-            .join(format!("{}.yaml", manifest["language"].as_str().unwrap())),
-    )?;
-    let mut actual_config: serde_yaml::Value = serde_yaml::from_slice(&config)?;
-    actual_config
-        .as_mapping_mut()
-        .unwrap()
-        .remove("timestamp_heads");
-    let expected_config: serde_yaml::Value =
-        serde_yaml::from_slice(&std::fs::read(manifest["config_path"].as_str().unwrap())?)?;
-    assert_eq!(actual_config, expected_config, "released config drift");
+    let config = fixture::config(&directory, &manifest)?;
     let model = TTSModel::load_from_bytes(
         &config,
         &std::fs::read(path("weights"))?,
@@ -80,14 +71,15 @@ fn teacher_forced_noise_matches_python_prefill_latents_and_decoder() -> Result<(
             };
             let cache = &state[&name];
             let length = expected.dim(2)?;
+            let start = manifest["prefill_cache_start"].as_u64().unwrap_or(0) as usize;
             close(
-                &cache["k_buf"].narrow(2, 0, length)?,
+                &cache["k_buf"].narrow(2, start, length)?,
                 &expected.get(0)?.transpose(1, 2)?,
                 5e-4,
                 &format!("{name} keys"),
             )?;
             close(
-                &cache["v_buf"].narrow(2, 0, length)?,
+                &cache["v_buf"].narrow(2, start, length)?,
                 &expected.get(1)?.transpose(1, 2)?,
                 5e-4,
                 &format!("{name} values"),

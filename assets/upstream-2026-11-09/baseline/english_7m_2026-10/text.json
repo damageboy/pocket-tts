@@ -1,0 +1,700 @@
+[
+  {
+    "chunks": {
+      "12": [
+        "Hello world."
+      ],
+      "25": [
+        "Hello world."
+      ],
+      "50": [
+        "Hello world."
+      ]
+    },
+    "frames_after_eos_guess": 3,
+    "input": "hello world",
+    "options": {
+      "append_terminal_punctuation": true,
+      "capitalize_first_letter": true,
+      "pad_with_spaces_for_short_inputs": false,
+      "remove_semicolons": false,
+      "replace_characters": {
+        "–": ",",
+        "—": ",",
+        "‘": "'",
+        "’": "'"
+      }
+    },
+    "prepared": "Hello world.",
+    "token_ids": [
+      2994,
+      578,
+      263
+    ]
+  },
+  {
+    "chunks": {
+      "12": [
+        "Hello world again."
+      ],
+      "25": [
+        "Hello world again."
+      ],
+      "50": [
+        "Hello world again."
+      ]
+    },
+    "frames_after_eos_guess": 3,
+    "input": "  hello   world\nagain  ",
+    "options": {
+      "append_terminal_punctuation": true,
+      "capitalize_first_letter": true,
+      "pad_with_spaces_for_short_inputs": false,
+      "remove_semicolons": false,
+      "replace_characters": {
+        "–": ",",
+        "—": ",",
+        "‘": "'",
+        "’": "'"
+      }
+    },
+    "prepared": "Hello world again.",
+    "token_ids": [
+      2994,
+      578,
+      517,
+      263
+    ]
+  },
+  {
+    "chunks": {
+      "12": [
+        "Dr. Miller met Prof. Smith.",
+        "Next!"
+      ],
+      "25": [
+        "Dr. Miller met Prof. Smith. Next!"
+      ],
+      "50": [
+        "Dr. Miller met Prof. Smith. Next!"
+      ]
+    },
+    "frames_after_eos_guess": 1,
+    "input": "Dr. Miller met Prof. Smith. Next!",
+    "options": {
+      "append_terminal_punctuation": true,
+      "capitalize_first_letter": true,
+      "pad_with_spaces_for_short_inputs": false,
+      "remove_semicolons": false,
+      "replace_characters": {
+        "–": ",",
+        "—": ",",
+        "‘": "'",
+        "’": "'"
+      }
+    },
+    "prepared": "Dr. Miller met Prof. Smith. Next!",
+    "token_ids": [
+      1555,
+      263,
+      3060,
+      1428,
+      308,
+      274,
+      2416,
+      601,
+      263,
+      3669,
+      263,
+      3219,
+      682
+    ]
+  },
+  {
+    "chunks": {
+      "12": [
+        "The fee is $822.95,",
+        "please pay tomorrow. Then leave."
+      ],
+      "25": [
+        "The fee is $822.95, please pay tomorrow. Then leave."
+      ],
+      "50": [
+        "The fee is $822.95, please pay tomorrow. Then leave."
+      ]
+    },
+    "frames_after_eos_guess": 1,
+    "input": "The fee is $822.95, please pay tomorrow. Then leave.",
+    "options": {
+      "append_terminal_punctuation": true,
+      "capitalize_first_letter": true,
+      "pad_with_spaces_for_short_inputs": false,
+      "remove_semicolons": false,
+      "replace_characters": {
+        "–": ",",
+        "—": ",",
+        "‘": "'",
+        "’": "'"
+      }
+    },
+    "prepared": "The fee is $822.95, please pay tomorrow. Then leave.",
+    "token_ids": [
+      364,
+      521,
+      1239,
+      277,
+      1124,
+      547,
+      365,
+      365,
+      263,
+      501,
+      437,
+      262,
+      260,
+      1530,
+      882,
+      266,
+      2382,
+      263,
+      1160,
+      1037,
+      263
+    ]
+  },
+  {
+    "chunks": {
+      "12": [
+        "I counted to 3. 14 people were there."
+      ],
+      "25": [
+        "I counted to 3. 14 people were there."
+      ],
+      "50": [
+        "I counted to 3. 14 people were there."
+      ]
+    },
+    "frames_after_eos_guess": 1,
+    "input": "I counted to 3. 14 people were there.",
+    "options": {
+      "append_terminal_punctuation": true,
+      "capitalize_first_letter": true,
+      "pad_with_spaces_for_short_inputs": false,
+      "remove_semicolons": false,
+      "replace_characters": {
+        "–": ",",
+        "—": ",",
+        "‘": "'",
+        "’": "'"
+      }
+    },
+    "prepared": "I counted to 3. 14 people were there.",
+    "token_ids": [
+      268,
+      1026,
+      278,
+      266,
+      260,
+      450,
+      263,
+      260,
+      341,
+      487,
+      260,
+      346,
+      379,
+      310,
+      263
+    ]
+  },
+  {
+    "chunks": {
+      "12": [
+        "Visit www. kyutai.",
+        "org. Email jo@icloud.",
+        "com."
+      ],
+      "25": [
+        "Visit www. kyutai. org. Email jo@icloud. com."
+      ],
+      "50": [
+        "Visit www. kyutai. org. Email jo@icloud. com."
+      ]
+    },
+    "frames_after_eos_guess": 3,
+    "input": "Visit www.kyutai.org. Email jo@icloud.com.",
+    "options": {
+      "append_terminal_punctuation": true,
+      "capitalize_first_letter": true,
+      "pad_with_spaces_for_short_inputs": false,
+      "remove_semicolons": false,
+      "replace_characters": {
+        "–": ",",
+        "—": ",",
+        "‘": "'",
+        "’": "'"
+      }
+    },
+    "prepared": "Visit www.kyutai.org. Email jo@icloud.com.",
+    "token_ids": [
+      1633,
+      261,
+      562,
+      859,
+      479,
+      479,
+      263,
+      1982,
+      805,
+      1537,
+      263,
+      448,
+      453,
+      263,
+      520,
+      3270,
+      260,
+      1347,
+      68,
+      485,
+      589,
+      1471,
+      263,
+      924,
+      263
+    ]
+  },
+  {
+    "chunks": {
+      "12": [
+        "“Stop.",
+        "” She left.",
+        "(Quietly. ) Then returned."
+      ],
+      "25": [
+        "“Stop. ” She left. (Quietly.",
+        ") Then returned."
+      ],
+      "50": [
+        "“Stop. ” She left. (Quietly. ) Then returned."
+      ]
+    },
+    "frames_after_eos_guess": 1,
+    "input": "“Stop.” She left. (Quietly.) Then returned.",
+    "options": {
+      "append_terminal_punctuation": true,
+      "capitalize_first_letter": true,
+      "pad_with_spaces_for_short_inputs": false,
+      "remove_semicolons": false,
+      "replace_characters": {
+        "–": ",",
+        "—": ",",
+        "‘": "'",
+        "’": "'"
+      }
+    },
+    "prepared": "“Stop.” She left. (Quietly.) Then returned.",
+    "token_ids": [
+      260,
+      230,
+      132,
+      160,
+      640,
+      274,
+      561,
+      263,
+      230,
+      132,
+      161,
+      638,
+      866,
+      263,
+      260,
+      44,
+      2608,
+      720,
+      274,
+      323,
+      263,
+      45,
+      1160,
+      338,
+      1949,
+      263
+    ]
+  },
+  {
+    "chunks": {
+      "12": [
+        "Mr. Mrs. Ms. Rev.",
+        "vs. e. g. i. e.",
+        "Smith."
+      ],
+      "25": [
+        "Mr. Mrs. Ms. Rev. vs. e. g. i. e. Smith."
+      ],
+      "50": [
+        "Mr. Mrs. Ms. Rev. vs. e. g. i. e. Smith."
+      ]
+    },
+    "frames_after_eos_guess": 1,
+    "input": "Mr. Mrs. Ms. Rev. vs. e.g. i.e. Smith.",
+    "options": {
+      "append_terminal_punctuation": true,
+      "capitalize_first_letter": true,
+      "pad_with_spaces_for_short_inputs": false,
+      "remove_semicolons": false,
+      "replace_characters": {
+        "–": ",",
+        "—": ",",
+        "‘": "'",
+        "’": "'"
+      }
+    },
+    "prepared": "Mr. Mrs. Ms. Rev. vs. e.g. i.e. Smith.",
+    "token_ids": [
+      1519,
+      263,
+      1519,
+      261,
+      263,
+      657,
+      261,
+      263,
+      696,
+      653,
+      263,
+      1451,
+      261,
+      263,
+      402,
+      263,
+      453,
+      263,
+      406,
+      263,
+      336,
+      263,
+      3669,
+      263
+    ]
+  },
+  {
+    "chunks": {
+      "12": [
+        "The time is 4 p. m. Next one."
+      ],
+      "25": [
+        "The time is 4 p. m. Next one."
+      ],
+      "50": [
+        "The time is 4 p. m. Next one."
+      ]
+    },
+    "frames_after_eos_guess": 1,
+    "input": "The time is 4 p.m. Next one.",
+    "options": {
+      "append_terminal_punctuation": true,
+      "capitalize_first_letter": true,
+      "pad_with_spaces_for_short_inputs": false,
+      "remove_semicolons": false,
+      "replace_characters": {
+        "–": ",",
+        "—": ",",
+        "‘": "'",
+        "’": "'"
+      }
+    },
+    "prepared": "The time is 4 p.m. Next one.",
+    "token_ids": [
+      364,
+      361,
+      277,
+      260,
+      487,
+      324,
+      263,
+      283,
+      263,
+      3219,
+      322,
+      263
+    ]
+  },
+  {
+    "chunks": {
+      "12": [
+        "One two three four."
+      ],
+      "25": [
+        "One two three four."
+      ],
+      "50": [
+        "One two three four."
+      ]
+    },
+    "frames_after_eos_guess": 3,
+    "input": "one two three four",
+    "options": {
+      "append_terminal_punctuation": true,
+      "capitalize_first_letter": true,
+      "pad_with_spaces_for_short_inputs": false,
+      "remove_semicolons": false,
+      "replace_characters": {
+        "–": ",",
+        "—": ",",
+        "‘": "'",
+        "’": "'"
+      }
+    },
+    "prepared": "One two three four.",
+    "token_ids": [
+      1064,
+      434,
+      540,
+      704,
+      263
+    ]
+  },
+  {
+    "chunks": {
+      "12": [
+        "One two three four five."
+      ],
+      "25": [
+        "One two three four five."
+      ],
+      "50": [
+        "One two three four five."
+      ]
+    },
+    "frames_after_eos_guess": 1,
+    "input": "one two three four five",
+    "options": {
+      "append_terminal_punctuation": true,
+      "capitalize_first_letter": true,
+      "pad_with_spaces_for_short_inputs": false,
+      "remove_semicolons": false,
+      "replace_characters": {
+        "–": ",",
+        "—": ",",
+        "‘": "'",
+        "’": "'"
+      }
+    },
+    "prepared": "One two three four five.",
+    "token_ids": [
+      1064,
+      434,
+      540,
+      704,
+      702,
+      263
+    ]
+  },
+  {
+    "chunks": {
+      "12": [
+        "Ends with a quote\"."
+      ],
+      "25": [
+        "Ends with a quote\"."
+      ],
+      "50": [
+        "Ends with a quote\"."
+      ]
+    },
+    "frames_after_eos_guess": 3,
+    "input": "ends with a quote\"",
+    "options": {
+      "append_terminal_punctuation": true,
+      "capitalize_first_letter": true,
+      "pad_with_spaces_for_short_inputs": false,
+      "remove_semicolons": false,
+      "replace_characters": {
+        "–": ",",
+        "—": ",",
+        "‘": "'",
+        "’": "'"
+      }
+    },
+    "prepared": "Ends with a quote\".",
+    "token_ids": [
+      2227,
+      307,
+      261,
+      291,
+      267,
+      1875,
+      3877,
+      263
+    ]
+  },
+  {
+    "chunks": {
+      "12": [
+        "Ends with a dash."
+      ],
+      "25": [
+        "Ends with a dash."
+      ],
+      "50": [
+        "Ends with a dash."
+      ]
+    },
+    "frames_after_eos_guess": 3,
+    "input": "ends with a dash—",
+    "options": {
+      "append_terminal_punctuation": true,
+      "capitalize_first_letter": true,
+      "pad_with_spaces_for_short_inputs": false,
+      "remove_semicolons": false,
+      "replace_characters": {
+        "–": ",",
+        "—": ",",
+        "‘": "'",
+        "’": "'"
+      }
+    },
+    "prepared": "Ends with a dash.",
+    "token_ids": [
+      2227,
+      307,
+      261,
+      291,
+      267,
+      1093,
+      1028,
+      263
+    ]
+  },
+  {
+    "chunks": {
+      "12": [
+        "\"Hi?\", she said."
+      ],
+      "25": [
+        "\"Hi?\", she said."
+      ],
+      "50": [
+        "\"Hi?\", she said."
+      ]
+    },
+    "frames_after_eos_guess": 3,
+    "input": "\"Hi?\", she said",
+    "options": {
+      "append_terminal_punctuation": true,
+      "capitalize_first_letter": true,
+      "pad_with_spaces_for_short_inputs": false,
+      "remove_semicolons": false,
+      "replace_characters": {
+        "–": ",",
+        "—": ",",
+        "‘": "'",
+        "’": "'"
+      }
+    },
+    "prepared": "\"Hi?\", she said.",
+    "token_ids": [
+      694,
+      1356,
+      405,
+      2443,
+      262,
+      396,
+      425,
+      263
+    ]
+  },
+  {
+    "chunks": {
+      "12": [
+        "One clause, another clause;",
+        "a third clause: final clause.",
+        "Next sentence!"
+      ],
+      "25": [
+        "One clause, another clause; a third clause: final clause.",
+        "Next sentence!"
+      ],
+      "50": [
+        "One clause, another clause; a third clause: final clause. Next sentence!"
+      ]
+    },
+    "frames_after_eos_guess": 1,
+    "input": "one clause, another clause; a third clause: final clause. Next sentence!",
+    "options": {
+      "append_terminal_punctuation": true,
+      "capitalize_first_letter": true,
+      "pad_with_spaces_for_short_inputs": false,
+      "remove_semicolons": false,
+      "replace_characters": {
+        "–": ",",
+        "—": ",",
+        "‘": "'",
+        "’": "'"
+      }
+    },
+    "prepared": "One clause, another clause; a third clause: final clause. Next sentence!",
+    "token_ids": [
+      1064,
+      260,
+      1576,
+      2105,
+      262,
+      267,
+      580,
+      260,
+      1576,
+      2105,
+      1230,
+      267,
+      1474,
+      260,
+      1576,
+      2105,
+      3244,
+      1265,
+      260,
+      1576,
+      2105,
+      263,
+      3219,
+      1472,
+      599,
+      682
+    ]
+  },
+  {
+    "error": "Text prompt cannot be empty",
+    "input": "",
+    "options": {
+      "append_terminal_punctuation": true,
+      "capitalize_first_letter": true,
+      "pad_with_spaces_for_short_inputs": false,
+      "remove_semicolons": false,
+      "replace_characters": {
+        "–": ",",
+        "—": ",",
+        "‘": "'",
+        "’": "'"
+      }
+    }
+  },
+  {
+    "error": "Text prompt cannot be empty",
+    "input": " \t\n ",
+    "options": {
+      "append_terminal_punctuation": true,
+      "capitalize_first_letter": true,
+      "pad_with_spaces_for_short_inputs": false,
+      "remove_semicolons": false,
+      "replace_characters": {
+        "–": ",",
+        "—": ",",
+        "‘": "'",
+        "’": "'"
+      }
+    }
+  }
+]

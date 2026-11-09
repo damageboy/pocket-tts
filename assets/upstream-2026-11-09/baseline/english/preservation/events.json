@@ -1,0 +1,272 @@
+{
+  "events": [
+    {
+      "kind": "audio",
+      "samples": 1920
+    },
+    {
+      "kind": "audio",
+      "samples": 3840
+    },
+    {
+      "kind": "word_start",
+      "start_time": 0.16,
+      "word": "The",
+      "word_index": 0
+    },
+    {
+      "kind": "audio",
+      "samples": 5760
+    },
+    {
+      "end_time": 0.24,
+      "kind": "word_end",
+      "start_time": 0.16,
+      "word": "The",
+      "word_index": 0
+    },
+    {
+      "kind": "word_start",
+      "start_time": 0.24,
+      "word": "quick",
+      "word_index": 1
+    },
+    {
+      "kind": "audio",
+      "samples": 7680
+    },
+    {
+      "kind": "audio",
+      "samples": 9600
+    },
+    {
+      "end_time": 0.4,
+      "kind": "word_end",
+      "start_time": 0.24,
+      "word": "quick",
+      "word_index": 1
+    },
+    {
+      "kind": "word_start",
+      "start_time": 0.4,
+      "word": "brown",
+      "word_index": 2
+    },
+    {
+      "kind": "audio",
+      "samples": 11520
+    },
+    {
+      "kind": "audio",
+      "samples": 13440
+    },
+    {
+      "kind": "audio",
+      "samples": 15360
+    },
+    {
+      "kind": "audio",
+      "samples": 17280
+    },
+    {
+      "end_time": 0.72,
+      "kind": "word_end",
+      "start_time": 0.4,
+      "word": "brown",
+      "word_index": 2
+    },
+    {
+      "kind": "word_start",
+      "start_time": 0.72,
+      "word": "fox",
+      "word_index": 3
+    },
+    {
+      "kind": "audio",
+      "samples": 19200
+    },
+    {
+      "kind": "audio",
+      "samples": 21120
+    },
+    {
+      "kind": "audio",
+      "samples": 23040
+    },
+    {
+      "kind": "audio",
+      "samples": 24960
+    },
+    {
+      "end_time": 1.04,
+      "kind": "word_end",
+      "start_time": 0.72,
+      "word": "fox",
+      "word_index": 3
+    },
+    {
+      "kind": "word_start",
+      "start_time": 1.04,
+      "word": "jumps",
+      "word_index": 4
+    },
+    {
+      "kind": "audio",
+      "samples": 26880
+    },
+    {
+      "kind": "audio",
+      "samples": 28800
+    },
+    {
+      "kind": "audio",
+      "samples": 30720
+    },
+    {
+      "kind": "audio",
+      "samples": 32640
+    },
+    {
+      "kind": "audio",
+      "samples": 34560
+    },
+    {
+      "end_time": 1.44,
+      "kind": "word_end",
+      "start_time": 1.04,
+      "word": "jumps",
+      "word_index": 4
+    },
+    {
+      "kind": "word_start",
+      "start_time": 1.44,
+      "word": "over",
+      "word_index": 5
+    },
+    {
+      "kind": "audio",
+      "samples": 36480
+    },
+    {
+      "kind": "audio",
+      "samples": 38400
+    },
+    {
+      "kind": "audio",
+      "samples": 40320
+    },
+    {
+      "end_time": 1.68,
+      "kind": "word_end",
+      "start_time": 1.44,
+      "word": "over",
+      "word_index": 5
+    },
+    {
+      "kind": "word_start",
+      "start_time": 1.68,
+      "word": "the",
+      "word_index": 6
+    },
+    {
+      "kind": "audio",
+      "samples": 42240
+    },
+    {
+      "end_time": 1.76,
+      "kind": "word_end",
+      "start_time": 1.68,
+      "word": "the",
+      "word_index": 6
+    },
+    {
+      "kind": "word_start",
+      "start_time": 1.76,
+      "word": "lazy",
+      "word_index": 7
+    },
+    {
+      "kind": "audio",
+      "samples": 44160
+    },
+    {
+      "kind": "audio",
+      "samples": 46080
+    },
+    {
+      "kind": "audio",
+      "samples": 48000
+    },
+    {
+      "kind": "audio",
+      "samples": 49920
+    },
+    {
+      "end_time": 2.08,
+      "kind": "word_end",
+      "start_time": 1.76,
+      "word": "lazy",
+      "word_index": 7
+    },
+    {
+      "kind": "word_start",
+      "start_time": 2.08,
+      "word": "dog",
+      "word_index": 8
+    },
+    {
+      "kind": "audio",
+      "samples": 51840
+    },
+    {
+      "kind": "audio",
+      "samples": 53760
+    },
+    {
+      "kind": "audio",
+      "samples": 55680
+    },
+    {
+      "kind": "audio",
+      "samples": 57600
+    },
+    {
+      "kind": "audio",
+      "samples": 59520
+    },
+    {
+      "end_time": 2.48,
+      "kind": "word_end",
+      "start_time": 2.08,
+      "word": "dog",
+      "word_index": 8
+    },
+    {
+      "kind": "audio",
+      "samples": 61440
+    },
+    {
+      "kind": "audio",
+      "samples": 63360
+    },
+    {
+      "kind": "audio",
+      "samples": 65280
+    }
+  ],
+  "language": "english",
+  "sampler_decode_steps": 1,
+  "samples": 65280,
+  "temperature": 0.0,
+  "text": "The quick brown fox jumps over the lazy dog.",
+  "timestamp_heads": [
+    [
+      3,
+      8
+    ],
+    [
+      2,
+      0
+    ]
+  ]
+}
