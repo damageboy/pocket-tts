@@ -1,0 +1,74 @@
+[
+  {
+    "generation": "baseline",
+    "model": "english",
+    "voice": "anna",
+    "revision": "4e1e0a3e611c51c0b4ed8174fc10f32a54644303",
+    "uri": "hf://kyutai/pocket-tts-without-voice-cloning/languages/english/embeddings/anna.safetensors@4e1e0a3e611c51c0b4ed8174fc10f32a54644303",
+    "path": "/private/tmp/pocket-tts-reference-assets/models--kyutai--pocket-tts-without-voice-cloning/snapshots/4e1e0a3e611c51c0b4ed8174fc10f32a54644303/languages/english/embeddings/anna.safetensors",
+    "sha256": "80b3c36dc29aa1acd09ed522099142c5236789c8c5e87b2a30523175772a531c"
+  },
+  {
+    "generation": "baseline",
+    "model": "english_18m_2026-10",
+    "voice": "anna",
+    "revision": "a3055dcb533cf2ec90458008a01e7cef550bae2a",
+    "uri": "hf://kyutai/pocket-tts-without-voice-cloning/languages/english_18m_2026-10/embeddings/anna.safetensors@a3055dcb533cf2ec90458008a01e7cef550bae2a",
+    "path": "/private/tmp/pocket-tts-reference-assets/models--kyutai--pocket-tts-without-voice-cloning/snapshots/a3055dcb533cf2ec90458008a01e7cef550bae2a/languages/english_18m_2026-10/embeddings/anna.safetensors",
+    "sha256": "80045f7eee5f8d73ff31431c2eb818b6184c741f8b30532afb3c6844b143db3e"
+  },
+  {
+    "generation": "baseline",
+    "model": "english_2m_2026-10",
+    "voice": "anna",
+    "revision": "a3055dcb533cf2ec90458008a01e7cef550bae2a",
+    "uri": "hf://kyutai/pocket-tts-without-voice-cloning/languages/english_2m_2026-10/embeddings/anna.safetensors@a3055dcb533cf2ec90458008a01e7cef550bae2a",
+    "path": "/private/tmp/pocket-tts-reference-assets/models--kyutai--pocket-tts-without-voice-cloning/snapshots/a3055dcb533cf2ec90458008a01e7cef550bae2a/languages/english_2m_2026-10/embeddings/anna.safetensors",
+    "sha256": "59c128680209e3d5c82bbdb1ce3770598560d8d1482f761569439dc585bcb6bb"
+  },
+  {
+    "generation": "baseline",
+    "model": "english_7m_2026-10",
+    "voice": "anna",
+    "revision": "a3055dcb533cf2ec90458008a01e7cef550bae2a",
+    "uri": "hf://kyutai/pocket-tts-without-voice-cloning/languages/english_7m_2026-10/embeddings/anna.safetensors@a3055dcb533cf2ec90458008a01e7cef550bae2a",
+    "path": "/private/tmp/pocket-tts-reference-assets/models--kyutai--pocket-tts-without-voice-cloning/snapshots/a3055dcb533cf2ec90458008a01e7cef550bae2a/languages/english_7m_2026-10/embeddings/anna.safetensors",
+    "sha256": "2834123280d7de036c9c3414b76732e58c0d10f17ab7e99e1ec63cf334f53317"
+  },
+  {
+    "generation": "target",
+    "model": "english",
+    "voice": "anna",
+    "revision": "a7056f505a4a8ca72d8b5fb1440071d6f1a35739",
+    "uri": "hf://kyutai/pocket-tts-without-voice-cloning/languages/english/embeddings/anna.safetensors@a7056f505a4a8ca72d8b5fb1440071d6f1a35739",
+    "path": "/private/tmp/pocket-tts-reference-assets/models--kyutai--pocket-tts-without-voice-cloning/snapshots/a7056f505a4a8ca72d8b5fb1440071d6f1a35739/languages/english/embeddings/anna.safetensors",
+    "sha256": "626a19a37e3cbf5cac1e6893748c3f0dd2081b26b1ce787ae0deb42cb1ddb7f6"
+  },
+  {
+    "generation": "target",
+    "model": "english_18m_2026-10",
+    "voice": "anna",
+    "revision": "a7056f505a4a8ca72d8b5fb1440071d6f1a35739",
+    "uri": "hf://kyutai/pocket-tts-without-voice-cloning/languages/english_18m_2026-10/embeddings/anna.safetensors@a7056f505a4a8ca72d8b5fb1440071d6f1a35739",
+    "path": "/private/tmp/pocket-tts-reference-assets/models--kyutai--pocket-tts-without-voice-cloning/snapshots/a7056f505a4a8ca72d8b5fb1440071d6f1a35739/languages/english_18m_2026-10/embeddings/anna.safetensors",
+    "sha256": "d4c2f3660183b58d6fedd428ad59ba07ff4ea9f26a16295aba127e281c746450"
+  },
+  {
+    "generation": "target",
+    "model": "english_2m_2026-10",
+    "voice": "anna",
+    "revision": "a7056f505a4a8ca72d8b5fb1440071d6f1a35739",
+    "uri": "hf://kyutai/pocket-tts-without-voice-cloning/languages/english_2m_2026-10/embeddings/anna.safetensors@a7056f505a4a8ca72d8b5fb1440071d6f1a35739",
+    "path": "/private/tmp/pocket-tts-reference-assets/models--kyutai--pocket-tts-without-voice-cloning/snapshots/a7056f505a4a8ca72d8b5fb1440071d6f1a35739/languages/english_2m_2026-10/embeddings/anna.safetensors",
+    "sha256": "577dbc7a2fee7f62d776476505525bb50ad2f26c8f9dde98bcaaa92a1e33c540"
+  },
+  {
+    "generation": "target",
+    "model": "english_7m_2026-10",
+    "voice": "anna",
+    "revision": "a7056f505a4a8ca72d8b5fb1440071d6f1a35739",
+    "uri": "hf://kyutai/pocket-tts-without-voice-cloning/languages/english_7m_2026-10/embeddings/anna.safetensors@a7056f505a4a8ca72d8b5fb1440071d6f1a35739",
+    "path": "/private/tmp/pocket-tts-reference-assets/models--kyutai--pocket-tts-without-voice-cloning/snapshots/a7056f505a4a8ca72d8b5fb1440071d6f1a35739/languages/english_7m_2026-10/embeddings/anna.safetensors",
+    "sha256": "7d76ede64b5a1bd0f72523f1c621e86019bb43fa92101a076ed90d6aa1a980ba"
+  }
+]

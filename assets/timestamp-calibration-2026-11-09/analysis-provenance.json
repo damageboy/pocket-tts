@@ -1,0 +1,11 @@
+{
+  "analysis_script_sha256": "fd3e0d80c40edd43ea5c8cdcda624b5068d6121cd77ea1173f4d36f7bca936e0",
+  "audible_acceptance": "Pending user testing",
+  "capture_provenance": "capture-provenance.json",
+  "continuation": "Deferred to separate Task5 validation",
+  "generation_modes": [
+    "independent_segments"
+  ],
+  "note": "Capture source hashes are retained as recorded before generation. Subsequent analysis changes add missing/repeated counts, per-case/common-word/worst-boundary diagnostics and formatting, without changing frozen ranking, normalization or generation.",
+  "policy_ruling": "Only 7M passes the frozen gate and is promoted. Retain historical English/default, 18M, 2M weights/presets/heads. Unchanged-weight timestamp bundles retain historical preset states; refreshing those states is deferred. Other target text/config fields apply. New audio-only configs use target pins."
+}

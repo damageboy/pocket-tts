@@ -1,0 +1,7080 @@
+{
+  "frozen_before_evaluation": true,
+  "heads": [
+    [
+      5,
+      2
+    ],
+    [
+      4,
+      2
+    ]
+  ],
+  "protocol_sha256": "49b7c2187a81e5eaad2c5f01bdc6bb76b74686e1354a44e256f9e5480c50359d",
+  "ranked": [
+    {
+      "heads": [
+        [
+          5,
+          2
+        ],
+        [
+          4,
+          2
+        ]
+      ],
+      "metrics": {
+        "asr_missing": 5,
+        "asr_repeated": 0,
+        "cases": [
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-prose",
+            "matched_words": 12,
+            "source_words": 12,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-prose",
+            "matched_words": 12,
+            "source_words": 12,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "Antoine",
+              "22",
+              ".4."
+            ],
+            "asr_missing": [
+              "12",
+              "2024"
+            ],
+            "asr_repeated": [],
+            "id": "cal-number",
+            "matched_words": 7,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "one",
+              "tour"
+            ],
+            "asr_missing": [
+              "12"
+            ],
+            "asr_repeated": [],
+            "id": "cal-number",
+            "matched_words": 8,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-punctuation",
+            "matched_words": 9,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-punctuation",
+            "matched_words": 9,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-repeat",
+            "matched_words": 13,
+            "source_words": 13,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-repeat",
+            "matched_words": 13,
+            "source_words": 13,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-conversation",
+            "matched_words": 14,
+            "source_words": 14,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-conversation",
+            "matched_words": 14,
+            "source_words": 14,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "and",
+              "rose"
+            ],
+            "asr_missing": [
+              "in",
+              "rows"
+            ],
+            "asr_repeated": [],
+            "id": "cal-chunks",
+            "matched_words": 54,
+            "source_words": 56,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "Bye."
+            ],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-chunks",
+            "matched_words": 56,
+            "source_words": 56,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          }
+        ],
+        "coverage": 0.9778761061946902,
+        "end_mean": 0.06524886877828057,
+        "end_p95": 0.2400000000000002,
+        "matched_words": 221,
+        "pooled_mean": 0.07755656108597286,
+        "pooled_p95": 0.26000000000000156,
+        "source_words": 226,
+        "start_mean": 0.08986425339366516,
+        "start_p95": 0.32
+      }
+    },
+    {
+      "heads": [
+        [
+          5,
+          2
+        ]
+      ],
+      "metrics": {
+        "asr_missing": 5,
+        "asr_repeated": 0,
+        "cases": [
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-prose",
+            "matched_words": 12,
+            "source_words": 12,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-prose",
+            "matched_words": 12,
+            "source_words": 12,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "Antoine",
+              "22",
+              ".4."
+            ],
+            "asr_missing": [
+              "12",
+              "2024"
+            ],
+            "asr_repeated": [],
+            "id": "cal-number",
+            "matched_words": 7,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "one",
+              "tour"
+            ],
+            "asr_missing": [
+              "12"
+            ],
+            "asr_repeated": [],
+            "id": "cal-number",
+            "matched_words": 8,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-punctuation",
+            "matched_words": 9,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-punctuation",
+            "matched_words": 9,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-repeat",
+            "matched_words": 13,
+            "source_words": 13,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-repeat",
+            "matched_words": 13,
+            "source_words": 13,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-conversation",
+            "matched_words": 14,
+            "source_words": 14,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-conversation",
+            "matched_words": 14,
+            "source_words": 14,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "and",
+              "rose"
+            ],
+            "asr_missing": [
+              "in",
+              "rows"
+            ],
+            "asr_repeated": [],
+            "id": "cal-chunks",
+            "matched_words": 54,
+            "source_words": 56,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "Bye."
+            ],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-chunks",
+            "matched_words": 56,
+            "source_words": 56,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          }
+        ],
+        "coverage": 0.9778761061946902,
+        "end_mean": 0.06633484162895932,
+        "end_p95": 0.2400000000000002,
+        "matched_words": 221,
+        "pooled_mean": 0.07828054298642538,
+        "pooled_p95": 0.26000000000000156,
+        "source_words": 226,
+        "start_mean": 0.09022624434389143,
+        "start_p95": 0.32
+      }
+    },
+    {
+      "heads": [
+        [
+          5,
+          2
+        ],
+        [
+          2,
+          2
+        ]
+      ],
+      "metrics": {
+        "asr_missing": 5,
+        "asr_repeated": 0,
+        "cases": [
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-prose",
+            "matched_words": 12,
+            "source_words": 12,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-prose",
+            "matched_words": 12,
+            "source_words": 12,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "Antoine",
+              "22",
+              ".4."
+            ],
+            "asr_missing": [
+              "12",
+              "2024"
+            ],
+            "asr_repeated": [],
+            "id": "cal-number",
+            "matched_words": 7,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "one",
+              "tour"
+            ],
+            "asr_missing": [
+              "12"
+            ],
+            "asr_repeated": [],
+            "id": "cal-number",
+            "matched_words": 8,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-punctuation",
+            "matched_words": 9,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-punctuation",
+            "matched_words": 9,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-repeat",
+            "matched_words": 13,
+            "source_words": 13,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-repeat",
+            "matched_words": 13,
+            "source_words": 13,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-conversation",
+            "matched_words": 14,
+            "source_words": 14,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-conversation",
+            "matched_words": 14,
+            "source_words": 14,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "and",
+              "rose"
+            ],
+            "asr_missing": [
+              "in",
+              "rows"
+            ],
+            "asr_repeated": [],
+            "id": "cal-chunks",
+            "matched_words": 54,
+            "source_words": 56,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "Bye."
+            ],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-chunks",
+            "matched_words": 56,
+            "source_words": 56,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          }
+        ],
+        "coverage": 0.9778761061946902,
+        "end_mean": 0.08316742081447968,
+        "end_p95": 0.259999999999998,
+        "matched_words": 221,
+        "pooled_mean": 0.09303167420814484,
+        "pooled_p95": 0.26000000000000145,
+        "source_words": 226,
+        "start_mean": 0.10289592760180997,
+        "start_p95": 0.2799999999999998
+      }
+    },
+    {
+      "heads": [
+        [
+          5,
+          2
+        ],
+        [
+          5,
+          0
+        ]
+      ],
+      "metrics": {
+        "asr_missing": 5,
+        "asr_repeated": 0,
+        "cases": [
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-prose",
+            "matched_words": 12,
+            "source_words": 12,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-prose",
+            "matched_words": 12,
+            "source_words": 12,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "Antoine",
+              "22",
+              ".4."
+            ],
+            "asr_missing": [
+              "12",
+              "2024"
+            ],
+            "asr_repeated": [],
+            "id": "cal-number",
+            "matched_words": 7,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "one",
+              "tour"
+            ],
+            "asr_missing": [
+              "12"
+            ],
+            "asr_repeated": [],
+            "id": "cal-number",
+            "matched_words": 8,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-punctuation",
+            "matched_words": 9,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-punctuation",
+            "matched_words": 9,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-repeat",
+            "matched_words": 13,
+            "source_words": 13,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-repeat",
+            "matched_words": 13,
+            "source_words": 13,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-conversation",
+            "matched_words": 14,
+            "source_words": 14,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-conversation",
+            "matched_words": 14,
+            "source_words": 14,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "and",
+              "rose"
+            ],
+            "asr_missing": [
+              "in",
+              "rows"
+            ],
+            "asr_repeated": [],
+            "id": "cal-chunks",
+            "matched_words": 54,
+            "source_words": 56,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "Bye."
+            ],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-chunks",
+            "matched_words": 56,
+            "source_words": 56,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          }
+        ],
+        "coverage": 0.9778761061946902,
+        "end_mean": 0.08371040723981897,
+        "end_p95": 0.3199999999999985,
+        "matched_words": 221,
+        "pooled_mean": 0.0938461538461538,
+        "pooled_p95": 0.39799999999999947,
+        "source_words": 226,
+        "start_mean": 0.10398190045248865,
+        "start_p95": 0.5199999999999996
+      }
+    },
+    {
+      "heads": [
+        [
+          5,
+          2
+        ],
+        [
+          5,
+          0
+        ]
+      ],
+      "metrics": {
+        "asr_missing": 5,
+        "asr_repeated": 0,
+        "cases": [
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-prose",
+            "matched_words": 12,
+            "source_words": 12,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-prose",
+            "matched_words": 12,
+            "source_words": 12,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "Antoine",
+              "22",
+              ".4."
+            ],
+            "asr_missing": [
+              "12",
+              "2024"
+            ],
+            "asr_repeated": [],
+            "id": "cal-number",
+            "matched_words": 7,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "one",
+              "tour"
+            ],
+            "asr_missing": [
+              "12"
+            ],
+            "asr_repeated": [],
+            "id": "cal-number",
+            "matched_words": 8,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-punctuation",
+            "matched_words": 9,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-punctuation",
+            "matched_words": 9,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-repeat",
+            "matched_words": 13,
+            "source_words": 13,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-repeat",
+            "matched_words": 13,
+            "source_words": 13,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-conversation",
+            "matched_words": 14,
+            "source_words": 14,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-conversation",
+            "matched_words": 14,
+            "source_words": 14,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "and",
+              "rose"
+            ],
+            "asr_missing": [
+              "in",
+              "rows"
+            ],
+            "asr_repeated": [],
+            "id": "cal-chunks",
+            "matched_words": 54,
+            "source_words": 56,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "Bye."
+            ],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-chunks",
+            "matched_words": 56,
+            "source_words": 56,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          }
+        ],
+        "coverage": 0.9778761061946902,
+        "end_mean": 0.08371040723981897,
+        "end_p95": 0.3199999999999985,
+        "matched_words": 221,
+        "pooled_mean": 0.0938461538461538,
+        "pooled_p95": 0.39799999999999947,
+        "source_words": 226,
+        "start_mean": 0.10398190045248865,
+        "start_p95": 0.5199999999999996
+      }
+    },
+    {
+      "heads": [
+        [
+          5,
+          2
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "metrics": {
+        "asr_missing": 5,
+        "asr_repeated": 0,
+        "cases": [
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-prose",
+            "matched_words": 12,
+            "source_words": 12,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-prose",
+            "matched_words": 12,
+            "source_words": 12,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "Antoine",
+              "22",
+              ".4."
+            ],
+            "asr_missing": [
+              "12",
+              "2024"
+            ],
+            "asr_repeated": [],
+            "id": "cal-number",
+            "matched_words": 7,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "one",
+              "tour"
+            ],
+            "asr_missing": [
+              "12"
+            ],
+            "asr_repeated": [],
+            "id": "cal-number",
+            "matched_words": 8,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-punctuation",
+            "matched_words": 9,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-punctuation",
+            "matched_words": 9,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-repeat",
+            "matched_words": 13,
+            "source_words": 13,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-repeat",
+            "matched_words": 13,
+            "source_words": 13,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-conversation",
+            "matched_words": 14,
+            "source_words": 14,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-conversation",
+            "matched_words": 14,
+            "source_words": 14,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "and",
+              "rose"
+            ],
+            "asr_missing": [
+              "in",
+              "rows"
+            ],
+            "asr_repeated": [],
+            "id": "cal-chunks",
+            "matched_words": 54,
+            "source_words": 56,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "Bye."
+            ],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-chunks",
+            "matched_words": 56,
+            "source_words": 56,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          }
+        ],
+        "coverage": 0.9778761061946902,
+        "end_mean": 0.12135746606334845,
+        "end_p95": 0.3200000000000003,
+        "matched_words": 221,
+        "pooled_mean": 0.13203619909502265,
+        "pooled_p95": 0.7129999999999973,
+        "source_words": 226,
+        "start_mean": 0.14271493212669684,
+        "start_p95": 0.74
+      }
+    },
+    {
+      "heads": [
+        [
+          5,
+          0
+        ],
+        [
+          2,
+          2
+        ]
+      ],
+      "metrics": {
+        "asr_missing": 5,
+        "asr_repeated": 0,
+        "cases": [
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-prose",
+            "matched_words": 12,
+            "source_words": 12,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-prose",
+            "matched_words": 12,
+            "source_words": 12,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "Antoine",
+              "22",
+              ".4."
+            ],
+            "asr_missing": [
+              "12",
+              "2024"
+            ],
+            "asr_repeated": [],
+            "id": "cal-number",
+            "matched_words": 7,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "one",
+              "tour"
+            ],
+            "asr_missing": [
+              "12"
+            ],
+            "asr_repeated": [],
+            "id": "cal-number",
+            "matched_words": 8,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-punctuation",
+            "matched_words": 9,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-punctuation",
+            "matched_words": 9,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-repeat",
+            "matched_words": 13,
+            "source_words": 13,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-repeat",
+            "matched_words": 13,
+            "source_words": 13,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-conversation",
+            "matched_words": 14,
+            "source_words": 14,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-conversation",
+            "matched_words": 14,
+            "source_words": 14,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "and",
+              "rose"
+            ],
+            "asr_missing": [
+              "in",
+              "rows"
+            ],
+            "asr_repeated": [],
+            "id": "cal-chunks",
+            "matched_words": 54,
+            "source_words": 56,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "Bye."
+            ],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-chunks",
+            "matched_words": 56,
+            "source_words": 56,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          }
+        ],
+        "coverage": 0.9778761061946902,
+        "end_mean": 0.13981900452488685,
+        "end_p95": 0.3799999999999999,
+        "matched_words": 221,
+        "pooled_mean": 0.14606334841628957,
+        "pooled_p95": 0.52,
+        "source_words": 226,
+        "start_mean": 0.15230769230769228,
+        "start_p95": 0.5800000000000001
+      }
+    },
+    {
+      "heads": [
+        [
+          5,
+          2
+        ],
+        [
+          0,
+          0
+        ]
+      ],
+      "metrics": {
+        "asr_missing": 5,
+        "asr_repeated": 0,
+        "cases": [
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-prose",
+            "matched_words": 12,
+            "source_words": 12,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-prose",
+            "matched_words": 12,
+            "source_words": 12,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "Antoine",
+              "22",
+              ".4."
+            ],
+            "asr_missing": [
+              "12",
+              "2024"
+            ],
+            "asr_repeated": [],
+            "id": "cal-number",
+            "matched_words": 7,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "one",
+              "tour"
+            ],
+            "asr_missing": [
+              "12"
+            ],
+            "asr_repeated": [],
+            "id": "cal-number",
+            "matched_words": 8,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-punctuation",
+            "matched_words": 9,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-punctuation",
+            "matched_words": 9,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-repeat",
+            "matched_words": 13,
+            "source_words": 13,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-repeat",
+            "matched_words": 13,
+            "source_words": 13,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-conversation",
+            "matched_words": 14,
+            "source_words": 14,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-conversation",
+            "matched_words": 14,
+            "source_words": 14,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "and",
+              "rose"
+            ],
+            "asr_missing": [
+              "in",
+              "rows"
+            ],
+            "asr_repeated": [],
+            "id": "cal-chunks",
+            "matched_words": 54,
+            "source_words": 56,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "Bye."
+            ],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-chunks",
+            "matched_words": 56,
+            "source_words": 56,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          }
+        ],
+        "coverage": 0.9778761061946902,
+        "end_mean": 0.14452488687782808,
+        "end_p95": 0.9000000000000001,
+        "matched_words": 221,
+        "pooled_mean": 0.1542986425339367,
+        "pooled_p95": 0.9380000000000007,
+        "source_words": 226,
+        "start_mean": 0.16407239819004527,
+        "start_p95": 0.9400000000000013
+      }
+    },
+    {
+      "heads": [
+        [
+          5,
+          0
+        ]
+      ],
+      "metrics": {
+        "asr_missing": 5,
+        "asr_repeated": 0,
+        "cases": [
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-prose",
+            "matched_words": 12,
+            "source_words": 12,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-prose",
+            "matched_words": 12,
+            "source_words": 12,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "Antoine",
+              "22",
+              ".4."
+            ],
+            "asr_missing": [
+              "12",
+              "2024"
+            ],
+            "asr_repeated": [],
+            "id": "cal-number",
+            "matched_words": 7,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "one",
+              "tour"
+            ],
+            "asr_missing": [
+              "12"
+            ],
+            "asr_repeated": [],
+            "id": "cal-number",
+            "matched_words": 8,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-punctuation",
+            "matched_words": 9,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-punctuation",
+            "matched_words": 9,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-repeat",
+            "matched_words": 13,
+            "source_words": 13,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-repeat",
+            "matched_words": 13,
+            "source_words": 13,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-conversation",
+            "matched_words": 14,
+            "source_words": 14,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-conversation",
+            "matched_words": 14,
+            "source_words": 14,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "and",
+              "rose"
+            ],
+            "asr_missing": [
+              "in",
+              "rows"
+            ],
+            "asr_repeated": [],
+            "id": "cal-chunks",
+            "matched_words": 54,
+            "source_words": 56,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "Bye."
+            ],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-chunks",
+            "matched_words": 56,
+            "source_words": 56,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          }
+        ],
+        "coverage": 0.9778761061946902,
+        "end_mean": 0.1434389140271493,
+        "end_p95": 0.36000000000000004,
+        "matched_words": 221,
+        "pooled_mean": 0.1566515837104072,
+        "pooled_p95": 0.5779999999999994,
+        "source_words": 226,
+        "start_mean": 0.16986425339366512,
+        "start_p95": 0.6799999999999997
+      }
+    },
+    {
+      "heads": [
+        [
+          5,
+          0
+        ],
+        [
+          0,
+          0
+        ]
+      ],
+      "metrics": {
+        "asr_missing": 5,
+        "asr_repeated": 0,
+        "cases": [
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-prose",
+            "matched_words": 12,
+            "source_words": 12,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-prose",
+            "matched_words": 12,
+            "source_words": 12,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "Antoine",
+              "22",
+              ".4."
+            ],
+            "asr_missing": [
+              "12",
+              "2024"
+            ],
+            "asr_repeated": [],
+            "id": "cal-number",
+            "matched_words": 7,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "one",
+              "tour"
+            ],
+            "asr_missing": [
+              "12"
+            ],
+            "asr_repeated": [],
+            "id": "cal-number",
+            "matched_words": 8,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-punctuation",
+            "matched_words": 9,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-punctuation",
+            "matched_words": 9,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-repeat",
+            "matched_words": 13,
+            "source_words": 13,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-repeat",
+            "matched_words": 13,
+            "source_words": 13,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-conversation",
+            "matched_words": 14,
+            "source_words": 14,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-conversation",
+            "matched_words": 14,
+            "source_words": 14,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "and",
+              "rose"
+            ],
+            "asr_missing": [
+              "in",
+              "rows"
+            ],
+            "asr_repeated": [],
+            "id": "cal-chunks",
+            "matched_words": 54,
+            "source_words": 56,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "Bye."
+            ],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-chunks",
+            "matched_words": 56,
+            "source_words": 56,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          }
+        ],
+        "coverage": 0.9778761061946902,
+        "end_mean": 0.16153846153846152,
+        "end_p95": 0.54,
+        "matched_words": 221,
+        "pooled_mean": 0.17276018099547508,
+        "pooled_p95": 0.7379999999999998,
+        "source_words": 226,
+        "start_mean": 0.18398190045248863,
+        "start_p95": 0.8
+      }
+    },
+    {
+      "heads": [
+        [
+          5,
+          0
+        ],
+        [
+          4,
+          2
+        ]
+      ],
+      "metrics": {
+        "asr_missing": 5,
+        "asr_repeated": 0,
+        "cases": [
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-prose",
+            "matched_words": 12,
+            "source_words": 12,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-prose",
+            "matched_words": 12,
+            "source_words": 12,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "Antoine",
+              "22",
+              ".4."
+            ],
+            "asr_missing": [
+              "12",
+              "2024"
+            ],
+            "asr_repeated": [],
+            "id": "cal-number",
+            "matched_words": 7,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "one",
+              "tour"
+            ],
+            "asr_missing": [
+              "12"
+            ],
+            "asr_repeated": [],
+            "id": "cal-number",
+            "matched_words": 8,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-punctuation",
+            "matched_words": 9,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-punctuation",
+            "matched_words": 9,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-repeat",
+            "matched_words": 13,
+            "source_words": 13,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-repeat",
+            "matched_words": 13,
+            "source_words": 13,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-conversation",
+            "matched_words": 14,
+            "source_words": 14,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-conversation",
+            "matched_words": 14,
+            "source_words": 14,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "and",
+              "rose"
+            ],
+            "asr_missing": [
+              "in",
+              "rows"
+            ],
+            "asr_repeated": [],
+            "id": "cal-chunks",
+            "matched_words": 54,
+            "source_words": 56,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "Bye."
+            ],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-chunks",
+            "matched_words": 56,
+            "source_words": 56,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          }
+        ],
+        "coverage": 0.9778761061946902,
+        "end_mean": 0.23628959276018097,
+        "end_p95": 1.1600000000000001,
+        "matched_words": 221,
+        "pooled_mean": 0.2476018099547511,
+        "pooled_p95": 1.2790000000000008,
+        "source_words": 226,
+        "start_mean": 0.2589140271493212,
+        "start_p95": 1.2800000000000011
+      }
+    },
+    {
+      "heads": [
+        [
+          5,
+          0
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "metrics": {
+        "asr_missing": 5,
+        "asr_repeated": 0,
+        "cases": [
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-prose",
+            "matched_words": 12,
+            "source_words": 12,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-prose",
+            "matched_words": 12,
+            "source_words": 12,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "Antoine",
+              "22",
+              ".4."
+            ],
+            "asr_missing": [
+              "12",
+              "2024"
+            ],
+            "asr_repeated": [],
+            "id": "cal-number",
+            "matched_words": 7,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "one",
+              "tour"
+            ],
+            "asr_missing": [
+              "12"
+            ],
+            "asr_repeated": [],
+            "id": "cal-number",
+            "matched_words": 8,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-punctuation",
+            "matched_words": 9,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-punctuation",
+            "matched_words": 9,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-repeat",
+            "matched_words": 13,
+            "source_words": 13,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-repeat",
+            "matched_words": 13,
+            "source_words": 13,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-conversation",
+            "matched_words": 14,
+            "source_words": 14,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-conversation",
+            "matched_words": 14,
+            "source_words": 14,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "and",
+              "rose"
+            ],
+            "asr_missing": [
+              "in",
+              "rows"
+            ],
+            "asr_repeated": [],
+            "id": "cal-chunks",
+            "matched_words": 54,
+            "source_words": 56,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "Bye."
+            ],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-chunks",
+            "matched_words": 56,
+            "source_words": 56,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          }
+        ],
+        "coverage": 0.9778761061946902,
+        "end_mean": 0.26271493212669683,
+        "end_p95": 1.12,
+        "matched_words": 221,
+        "pooled_mean": 0.27239819004524884,
+        "pooled_p95": 1.1390000000000002,
+        "source_words": 226,
+        "start_mean": 0.28208144796380086,
+        "start_p95": 1.1400000000000006
+      }
+    },
+    {
+      "heads": [
+        [
+          2,
+          2
+        ],
+        [
+          4,
+          2
+        ]
+      ],
+      "metrics": {
+        "asr_missing": 5,
+        "asr_repeated": 0,
+        "cases": [
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-prose",
+            "matched_words": 12,
+            "source_words": 12,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-prose",
+            "matched_words": 12,
+            "source_words": 12,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "Antoine",
+              "22",
+              ".4."
+            ],
+            "asr_missing": [
+              "12",
+              "2024"
+            ],
+            "asr_repeated": [],
+            "id": "cal-number",
+            "matched_words": 7,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "one",
+              "tour"
+            ],
+            "asr_missing": [
+              "12"
+            ],
+            "asr_repeated": [],
+            "id": "cal-number",
+            "matched_words": 8,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-punctuation",
+            "matched_words": 9,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-punctuation",
+            "matched_words": 9,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-repeat",
+            "matched_words": 13,
+            "source_words": 13,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-repeat",
+            "matched_words": 13,
+            "source_words": 13,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-conversation",
+            "matched_words": 14,
+            "source_words": 14,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-conversation",
+            "matched_words": 14,
+            "source_words": 14,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "and",
+              "rose"
+            ],
+            "asr_missing": [
+              "in",
+              "rows"
+            ],
+            "asr_repeated": [],
+            "id": "cal-chunks",
+            "matched_words": 54,
+            "source_words": 56,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "Bye."
+            ],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-chunks",
+            "matched_words": 56,
+            "source_words": 56,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          }
+        ],
+        "coverage": 0.9778761061946902,
+        "end_mean": 0.31990950226244347,
+        "end_p95": 1.1600000000000001,
+        "matched_words": 221,
+        "pooled_mean": 0.32316742081447963,
+        "pooled_p95": 1.1600000000000001,
+        "source_words": 226,
+        "start_mean": 0.32642533936651585,
+        "start_p95": 1.1600000000000001
+      }
+    },
+    {
+      "heads": [
+        [
+          2,
+          2
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "metrics": {
+        "asr_missing": 5,
+        "asr_repeated": 0,
+        "cases": [
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-prose",
+            "matched_words": 12,
+            "source_words": 12,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-prose",
+            "matched_words": 12,
+            "source_words": 12,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "Antoine",
+              "22",
+              ".4."
+            ],
+            "asr_missing": [
+              "12",
+              "2024"
+            ],
+            "asr_repeated": [],
+            "id": "cal-number",
+            "matched_words": 7,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "one",
+              "tour"
+            ],
+            "asr_missing": [
+              "12"
+            ],
+            "asr_repeated": [],
+            "id": "cal-number",
+            "matched_words": 8,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-punctuation",
+            "matched_words": 9,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-punctuation",
+            "matched_words": 9,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-repeat",
+            "matched_words": 13,
+            "source_words": 13,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-repeat",
+            "matched_words": 13,
+            "source_words": 13,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-conversation",
+            "matched_words": 14,
+            "source_words": 14,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-conversation",
+            "matched_words": 14,
+            "source_words": 14,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "and",
+              "rose"
+            ],
+            "asr_missing": [
+              "in",
+              "rows"
+            ],
+            "asr_repeated": [],
+            "id": "cal-chunks",
+            "matched_words": 54,
+            "source_words": 56,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "Bye."
+            ],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-chunks",
+            "matched_words": 56,
+            "source_words": 56,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          }
+        ],
+        "coverage": 0.9778761061946902,
+        "end_mean": 0.43574660633484164,
+        "end_p95": 1.8600000000000003,
+        "matched_words": 221,
+        "pooled_mean": 0.4365610859728507,
+        "pooled_p95": 1.8600000000000003,
+        "source_words": 226,
+        "start_mean": 0.4373755656108597,
+        "start_p95": 1.8399999999999999
+      }
+    },
+    {
+      "heads": [
+        [
+          2,
+          2
+        ],
+        [
+          0,
+          0
+        ]
+      ],
+      "metrics": {
+        "asr_missing": 5,
+        "asr_repeated": 0,
+        "cases": [
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-prose",
+            "matched_words": 12,
+            "source_words": 12,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-prose",
+            "matched_words": 12,
+            "source_words": 12,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "Antoine",
+              "22",
+              ".4."
+            ],
+            "asr_missing": [
+              "12",
+              "2024"
+            ],
+            "asr_repeated": [],
+            "id": "cal-number",
+            "matched_words": 7,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "one",
+              "tour"
+            ],
+            "asr_missing": [
+              "12"
+            ],
+            "asr_repeated": [],
+            "id": "cal-number",
+            "matched_words": 8,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-punctuation",
+            "matched_words": 9,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-punctuation",
+            "matched_words": 9,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-repeat",
+            "matched_words": 13,
+            "source_words": 13,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-repeat",
+            "matched_words": 13,
+            "source_words": 13,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-conversation",
+            "matched_words": 14,
+            "source_words": 14,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-conversation",
+            "matched_words": 14,
+            "source_words": 14,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "and",
+              "rose"
+            ],
+            "asr_missing": [
+              "in",
+              "rows"
+            ],
+            "asr_repeated": [],
+            "id": "cal-chunks",
+            "matched_words": 54,
+            "source_words": 56,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "Bye."
+            ],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-chunks",
+            "matched_words": 56,
+            "source_words": 56,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          }
+        ],
+        "coverage": 0.9778761061946902,
+        "end_mean": 0.4485972850678734,
+        "end_p95": 1.4399999999999995,
+        "matched_words": 221,
+        "pooled_mean": 0.4522171945701358,
+        "pooled_p95": 1.4400000000000013,
+        "source_words": 226,
+        "start_mean": 0.45583710407239825,
+        "start_p95": 1.46
+      }
+    },
+    {
+      "heads": [
+        [
+          2,
+          2
+        ]
+      ],
+      "metrics": {
+        "asr_missing": 5,
+        "asr_repeated": 0,
+        "cases": [
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-prose",
+            "matched_words": 12,
+            "source_words": 12,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-prose",
+            "matched_words": 12,
+            "source_words": 12,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "Antoine",
+              "22",
+              ".4."
+            ],
+            "asr_missing": [
+              "12",
+              "2024"
+            ],
+            "asr_repeated": [],
+            "id": "cal-number",
+            "matched_words": 7,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "one",
+              "tour"
+            ],
+            "asr_missing": [
+              "12"
+            ],
+            "asr_repeated": [],
+            "id": "cal-number",
+            "matched_words": 8,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-punctuation",
+            "matched_words": 9,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-punctuation",
+            "matched_words": 9,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-repeat",
+            "matched_words": 13,
+            "source_words": 13,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-repeat",
+            "matched_words": 13,
+            "source_words": 13,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-conversation",
+            "matched_words": 14,
+            "source_words": 14,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-conversation",
+            "matched_words": 14,
+            "source_words": 14,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "and",
+              "rose"
+            ],
+            "asr_missing": [
+              "in",
+              "rows"
+            ],
+            "asr_repeated": [],
+            "id": "cal-chunks",
+            "matched_words": 54,
+            "source_words": 56,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "Bye."
+            ],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-chunks",
+            "matched_words": 56,
+            "source_words": 56,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          }
+        ],
+        "coverage": 0.9778761061946902,
+        "end_mean": 0.6047963800904977,
+        "end_p95": 2.1799999999999997,
+        "matched_words": 221,
+        "pooled_mean": 0.6026244343891403,
+        "pooled_p95": 2.1799999999999997,
+        "source_words": 226,
+        "start_mean": 0.6004524886877828,
+        "start_p95": 2.1799999999999997
+      }
+    },
+    {
+      "heads": [
+        [
+          4,
+          2
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "metrics": {
+        "asr_missing": 5,
+        "asr_repeated": 0,
+        "cases": [
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-prose",
+            "matched_words": 12,
+            "source_words": 12,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-prose",
+            "matched_words": 12,
+            "source_words": 12,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "Antoine",
+              "22",
+              ".4."
+            ],
+            "asr_missing": [
+              "12",
+              "2024"
+            ],
+            "asr_repeated": [],
+            "id": "cal-number",
+            "matched_words": 7,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "one",
+              "tour"
+            ],
+            "asr_missing": [
+              "12"
+            ],
+            "asr_repeated": [],
+            "id": "cal-number",
+            "matched_words": 8,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-punctuation",
+            "matched_words": 9,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-punctuation",
+            "matched_words": 9,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-repeat",
+            "matched_words": 13,
+            "source_words": 13,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-repeat",
+            "matched_words": 13,
+            "source_words": 13,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-conversation",
+            "matched_words": 14,
+            "source_words": 14,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-conversation",
+            "matched_words": 14,
+            "source_words": 14,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "and",
+              "rose"
+            ],
+            "asr_missing": [
+              "in",
+              "rows"
+            ],
+            "asr_repeated": [],
+            "id": "cal-chunks",
+            "matched_words": 54,
+            "source_words": 56,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "Bye."
+            ],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-chunks",
+            "matched_words": 56,
+            "source_words": 56,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          }
+        ],
+        "coverage": 0.9778761061946902,
+        "end_mean": 0.8520361990950226,
+        "end_p95": 3.0,
+        "matched_words": 221,
+        "pooled_mean": 0.8447963800904977,
+        "pooled_p95": 2.9949999999999988,
+        "source_words": 226,
+        "start_mean": 0.8375565610859729,
+        "start_p95": 2.900000000000002
+      }
+    },
+    {
+      "heads": [
+        [
+          0,
+          0
+        ],
+        [
+          4,
+          2
+        ]
+      ],
+      "metrics": {
+        "asr_missing": 5,
+        "asr_repeated": 0,
+        "cases": [
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-prose",
+            "matched_words": 12,
+            "source_words": 12,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-prose",
+            "matched_words": 12,
+            "source_words": 12,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "Antoine",
+              "22",
+              ".4."
+            ],
+            "asr_missing": [
+              "12",
+              "2024"
+            ],
+            "asr_repeated": [],
+            "id": "cal-number",
+            "matched_words": 7,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "one",
+              "tour"
+            ],
+            "asr_missing": [
+              "12"
+            ],
+            "asr_repeated": [],
+            "id": "cal-number",
+            "matched_words": 8,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-punctuation",
+            "matched_words": 9,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-punctuation",
+            "matched_words": 9,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-repeat",
+            "matched_words": 13,
+            "source_words": 13,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-repeat",
+            "matched_words": 13,
+            "source_words": 13,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-conversation",
+            "matched_words": 14,
+            "source_words": 14,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-conversation",
+            "matched_words": 14,
+            "source_words": 14,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "and",
+              "rose"
+            ],
+            "asr_missing": [
+              "in",
+              "rows"
+            ],
+            "asr_repeated": [],
+            "id": "cal-chunks",
+            "matched_words": 54,
+            "source_words": 56,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "Bye."
+            ],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-chunks",
+            "matched_words": 56,
+            "source_words": 56,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          }
+        ],
+        "coverage": 0.9778761061946902,
+        "end_mean": 0.9514027149321267,
+        "end_p95": 3.2799999999999994,
+        "matched_words": 221,
+        "pooled_mean": 0.9395475113122171,
+        "pooled_p95": 3.272999999999998,
+        "source_words": 226,
+        "start_mean": 0.9276923076923076,
+        "start_p95": 3.1400000000000006
+      }
+    },
+    {
+      "heads": [
+        [
+          0,
+          0
+        ]
+      ],
+      "metrics": {
+        "asr_missing": 5,
+        "asr_repeated": 0,
+        "cases": [
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-prose",
+            "matched_words": 12,
+            "source_words": 12,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-prose",
+            "matched_words": 12,
+            "source_words": 12,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "Antoine",
+              "22",
+              ".4."
+            ],
+            "asr_missing": [
+              "12",
+              "2024"
+            ],
+            "asr_repeated": [],
+            "id": "cal-number",
+            "matched_words": 7,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "one",
+              "tour"
+            ],
+            "asr_missing": [
+              "12"
+            ],
+            "asr_repeated": [],
+            "id": "cal-number",
+            "matched_words": 8,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-punctuation",
+            "matched_words": 9,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-punctuation",
+            "matched_words": 9,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-repeat",
+            "matched_words": 13,
+            "source_words": 13,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-repeat",
+            "matched_words": 13,
+            "source_words": 13,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-conversation",
+            "matched_words": 14,
+            "source_words": 14,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-conversation",
+            "matched_words": 14,
+            "source_words": 14,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "and",
+              "rose"
+            ],
+            "asr_missing": [
+              "in",
+              "rows"
+            ],
+            "asr_repeated": [],
+            "id": "cal-chunks",
+            "matched_words": 54,
+            "source_words": 56,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "Bye."
+            ],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-chunks",
+            "matched_words": 56,
+            "source_words": 56,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          }
+        ],
+        "coverage": 0.9778761061946902,
+        "end_mean": 0.9866968325791854,
+        "end_p95": 3.040000000000001,
+        "matched_words": 221,
+        "pooled_mean": 0.9723076923076923,
+        "pooled_p95": 3.040000000000001,
+        "source_words": 226,
+        "start_mean": 0.957918552036199,
+        "start_p95": 3.040000000000001
+      }
+    },
+    {
+      "heads": [
+        [
+          4,
+          2
+        ]
+      ],
+      "metrics": {
+        "asr_missing": 5,
+        "asr_repeated": 0,
+        "cases": [
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-prose",
+            "matched_words": 12,
+            "source_words": 12,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-prose",
+            "matched_words": 12,
+            "source_words": 12,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "Antoine",
+              "22",
+              ".4."
+            ],
+            "asr_missing": [
+              "12",
+              "2024"
+            ],
+            "asr_repeated": [],
+            "id": "cal-number",
+            "matched_words": 7,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "one",
+              "tour"
+            ],
+            "asr_missing": [
+              "12"
+            ],
+            "asr_repeated": [],
+            "id": "cal-number",
+            "matched_words": 8,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-punctuation",
+            "matched_words": 9,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-punctuation",
+            "matched_words": 9,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-repeat",
+            "matched_words": 13,
+            "source_words": 13,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-repeat",
+            "matched_words": 13,
+            "source_words": 13,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-conversation",
+            "matched_words": 14,
+            "source_words": 14,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-conversation",
+            "matched_words": 14,
+            "source_words": 14,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "and",
+              "rose"
+            ],
+            "asr_missing": [
+              "in",
+              "rows"
+            ],
+            "asr_repeated": [],
+            "id": "cal-chunks",
+            "matched_words": 54,
+            "source_words": 56,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "Bye."
+            ],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-chunks",
+            "matched_words": 56,
+            "source_words": 56,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          }
+        ],
+        "coverage": 0.9778761061946902,
+        "end_mean": 1.1716742081447964,
+        "end_p95": 3.5199999999999996,
+        "matched_words": 221,
+        "pooled_mean": 1.1589140271493212,
+        "pooled_p95": 3.5159999999999987,
+        "source_words": 226,
+        "start_mean": 1.146153846153846,
+        "start_p95": 3.44
+      }
+    },
+    {
+      "heads": [
+        [
+          1,
+          0
+        ]
+      ],
+      "metrics": {
+        "asr_missing": 5,
+        "asr_repeated": 0,
+        "cases": [
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-prose",
+            "matched_words": 12,
+            "source_words": 12,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-prose",
+            "matched_words": 12,
+            "source_words": 12,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "Antoine",
+              "22",
+              ".4."
+            ],
+            "asr_missing": [
+              "12",
+              "2024"
+            ],
+            "asr_repeated": [],
+            "id": "cal-number",
+            "matched_words": 7,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "one",
+              "tour"
+            ],
+            "asr_missing": [
+              "12"
+            ],
+            "asr_repeated": [],
+            "id": "cal-number",
+            "matched_words": 8,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-punctuation",
+            "matched_words": 9,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-punctuation",
+            "matched_words": 9,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-repeat",
+            "matched_words": 13,
+            "source_words": 13,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-repeat",
+            "matched_words": 13,
+            "source_words": 13,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-conversation",
+            "matched_words": 14,
+            "source_words": 14,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-conversation",
+            "matched_words": 14,
+            "source_words": 14,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "and",
+              "rose"
+            ],
+            "asr_missing": [
+              "in",
+              "rows"
+            ],
+            "asr_repeated": [],
+            "id": "cal-chunks",
+            "matched_words": 54,
+            "source_words": 56,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "Bye."
+            ],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-chunks",
+            "matched_words": 56,
+            "source_words": 56,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          }
+        ],
+        "coverage": 0.9778761061946902,
+        "end_mean": 1.2554751131221717,
+        "end_p95": 3.58,
+        "matched_words": 221,
+        "pooled_mean": 1.243710407239819,
+        "pooled_p95": 3.617999999999999,
+        "source_words": 226,
+        "start_mean": 1.231945701357466,
+        "start_p95": 3.619999999999999
+      }
+    },
+    {
+      "heads": [
+        [
+          4,
+          1
+        ]
+      ],
+      "metrics": {
+        "asr_missing": 5,
+        "asr_repeated": 0,
+        "cases": [
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-prose",
+            "matched_words": 12,
+            "source_words": 12,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-prose",
+            "matched_words": 12,
+            "source_words": 12,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "Antoine",
+              "22",
+              ".4."
+            ],
+            "asr_missing": [
+              "12",
+              "2024"
+            ],
+            "asr_repeated": [],
+            "id": "cal-number",
+            "matched_words": 7,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "one",
+              "tour"
+            ],
+            "asr_missing": [
+              "12"
+            ],
+            "asr_repeated": [],
+            "id": "cal-number",
+            "matched_words": 8,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-punctuation",
+            "matched_words": 9,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-punctuation",
+            "matched_words": 9,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-repeat",
+            "matched_words": 13,
+            "source_words": 13,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-repeat",
+            "matched_words": 13,
+            "source_words": 13,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-conversation",
+            "matched_words": 14,
+            "source_words": 14,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-conversation",
+            "matched_words": 14,
+            "source_words": 14,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "and",
+              "rose"
+            ],
+            "asr_missing": [
+              "in",
+              "rows"
+            ],
+            "asr_repeated": [],
+            "id": "cal-chunks",
+            "matched_words": 54,
+            "source_words": 56,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "Bye."
+            ],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-chunks",
+            "matched_words": 56,
+            "source_words": 56,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          }
+        ],
+        "coverage": 0.9778761061946902,
+        "end_mean": 1.2714027149321268,
+        "end_p95": 3.1599999999999993,
+        "matched_words": 221,
+        "pooled_mean": 1.2519457013574662,
+        "pooled_p95": 3.1599999999999993,
+        "source_words": 226,
+        "start_mean": 1.2324886877828054,
+        "start_p95": 3.1599999999999993
+      }
+    },
+    {
+      "heads": [
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "metrics": {
+        "asr_missing": 5,
+        "asr_repeated": 0,
+        "cases": [
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-prose",
+            "matched_words": 12,
+            "source_words": 12,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-prose",
+            "matched_words": 12,
+            "source_words": 12,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "Antoine",
+              "22",
+              ".4."
+            ],
+            "asr_missing": [
+              "12",
+              "2024"
+            ],
+            "asr_repeated": [],
+            "id": "cal-number",
+            "matched_words": 7,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "one",
+              "tour"
+            ],
+            "asr_missing": [
+              "12"
+            ],
+            "asr_repeated": [],
+            "id": "cal-number",
+            "matched_words": 8,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-punctuation",
+            "matched_words": 9,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-punctuation",
+            "matched_words": 9,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-repeat",
+            "matched_words": 13,
+            "source_words": 13,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-repeat",
+            "matched_words": 13,
+            "source_words": 13,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-conversation",
+            "matched_words": 14,
+            "source_words": 14,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-conversation",
+            "matched_words": 14,
+            "source_words": 14,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "and",
+              "rose"
+            ],
+            "asr_missing": [
+              "in",
+              "rows"
+            ],
+            "asr_repeated": [],
+            "id": "cal-chunks",
+            "matched_words": 54,
+            "source_words": 56,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "Bye."
+            ],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-chunks",
+            "matched_words": 56,
+            "source_words": 56,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          }
+        ],
+        "coverage": 0.9778761061946902,
+        "end_mean": 1.3142986425339365,
+        "end_p95": 3.619999999999999,
+        "matched_words": 221,
+        "pooled_mean": 1.2989140271493214,
+        "pooled_p95": 3.619999999999999,
+        "source_words": 226,
+        "start_mean": 1.2835294117647058,
+        "start_p95": 3.619999999999999
+      }
+    },
+    {
+      "heads": [
+        [
+          0,
+          2
+        ]
+      ],
+      "metrics": {
+        "asr_missing": 5,
+        "asr_repeated": 0,
+        "cases": [
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-prose",
+            "matched_words": 12,
+            "source_words": 12,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-prose",
+            "matched_words": 12,
+            "source_words": 12,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "Antoine",
+              "22",
+              ".4."
+            ],
+            "asr_missing": [
+              "12",
+              "2024"
+            ],
+            "asr_repeated": [],
+            "id": "cal-number",
+            "matched_words": 7,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "one",
+              "tour"
+            ],
+            "asr_missing": [
+              "12"
+            ],
+            "asr_repeated": [],
+            "id": "cal-number",
+            "matched_words": 8,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-punctuation",
+            "matched_words": 9,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-punctuation",
+            "matched_words": 9,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-repeat",
+            "matched_words": 13,
+            "source_words": 13,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-repeat",
+            "matched_words": 13,
+            "source_words": 13,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-conversation",
+            "matched_words": 14,
+            "source_words": 14,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-conversation",
+            "matched_words": 14,
+            "source_words": 14,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "and",
+              "rose"
+            ],
+            "asr_missing": [
+              "in",
+              "rows"
+            ],
+            "asr_repeated": [],
+            "id": "cal-chunks",
+            "matched_words": 54,
+            "source_words": 56,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "Bye."
+            ],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-chunks",
+            "matched_words": 56,
+            "source_words": 56,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          }
+        ],
+        "coverage": 0.9778761061946902,
+        "end_mean": 1.4607239819004525,
+        "end_p95": 3.7,
+        "matched_words": 221,
+        "pooled_mean": 1.4446153846153846,
+        "pooled_p95": 3.7,
+        "source_words": 226,
+        "start_mean": 1.4285067873303168,
+        "start_p95": 3.7
+      }
+    },
+    {
+      "heads": [
+        [
+          0,
+          1
+        ]
+      ],
+      "metrics": {
+        "asr_missing": 5,
+        "asr_repeated": 0,
+        "cases": [
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-prose",
+            "matched_words": 12,
+            "source_words": 12,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-prose",
+            "matched_words": 12,
+            "source_words": 12,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "Antoine",
+              "22",
+              ".4."
+            ],
+            "asr_missing": [
+              "12",
+              "2024"
+            ],
+            "asr_repeated": [],
+            "id": "cal-number",
+            "matched_words": 7,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "one",
+              "tour"
+            ],
+            "asr_missing": [
+              "12"
+            ],
+            "asr_repeated": [],
+            "id": "cal-number",
+            "matched_words": 8,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-punctuation",
+            "matched_words": 9,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-punctuation",
+            "matched_words": 9,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-repeat",
+            "matched_words": 13,
+            "source_words": 13,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-repeat",
+            "matched_words": 13,
+            "source_words": 13,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-conversation",
+            "matched_words": 14,
+            "source_words": 14,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-conversation",
+            "matched_words": 14,
+            "source_words": 14,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "and",
+              "rose"
+            ],
+            "asr_missing": [
+              "in",
+              "rows"
+            ],
+            "asr_repeated": [],
+            "id": "cal-chunks",
+            "matched_words": 54,
+            "source_words": 56,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "Bye."
+            ],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-chunks",
+            "matched_words": 56,
+            "source_words": 56,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          }
+        ],
+        "coverage": 0.9778761061946902,
+        "end_mean": 1.517556561085973,
+        "end_p95": 4.059999999999999,
+        "matched_words": 221,
+        "pooled_mean": 1.4929411764705882,
+        "pooled_p95": 4.059999999999999,
+        "source_words": 226,
+        "start_mean": 1.4683257918552035,
+        "start_p95": 4.059999999999999
+      }
+    },
+    {
+      "heads": [
+        [
+          1,
+          1
+        ]
+      ],
+      "metrics": {
+        "asr_missing": 5,
+        "asr_repeated": 0,
+        "cases": [
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-prose",
+            "matched_words": 11,
+            "source_words": 12,
+            "timestamp_missing": 1,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-prose",
+            "matched_words": 12,
+            "source_words": 12,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "Antoine",
+              "22",
+              ".4."
+            ],
+            "asr_missing": [
+              "12",
+              "2024"
+            ],
+            "asr_repeated": [],
+            "id": "cal-number",
+            "matched_words": 7,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "one",
+              "tour"
+            ],
+            "asr_missing": [
+              "12"
+            ],
+            "asr_repeated": [],
+            "id": "cal-number",
+            "matched_words": 8,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-punctuation",
+            "matched_words": 9,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-punctuation",
+            "matched_words": 9,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-repeat",
+            "matched_words": 13,
+            "source_words": 13,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-repeat",
+            "matched_words": 13,
+            "source_words": 13,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-conversation",
+            "matched_words": 14,
+            "source_words": 14,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-conversation",
+            "matched_words": 14,
+            "source_words": 14,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "and",
+              "rose"
+            ],
+            "asr_missing": [
+              "in",
+              "rows"
+            ],
+            "asr_repeated": [],
+            "id": "cal-chunks",
+            "matched_words": 54,
+            "source_words": 56,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "Bye."
+            ],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-chunks",
+            "matched_words": 56,
+            "source_words": 56,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          }
+        ],
+        "coverage": 0.9734513274336283,
+        "end_mean": 1.371181818181818,
+        "end_p95": 3.7409999999999983,
+        "matched_words": 220,
+        "pooled_mean": 1.3573636363636363,
+        "pooled_p95": 3.7399999999999984,
+        "source_words": 226,
+        "start_mean": 1.3435454545454544,
+        "start_p95": 3.7019999999999986
+      }
+    },
+    {
+      "heads": [
+        [
+          3,
+          0
+        ]
+      ],
+      "metrics": {
+        "asr_missing": 5,
+        "asr_repeated": 0,
+        "cases": [
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-prose",
+            "matched_words": 12,
+            "source_words": 12,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-prose",
+            "matched_words": 12,
+            "source_words": 12,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "Antoine",
+              "22",
+              ".4."
+            ],
+            "asr_missing": [
+              "12",
+              "2024"
+            ],
+            "asr_repeated": [],
+            "id": "cal-number",
+            "matched_words": 7,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "one",
+              "tour"
+            ],
+            "asr_missing": [
+              "12"
+            ],
+            "asr_repeated": [],
+            "id": "cal-number",
+            "matched_words": 8,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-punctuation",
+            "matched_words": 9,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-punctuation",
+            "matched_words": 9,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-repeat",
+            "matched_words": 13,
+            "source_words": 13,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-repeat",
+            "matched_words": 13,
+            "source_words": 13,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-conversation",
+            "matched_words": 12,
+            "source_words": 14,
+            "timestamp_missing": 2,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-conversation",
+            "matched_words": 14,
+            "source_words": 14,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "and",
+              "rose"
+            ],
+            "asr_missing": [
+              "in",
+              "rows"
+            ],
+            "asr_repeated": [],
+            "id": "cal-chunks",
+            "matched_words": 54,
+            "source_words": 56,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "Bye."
+            ],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-chunks",
+            "matched_words": 56,
+            "source_words": 56,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          }
+        ],
+        "coverage": 0.9690265486725663,
+        "end_mean": 0.7481278538812786,
+        "end_p95": 2.4800000000000004,
+        "matched_words": 219,
+        "pooled_mean": 0.74,
+        "pooled_p95": 2.3439999999999968,
+        "source_words": 226,
+        "start_mean": 0.7318721461187214,
+        "start_p95": 2.3200000000000003
+      }
+    },
+    {
+      "heads": [
+        [
+          2,
+          0
+        ]
+      ],
+      "metrics": {
+        "asr_missing": 5,
+        "asr_repeated": 0,
+        "cases": [
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-prose",
+            "matched_words": 12,
+            "source_words": 12,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-prose",
+            "matched_words": 12,
+            "source_words": 12,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "Antoine",
+              "22",
+              ".4."
+            ],
+            "asr_missing": [
+              "12",
+              "2024"
+            ],
+            "asr_repeated": [],
+            "id": "cal-number",
+            "matched_words": 7,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "one",
+              "tour"
+            ],
+            "asr_missing": [
+              "12"
+            ],
+            "asr_repeated": [],
+            "id": "cal-number",
+            "matched_words": 8,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-punctuation",
+            "matched_words": 9,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-punctuation",
+            "matched_words": 9,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-repeat",
+            "matched_words": 13,
+            "source_words": 13,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-repeat",
+            "matched_words": 13,
+            "source_words": 13,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-conversation",
+            "matched_words": 14,
+            "source_words": 14,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-conversation",
+            "matched_words": 14,
+            "source_words": 14,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "and",
+              "rose"
+            ],
+            "asr_missing": [
+              "in",
+              "rows"
+            ],
+            "asr_repeated": [],
+            "id": "cal-chunks",
+            "matched_words": 47,
+            "source_words": 56,
+            "timestamp_missing": 7,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "Bye."
+            ],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-chunks",
+            "matched_words": 56,
+            "source_words": 56,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          }
+        ],
+        "coverage": 0.9469026548672567,
+        "end_mean": 0.6407476635514019,
+        "end_p95": 2.02,
+        "matched_words": 214,
+        "pooled_mean": 0.6314485981308411,
+        "pooled_p95": 1.92,
+        "source_words": 226,
+        "start_mean": 0.6221495327102803,
+        "start_p95": 1.8739999999999999
+      }
+    },
+    {
+      "heads": [
+        [
+          6,
+          0
+        ]
+      ],
+      "metrics": {
+        "asr_missing": 5,
+        "asr_repeated": 0,
+        "cases": [
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-prose",
+            "matched_words": 7,
+            "source_words": 12,
+            "timestamp_missing": 5,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-prose",
+            "matched_words": 12,
+            "source_words": 12,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "Antoine",
+              "22",
+              ".4."
+            ],
+            "asr_missing": [
+              "12",
+              "2024"
+            ],
+            "asr_repeated": [],
+            "id": "cal-number",
+            "matched_words": 7,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "one",
+              "tour"
+            ],
+            "asr_missing": [
+              "12"
+            ],
+            "asr_repeated": [],
+            "id": "cal-number",
+            "matched_words": 6,
+            "source_words": 9,
+            "timestamp_missing": 2,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-punctuation",
+            "matched_words": 9,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-punctuation",
+            "matched_words": 9,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-repeat",
+            "matched_words": 13,
+            "source_words": 13,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-repeat",
+            "matched_words": 13,
+            "source_words": 13,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-conversation",
+            "matched_words": 14,
+            "source_words": 14,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-conversation",
+            "matched_words": 14,
+            "source_words": 14,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "and",
+              "rose"
+            ],
+            "asr_missing": [
+              "in",
+              "rows"
+            ],
+            "asr_repeated": [],
+            "id": "cal-chunks",
+            "matched_words": 54,
+            "source_words": 56,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "Bye."
+            ],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-chunks",
+            "matched_words": 56,
+            "source_words": 56,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          }
+        ],
+        "coverage": 0.9469026548672567,
+        "end_mean": 1.0200934579439251,
+        "end_p95": 3.021,
+        "matched_words": 214,
+        "pooled_mean": 1.0191121495327102,
+        "pooled_p95": 3.0600000000000005,
+        "source_words": 226,
+        "start_mean": 1.0181308411214953,
+        "start_p95": 3.074
+      }
+    },
+    {
+      "heads": [
+        [
+          6,
+          2
+        ]
+      ],
+      "metrics": {
+        "asr_missing": 5,
+        "asr_repeated": 0,
+        "cases": [
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-prose",
+            "matched_words": 10,
+            "source_words": 12,
+            "timestamp_missing": 2,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-prose",
+            "matched_words": 9,
+            "source_words": 12,
+            "timestamp_missing": 3,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "Antoine",
+              "22",
+              ".4."
+            ],
+            "asr_missing": [
+              "12",
+              "2024"
+            ],
+            "asr_repeated": [],
+            "id": "cal-number",
+            "matched_words": 6,
+            "source_words": 9,
+            "timestamp_missing": 2,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "one",
+              "tour"
+            ],
+            "asr_missing": [
+              "12"
+            ],
+            "asr_repeated": [],
+            "id": "cal-number",
+            "matched_words": 6,
+            "source_words": 9,
+            "timestamp_missing": 2,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-punctuation",
+            "matched_words": 9,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-punctuation",
+            "matched_words": 9,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-repeat",
+            "matched_words": 13,
+            "source_words": 13,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-repeat",
+            "matched_words": 13,
+            "source_words": 13,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-conversation",
+            "matched_words": 14,
+            "source_words": 14,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-conversation",
+            "matched_words": 14,
+            "source_words": 14,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "and",
+              "rose"
+            ],
+            "asr_missing": [
+              "in",
+              "rows"
+            ],
+            "asr_repeated": [],
+            "id": "cal-chunks",
+            "matched_words": 54,
+            "source_words": 56,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "Bye."
+            ],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-chunks",
+            "matched_words": 56,
+            "source_words": 56,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          }
+        ],
+        "coverage": 0.9424778761061947,
+        "end_mean": 0.8367136150234742,
+        "end_p95": 3.023999999999996,
+        "matched_words": 213,
+        "pooled_mean": 0.821830985915493,
+        "pooled_p95": 3.079999999999999,
+        "source_words": 226,
+        "start_mean": 0.8069483568075118,
+        "start_p95": 3.023999999999996
+      }
+    },
+    {
+      "heads": [
+        [
+          2,
+          1
+        ]
+      ],
+      "metrics": {
+        "asr_missing": 5,
+        "asr_repeated": 0,
+        "cases": [
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-prose",
+            "matched_words": 12,
+            "source_words": 12,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-prose",
+            "matched_words": 10,
+            "source_words": 12,
+            "timestamp_missing": 2,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "Antoine",
+              "22",
+              ".4."
+            ],
+            "asr_missing": [
+              "12",
+              "2024"
+            ],
+            "asr_repeated": [],
+            "id": "cal-number",
+            "matched_words": 7,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "one",
+              "tour"
+            ],
+            "asr_missing": [
+              "12"
+            ],
+            "asr_repeated": [],
+            "id": "cal-number",
+            "matched_words": 8,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-punctuation",
+            "matched_words": 9,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-punctuation",
+            "matched_words": 9,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-repeat",
+            "matched_words": 13,
+            "source_words": 13,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-repeat",
+            "matched_words": 13,
+            "source_words": 13,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-conversation",
+            "matched_words": 14,
+            "source_words": 14,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-conversation",
+            "matched_words": 14,
+            "source_words": 14,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "and",
+              "rose"
+            ],
+            "asr_missing": [
+              "in",
+              "rows"
+            ],
+            "asr_repeated": [],
+            "id": "cal-chunks",
+            "matched_words": 52,
+            "source_words": 56,
+            "timestamp_missing": 2,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "Bye."
+            ],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-chunks",
+            "matched_words": 50,
+            "source_words": 56,
+            "timestamp_missing": 6,
+            "voice": "anna",
+            "zero_duration_events": []
+          }
+        ],
+        "coverage": 0.9336283185840708,
+        "end_mean": 0.9485308056872037,
+        "end_p95": 2.5999999999999996,
+        "matched_words": 211,
+        "pooled_mean": 0.9315639810426539,
+        "pooled_p95": 2.6359999999999997,
+        "source_words": 226,
+        "start_mean": 0.9145971563981042,
+        "start_p95": 2.5999999999999996
+      }
+    },
+    {
+      "heads": [
+        [
+          6,
+          1
+        ]
+      ],
+      "metrics": {
+        "asr_missing": 5,
+        "asr_repeated": 0,
+        "cases": [
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-prose",
+            "matched_words": 10,
+            "source_words": 12,
+            "timestamp_missing": 2,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-prose",
+            "matched_words": 9,
+            "source_words": 12,
+            "timestamp_missing": 3,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "Antoine",
+              "22",
+              ".4."
+            ],
+            "asr_missing": [
+              "12",
+              "2024"
+            ],
+            "asr_repeated": [],
+            "id": "cal-number",
+            "matched_words": 7,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "one",
+              "tour"
+            ],
+            "asr_missing": [
+              "12"
+            ],
+            "asr_repeated": [],
+            "id": "cal-number",
+            "matched_words": 8,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-punctuation",
+            "matched_words": 9,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-punctuation",
+            "matched_words": 9,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-repeat",
+            "matched_words": 13,
+            "source_words": 13,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-repeat",
+            "matched_words": 13,
+            "source_words": 13,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-conversation",
+            "matched_words": 14,
+            "source_words": 14,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-conversation",
+            "matched_words": 14,
+            "source_words": 14,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "and",
+              "rose"
+            ],
+            "asr_missing": [
+              "in",
+              "rows"
+            ],
+            "asr_repeated": [],
+            "id": "cal-chunks",
+            "matched_words": 47,
+            "source_words": 56,
+            "timestamp_missing": 7,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "Bye."
+            ],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-chunks",
+            "matched_words": 56,
+            "source_words": 56,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          }
+        ],
+        "coverage": 0.9247787610619469,
+        "end_mean": 1.0029665071770335,
+        "end_p95": 2.668,
+        "matched_words": 209,
+        "pooled_mean": 0.9888516746411483,
+        "pooled_p95": 2.7030000000000003,
+        "source_words": 226,
+        "start_mean": 0.9747368421052631,
+        "start_p95": 2.712
+      }
+    },
+    {
+      "heads": [
+        [
+          3,
+          1
+        ]
+      ],
+      "metrics": {
+        "asr_missing": 5,
+        "asr_repeated": 0,
+        "cases": [
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-prose",
+            "matched_words": 5,
+            "source_words": 12,
+            "timestamp_missing": 7,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-prose",
+            "matched_words": 12,
+            "source_words": 12,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "Antoine",
+              "22",
+              ".4."
+            ],
+            "asr_missing": [
+              "12",
+              "2024"
+            ],
+            "asr_repeated": [],
+            "id": "cal-number",
+            "matched_words": 7,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "one",
+              "tour"
+            ],
+            "asr_missing": [
+              "12"
+            ],
+            "asr_repeated": [],
+            "id": "cal-number",
+            "matched_words": 8,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-punctuation",
+            "matched_words": 9,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-punctuation",
+            "matched_words": 9,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-repeat",
+            "matched_words": 13,
+            "source_words": 13,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-repeat",
+            "matched_words": 9,
+            "source_words": 13,
+            "timestamp_missing": 4,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-conversation",
+            "matched_words": 9,
+            "source_words": 14,
+            "timestamp_missing": 5,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-conversation",
+            "matched_words": 13,
+            "source_words": 14,
+            "timestamp_missing": 1,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "and",
+              "rose"
+            ],
+            "asr_missing": [
+              "in",
+              "rows"
+            ],
+            "asr_repeated": [],
+            "id": "cal-chunks",
+            "matched_words": 54,
+            "source_words": 56,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "Bye."
+            ],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-chunks",
+            "matched_words": 56,
+            "source_words": 56,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          }
+        ],
+        "coverage": 0.9026548672566371,
+        "end_mean": 0.9286274509803921,
+        "end_p95": 2.194,
+        "matched_words": 204,
+        "pooled_mean": 0.9090686274509804,
+        "pooled_p95": 2.1729999999999996,
+        "source_words": 226,
+        "start_mean": 0.8895098039215685,
+        "start_p95": 2.1599999999999997
+      }
+    },
+    {
+      "heads": [
+        [
+          4,
+          0
+        ]
+      ],
+      "metrics": {
+        "asr_missing": 5,
+        "asr_repeated": 0,
+        "cases": [
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-prose",
+            "matched_words": 8,
+            "source_words": 12,
+            "timestamp_missing": 4,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-prose",
+            "matched_words": 12,
+            "source_words": 12,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "Antoine",
+              "22",
+              ".4."
+            ],
+            "asr_missing": [
+              "12",
+              "2024"
+            ],
+            "asr_repeated": [],
+            "id": "cal-number",
+            "matched_words": 6,
+            "source_words": 9,
+            "timestamp_missing": 2,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "one",
+              "tour"
+            ],
+            "asr_missing": [
+              "12"
+            ],
+            "asr_repeated": [],
+            "id": "cal-number",
+            "matched_words": 6,
+            "source_words": 9,
+            "timestamp_missing": 2,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-punctuation",
+            "matched_words": 9,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-punctuation",
+            "matched_words": 9,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-repeat",
+            "matched_words": 9,
+            "source_words": 13,
+            "timestamp_missing": 4,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-repeat",
+            "matched_words": 13,
+            "source_words": 13,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-conversation",
+            "matched_words": 9,
+            "source_words": 14,
+            "timestamp_missing": 5,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-conversation",
+            "matched_words": 9,
+            "source_words": 14,
+            "timestamp_missing": 5,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "and",
+              "rose"
+            ],
+            "asr_missing": [
+              "in",
+              "rows"
+            ],
+            "asr_repeated": [],
+            "id": "cal-chunks",
+            "matched_words": 43,
+            "source_words": 56,
+            "timestamp_missing": 11,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "Bye."
+            ],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-chunks",
+            "matched_words": 46,
+            "source_words": 56,
+            "timestamp_missing": 10,
+            "voice": "anna",
+            "zero_duration_events": []
+          }
+        ],
+        "coverage": 0.7920353982300885,
+        "end_mean": 0.7617877094972068,
+        "end_p95": 2.4159999999999995,
+        "matched_words": 179,
+        "pooled_mean": 0.7198882681564247,
+        "pooled_p95": 1.9029999999999998,
+        "source_words": 226,
+        "start_mean": 0.6779888268156424,
+        "start_p95": 1.8420000000000014
+      }
+    },
+    {
+      "heads": [
+        [
+          3,
+          2
+        ]
+      ],
+      "metrics": {
+        "asr_missing": 5,
+        "asr_repeated": 0,
+        "cases": [
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-prose",
+            "matched_words": 12,
+            "source_words": 12,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-prose",
+            "matched_words": 12,
+            "source_words": 12,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "Antoine",
+              "22",
+              ".4."
+            ],
+            "asr_missing": [
+              "12",
+              "2024"
+            ],
+            "asr_repeated": [],
+            "id": "cal-number",
+            "matched_words": 7,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "one",
+              "tour"
+            ],
+            "asr_missing": [
+              "12"
+            ],
+            "asr_repeated": [],
+            "id": "cal-number",
+            "matched_words": 6,
+            "source_words": 9,
+            "timestamp_missing": 2,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-punctuation",
+            "matched_words": 9,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-punctuation",
+            "matched_words": 9,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-repeat",
+            "matched_words": 7,
+            "source_words": 13,
+            "timestamp_missing": 6,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-repeat",
+            "matched_words": 13,
+            "source_words": 13,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-conversation",
+            "matched_words": 7,
+            "source_words": 14,
+            "timestamp_missing": 7,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-conversation",
+            "matched_words": 14,
+            "source_words": 14,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "and",
+              "rose"
+            ],
+            "asr_missing": [
+              "in",
+              "rows"
+            ],
+            "asr_repeated": [],
+            "id": "cal-chunks",
+            "matched_words": 35,
+            "source_words": 56,
+            "timestamp_missing": 21,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "Bye."
+            ],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-chunks",
+            "matched_words": 38,
+            "source_words": 56,
+            "timestamp_missing": 18,
+            "voice": "anna",
+            "zero_duration_events": []
+          }
+        ],
+        "coverage": 0.7477876106194691,
+        "end_mean": 0.8389349112426036,
+        "end_p95": 3.275999999999996,
+        "matched_words": 169,
+        "pooled_mean": 0.7919526627218935,
+        "pooled_p95": 2.82,
+        "source_words": 226,
+        "start_mean": 0.7449704142011835,
+        "start_p95": 2.671999999999999
+      }
+    },
+    {
+      "heads": [
+        [
+          7,
+          2
+        ]
+      ],
+      "metrics": {
+        "asr_missing": 5,
+        "asr_repeated": 0,
+        "cases": [
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-prose",
+            "matched_words": 7,
+            "source_words": 12,
+            "timestamp_missing": 5,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-prose",
+            "matched_words": 7,
+            "source_words": 12,
+            "timestamp_missing": 5,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "Antoine",
+              "22",
+              ".4."
+            ],
+            "asr_missing": [
+              "12",
+              "2024"
+            ],
+            "asr_repeated": [],
+            "id": "cal-number",
+            "matched_words": 3,
+            "source_words": 9,
+            "timestamp_missing": 5,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "one",
+              "tour"
+            ],
+            "asr_missing": [
+              "12"
+            ],
+            "asr_repeated": [],
+            "id": "cal-number",
+            "matched_words": 3,
+            "source_words": 9,
+            "timestamp_missing": 5,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-punctuation",
+            "matched_words": 9,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-punctuation",
+            "matched_words": 9,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-repeat",
+            "matched_words": 10,
+            "source_words": 13,
+            "timestamp_missing": 3,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-repeat",
+            "matched_words": 13,
+            "source_words": 13,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-conversation",
+            "matched_words": 10,
+            "source_words": 14,
+            "timestamp_missing": 4,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-conversation",
+            "matched_words": 10,
+            "source_words": 14,
+            "timestamp_missing": 4,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "and",
+              "rose"
+            ],
+            "asr_missing": [
+              "in",
+              "rows"
+            ],
+            "asr_repeated": [],
+            "id": "cal-chunks",
+            "matched_words": 34,
+            "source_words": 56,
+            "timestamp_missing": 22,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "Bye."
+            ],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-chunks",
+            "matched_words": 44,
+            "source_words": 56,
+            "timestamp_missing": 12,
+            "voice": "anna",
+            "zero_duration_events": []
+          }
+        ],
+        "coverage": 0.7035398230088495,
+        "end_mean": 1.1247798742138364,
+        "end_p95": 2.821999999999999,
+        "matched_words": 159,
+        "pooled_mean": 1.0546540880503144,
+        "pooled_p95": 2.799999999999999,
+        "source_words": 226,
+        "start_mean": 0.9845283018867924,
+        "start_p95": 2.7200000000000006
+      }
+    },
+    {
+      "heads": [
+        [
+          5,
+          1
+        ]
+      ],
+      "metrics": {
+        "asr_missing": 5,
+        "asr_repeated": 0,
+        "cases": [
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-prose",
+            "matched_words": 7,
+            "source_words": 12,
+            "timestamp_missing": 5,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-prose",
+            "matched_words": 7,
+            "source_words": 12,
+            "timestamp_missing": 5,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "Antoine",
+              "22",
+              ".4."
+            ],
+            "asr_missing": [
+              "12",
+              "2024"
+            ],
+            "asr_repeated": [],
+            "id": "cal-number",
+            "matched_words": 3,
+            "source_words": 9,
+            "timestamp_missing": 5,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "one",
+              "tour"
+            ],
+            "asr_missing": [
+              "12"
+            ],
+            "asr_repeated": [],
+            "id": "cal-number",
+            "matched_words": 3,
+            "source_words": 9,
+            "timestamp_missing": 5,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-punctuation",
+            "matched_words": 9,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-punctuation",
+            "matched_words": 9,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-repeat",
+            "matched_words": 13,
+            "source_words": 13,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-repeat",
+            "matched_words": 13,
+            "source_words": 13,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-conversation",
+            "matched_words": 12,
+            "source_words": 14,
+            "timestamp_missing": 2,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-conversation",
+            "matched_words": 10,
+            "source_words": 14,
+            "timestamp_missing": 4,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "and",
+              "rose"
+            ],
+            "asr_missing": [
+              "in",
+              "rows"
+            ],
+            "asr_repeated": [],
+            "id": "cal-chunks",
+            "matched_words": 42,
+            "source_words": 56,
+            "timestamp_missing": 14,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "Bye."
+            ],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-chunks",
+            "matched_words": 27,
+            "source_words": 56,
+            "timestamp_missing": 29,
+            "voice": "anna",
+            "zero_duration_events": []
+          }
+        ],
+        "coverage": 0.6858407079646017,
+        "end_mean": 0.736516129032258,
+        "end_p95": 1.931999999999999,
+        "matched_words": 155,
+        "pooled_mean": 0.6667741935483871,
+        "pooled_p95": 1.7750000000000012,
+        "source_words": 226,
+        "start_mean": 0.5970322580645161,
+        "start_p95": 1.6059999999999997
+      }
+    },
+    {
+      "heads": [
+        [
+          1,
+          2
+        ]
+      ],
+      "metrics": {
+        "asr_missing": 5,
+        "asr_repeated": 0,
+        "cases": [
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-prose",
+            "matched_words": 1,
+            "source_words": 12,
+            "timestamp_missing": 11,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-prose",
+            "matched_words": 4,
+            "source_words": 12,
+            "timestamp_missing": 8,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "Antoine",
+              "22",
+              ".4."
+            ],
+            "asr_missing": [
+              "12",
+              "2024"
+            ],
+            "asr_repeated": [],
+            "id": "cal-number",
+            "matched_words": 5,
+            "source_words": 9,
+            "timestamp_missing": 3,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "one",
+              "tour"
+            ],
+            "asr_missing": [
+              "12"
+            ],
+            "asr_repeated": [],
+            "id": "cal-number",
+            "matched_words": 3,
+            "source_words": 9,
+            "timestamp_missing": 5,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-punctuation",
+            "matched_words": 9,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-punctuation",
+            "matched_words": 9,
+            "source_words": 9,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-repeat",
+            "matched_words": 5,
+            "source_words": 13,
+            "timestamp_missing": 8,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-repeat",
+            "matched_words": 13,
+            "source_words": 13,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-conversation",
+            "matched_words": 14,
+            "source_words": 14,
+            "timestamp_missing": 0,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-conversation",
+            "matched_words": 9,
+            "source_words": 14,
+            "timestamp_missing": 5,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "and",
+              "rose"
+            ],
+            "asr_missing": [
+              "in",
+              "rows"
+            ],
+            "asr_repeated": [],
+            "id": "cal-chunks",
+            "matched_words": 35,
+            "source_words": 56,
+            "timestamp_missing": 21,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "Bye."
+            ],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-chunks",
+            "matched_words": 38,
+            "source_words": 56,
+            "timestamp_missing": 18,
+            "voice": "anna",
+            "zero_duration_events": []
+          }
+        ],
+        "coverage": 0.6415929203539823,
+        "end_mean": 1.5387586206896553,
+        "end_p95": 2.9959999999999996,
+        "matched_words": 145,
+        "pooled_mean": 1.4419310344827587,
+        "pooled_p95": 2.9800000000000004,
+        "source_words": 226,
+        "start_mean": 1.3451034482758621,
+        "start_p95": 2.9560000000000004
+      }
+    },
+    {
+      "heads": [
+        [
+          7,
+          1
+        ]
+      ],
+      "metrics": {
+        "asr_missing": 5,
+        "asr_repeated": 0,
+        "cases": [
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-prose",
+            "matched_words": 7,
+            "source_words": 12,
+            "timestamp_missing": 5,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-prose",
+            "matched_words": 7,
+            "source_words": 12,
+            "timestamp_missing": 5,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "Antoine",
+              "22",
+              ".4."
+            ],
+            "asr_missing": [
+              "12",
+              "2024"
+            ],
+            "asr_repeated": [],
+            "id": "cal-number",
+            "matched_words": 3,
+            "source_words": 9,
+            "timestamp_missing": 5,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "one",
+              "tour"
+            ],
+            "asr_missing": [
+              "12"
+            ],
+            "asr_repeated": [],
+            "id": "cal-number",
+            "matched_words": 2,
+            "source_words": 9,
+            "timestamp_missing": 6,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-punctuation",
+            "matched_words": 5,
+            "source_words": 9,
+            "timestamp_missing": 4,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-punctuation",
+            "matched_words": 5,
+            "source_words": 9,
+            "timestamp_missing": 4,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-repeat",
+            "matched_words": 9,
+            "source_words": 13,
+            "timestamp_missing": 4,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-repeat",
+            "matched_words": 13,
+            "source_words": 13,
+            "timestamp_missing": 0,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-conversation",
+            "matched_words": 7,
+            "source_words": 14,
+            "timestamp_missing": 7,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-conversation",
+            "matched_words": 7,
+            "source_words": 14,
+            "timestamp_missing": 7,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "and",
+              "rose"
+            ],
+            "asr_missing": [
+              "in",
+              "rows"
+            ],
+            "asr_repeated": [],
+            "id": "cal-chunks",
+            "matched_words": 24,
+            "source_words": 56,
+            "timestamp_missing": 32,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "Bye."
+            ],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-chunks",
+            "matched_words": 29,
+            "source_words": 56,
+            "timestamp_missing": 27,
+            "voice": "anna",
+            "zero_duration_events": []
+          }
+        ],
+        "coverage": 0.5221238938053098,
+        "end_mean": 0.926949152542373,
+        "end_p95": 3.4899999999999975,
+        "matched_words": 118,
+        "pooled_mean": 0.7972033898305085,
+        "pooled_p95": 2.639999999999999,
+        "source_words": 226,
+        "start_mean": 0.6674576271186441,
+        "start_p95": 2.6
+      }
+    },
+    {
+      "heads": [
+        [
+          7,
+          0
+        ]
+      ],
+      "metrics": {
+        "asr_missing": 5,
+        "asr_repeated": 0,
+        "cases": [
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-prose",
+            "matched_words": 4,
+            "source_words": 12,
+            "timestamp_missing": 8,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-prose",
+            "matched_words": 4,
+            "source_words": 12,
+            "timestamp_missing": 8,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "Antoine",
+              "22",
+              ".4."
+            ],
+            "asr_missing": [
+              "12",
+              "2024"
+            ],
+            "asr_repeated": [],
+            "id": "cal-number",
+            "matched_words": 1,
+            "source_words": 9,
+            "timestamp_missing": 8,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "one",
+              "tour"
+            ],
+            "asr_missing": [
+              "12"
+            ],
+            "asr_repeated": [],
+            "id": "cal-number",
+            "matched_words": 1,
+            "source_words": 9,
+            "timestamp_missing": 8,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-punctuation",
+            "matched_words": 3,
+            "source_words": 9,
+            "timestamp_missing": 6,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-punctuation",
+            "matched_words": 8,
+            "source_words": 9,
+            "timestamp_missing": 1,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-repeat",
+            "matched_words": 5,
+            "source_words": 13,
+            "timestamp_missing": 8,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-repeat",
+            "matched_words": 4,
+            "source_words": 13,
+            "timestamp_missing": 9,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-conversation",
+            "matched_words": 7,
+            "source_words": 14,
+            "timestamp_missing": 7,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-conversation",
+            "matched_words": 8,
+            "source_words": 14,
+            "timestamp_missing": 6,
+            "voice": "anna",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "and",
+              "rose"
+            ],
+            "asr_missing": [
+              "in",
+              "rows"
+            ],
+            "asr_repeated": [],
+            "id": "cal-chunks",
+            "matched_words": 21,
+            "source_words": 56,
+            "timestamp_missing": 35,
+            "voice": "alba",
+            "zero_duration_events": []
+          },
+          {
+            "asr_extra": [
+              "Bye."
+            ],
+            "asr_missing": [],
+            "asr_repeated": [],
+            "id": "cal-chunks",
+            "matched_words": 21,
+            "source_words": 56,
+            "timestamp_missing": 35,
+            "voice": "anna",
+            "zero_duration_events": []
+          }
+        ],
+        "coverage": 0.38495575221238937,
+        "end_mean": 2.0756321839080463,
+        "end_p95": 4.674000000000001,
+        "matched_words": 87,
+        "pooled_mean": 1.8227586206896553,
+        "pooled_p95": 4.477999999999998,
+        "source_words": 226,
+        "start_mean": 1.5698850574712646,
+        "start_p95": 4.004
+      }
+    }
+  ]
+}

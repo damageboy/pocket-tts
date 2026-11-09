@@ -1,0 +1,70 @@
+{
+  "model": "english",
+  "phase": "before numerical old/new comparison",
+  "reviewed_cases": [
+    {
+      "generation": "baseline",
+      "id": "eval-number",
+      "voice": "alba",
+      "transcript": " The museum welcomed 20 visitors in 2025.",
+      "missing": [],
+      "extra": []
+    },
+    {
+      "generation": "baseline",
+      "id": "eval-number",
+      "voice": "anna",
+      "transcript": " The museum welcomed 20 visitors in 2025.",
+      "missing": [],
+      "extra": []
+    },
+    {
+      "generation": "baseline",
+      "id": "eval-conversation",
+      "voice": "anna",
+      "transcript": " Would you like another cup of tea?  Thanks, but I really have to leave.  you",
+      "missing": [],
+      "extra": [
+        "you"
+      ]
+    },
+    {
+      "generation": "baseline",
+      "id": "eval-chunks",
+      "voice": "alba",
+      "transcript": " On Saturday, the family took a train to the coast. They walked along the beach and watched the boats  returning to the harbor. At noon, they found a small cafe beside an old stone bridge. After lunch,  they visited the lighthouse and climbed the narrow stairs. By evening, everyone was tired and ready  ready to travel home.",
+      "missing": [],
+      "extra": [
+        "ready"
+      ]
+    },
+    {
+      "generation": "target",
+      "id": "eval-number",
+      "voice": "alba",
+      "transcript": " The museum welcomed 20 visitors in 2025.",
+      "missing": [],
+      "extra": []
+    },
+    {
+      "generation": "target",
+      "id": "eval-number",
+      "voice": "anna",
+      "transcript": " The museum welcomed 20 visitors in 2025.",
+      "missing": [],
+      "extra": []
+    },
+    {
+      "generation": "target",
+      "id": "eval-chunks",
+      "voice": "alba",
+      "transcript": " On Saturday, the family took a train to the coast.  They walked along the beach and watched the boats returning to the harbor.  At noon, they found a small cafe beside an old stone bridge.  After lunch, they visited the lighthouse and climbed the narrow stairs.  By evening, everyone was tired and ready to travel home.  phone.  7",
+      "missing": [],
+      "extra": [
+        "phone.",
+        "7"
+      ]
+    }
+  ],
+  "policy": "Exact lexical/numeric/orthographic matching frozen. Both source numeric cases fully match ASR in old/new. Baseline Alba multi-chunk has a repeated ready; existing minimum-edit tie-breaking supplies the fixed match, and the other occurrence is reported as repetition without new source events. Unrequested suffix you/phone/7 remains extra. No boundaries invented, no holdouts dropped or normalizer changes. Repetition and suffix acoustic truth remain uncertain pending human listening."
+}

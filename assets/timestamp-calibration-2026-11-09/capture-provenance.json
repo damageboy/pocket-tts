@@ -1,0 +1,467 @@
+{
+  "asr_manifest": {
+    "files": {
+      "config.json": "f3bc3821e9fc76a27bae538e11ae5b677dcdd352b4600429ce7951d398569aeb",
+      "model.bin": "2a166925539a16005f14ff328359f9b9adb9dc4fb631bb3b227526862e93e2ef",
+      "tokenizer.json": "929c5252409436dce1b38a75d1abbcb5e132d170d8e324e4e04ed915fa2d22df",
+      "vocabulary.txt": "ff77588746d3a2595d32ab5b69ffd7b95ce2441ac57533cb66fc3eb575a115cf"
+    },
+    "repo": "Systran/faster-whisper-base.en",
+    "revision": "3d3d5dee26484f91867d81cb899cfcf72b96be6c"
+  },
+  "bundles": {
+    "baseline/english": {
+      "assets": {
+        "tokenizer": {
+          "path": "/private/tmp/pocket-tts-reference-assets/models--kyutai--pocket-tts-without-voice-cloning/snapshots/00eac05ed3d16bdc3f6b5d598874019c34a89214/languages/english/tokenizer.json",
+          "revision": "00eac05ed3d16bdc3f6b5d598874019c34a89214",
+          "sha256": "f498428e1eafee50492f7be13dc9bfafcfc12e508cd0eb1b01c92ecd5d8c6687",
+          "uri": "hf://kyutai/pocket-tts-without-voice-cloning/languages/english/tokenizer.json@00eac05ed3d16bdc3f6b5d598874019c34a89214"
+        },
+        "weights": {
+          "path": "/private/tmp/pocket-tts-reference-assets/models--kyutai--pocket-tts-without-voice-cloning/snapshots/e7205b6ee50e654a5ea19f0e9df2b0813b05e921/languages/english/model.safetensors",
+          "revision": "e7205b6ee50e654a5ea19f0e9df2b0813b05e921",
+          "sha256": "916ccd2686e9311cb40054893a3c4284393d658825ffc714a276f3e9b152344f",
+          "uri": "hf://kyutai/pocket-tts-without-voice-cloning/languages/english/model.safetensors@e7205b6ee50e654a5ea19f0e9df2b0813b05e921"
+        }
+      },
+      "config_sha256": "bb61697161cdc85e327a663e0046837e612955791dc024321f8dbd7d1b06b159",
+      "identity": {
+        "config_sha256": "1b06236b6a4405a4010c731da097745c23d3d5c543e712e31086b6293fd1124a",
+        "heads": [
+          [
+            3,
+            8
+          ],
+          [
+            2,
+            0
+          ]
+        ],
+        "modes": [
+          "independent_segments"
+        ],
+        "preset_revision": "4e1e0a3e611c51c0b4ed8174fc10f32a54644303",
+        "protocol_sha256": "49b7c2187a81e5eaad2c5f01bdc6bb76b74686e1354a44e256f9e5480c50359d",
+        "tokenizer": "hf://kyutai/pocket-tts-without-voice-cloning/languages/english/tokenizer.json@00eac05ed3d16bdc3f6b5d598874019c34a89214",
+        "weights": "hf://kyutai/pocket-tts-without-voice-cloning/languages/english/model.safetensors@e7205b6ee50e654a5ea19f0e9df2b0813b05e921"
+      },
+      "voices": [
+        {
+          "name": "alba",
+          "path": "/private/tmp/pocket-tts-reference-assets/models--kyutai--pocket-tts-without-voice-cloning/snapshots/4e1e0a3e611c51c0b4ed8174fc10f32a54644303/languages/english/embeddings/alba.safetensors",
+          "revision": "4e1e0a3e611c51c0b4ed8174fc10f32a54644303",
+          "sha256": "d291428b416d6c36a1de7835e51dbe1e334b75e5af512bb18dd23a1047fe8f3b",
+          "uri": "hf://kyutai/pocket-tts-without-voice-cloning/languages/english/embeddings/alba.safetensors@4e1e0a3e611c51c0b4ed8174fc10f32a54644303"
+        },
+        {
+          "generation": "baseline",
+          "model": "english",
+          "name": "anna",
+          "path": "/private/tmp/pocket-tts-reference-assets/models--kyutai--pocket-tts-without-voice-cloning/snapshots/4e1e0a3e611c51c0b4ed8174fc10f32a54644303/languages/english/embeddings/anna.safetensors",
+          "revision": "4e1e0a3e611c51c0b4ed8174fc10f32a54644303",
+          "sha256": "80b3c36dc29aa1acd09ed522099142c5236789c8c5e87b2a30523175772a531c",
+          "uri": "hf://kyutai/pocket-tts-without-voice-cloning/languages/english/embeddings/anna.safetensors@4e1e0a3e611c51c0b4ed8174fc10f32a54644303",
+          "voice": "anna"
+        }
+      ]
+    },
+    "baseline/english_18m_2026-10": {
+      "assets": {
+        "tokenizer": {
+          "path": "/private/tmp/pocket-tts-reference-assets/models--kyutai--pocket-tts-without-voice-cloning/snapshots/08ffc58775e62aad9409511b9591c9af626270f3/languages/english_18m_2026-10/tokenizer.model",
+          "revision": "08ffc58775e62aad9409511b9591c9af626270f3",
+          "sha256": "d461765ae179566678c93091c5fa6f2984c31bbe990bf1aa62d92c64d91bc3f6",
+          "uri": "hf://kyutai/pocket-tts-without-voice-cloning/languages/english_18m_2026-10/tokenizer.model@08ffc58775e62aad9409511b9591c9af626270f3"
+        },
+        "weights": {
+          "path": "/private/tmp/pocket-tts-reference-assets/models--kyutai--pocket-tts-without-voice-cloning/snapshots/08ffc58775e62aad9409511b9591c9af626270f3/languages/english_18m_2026-10/model.safetensors",
+          "revision": "08ffc58775e62aad9409511b9591c9af626270f3",
+          "sha256": "7b04e5c9f99b2fd08e818635306141aa1754af67d53e1da16f7dcbcd6f48e532",
+          "uri": "hf://kyutai/pocket-tts-without-voice-cloning/languages/english_18m_2026-10/model.safetensors@08ffc58775e62aad9409511b9591c9af626270f3"
+        }
+      },
+      "config_sha256": "9c91f1c773df69a9aafcaaeb578cb3318ba22ec97e5dcd1e0e33e06466e15b17",
+      "identity": {
+        "config_sha256": "5651291540139021f5a60a1d3f1cf815b0dd756e18e00b61b0914d4c4f82ce09",
+        "heads": [
+          [
+            5,
+            3
+          ]
+        ],
+        "modes": [
+          "independent_segments"
+        ],
+        "preset_revision": "a3055dcb533cf2ec90458008a01e7cef550bae2a",
+        "protocol_sha256": "49b7c2187a81e5eaad2c5f01bdc6bb76b74686e1354a44e256f9e5480c50359d",
+        "tokenizer": "hf://kyutai/pocket-tts-without-voice-cloning/languages/english_18m_2026-10/tokenizer.model@08ffc58775e62aad9409511b9591c9af626270f3",
+        "weights": "hf://kyutai/pocket-tts-without-voice-cloning/languages/english_18m_2026-10/model.safetensors@08ffc58775e62aad9409511b9591c9af626270f3"
+      },
+      "voices": [
+        {
+          "name": "alba",
+          "path": "/private/tmp/pocket-tts-reference-assets/models--kyutai--pocket-tts-without-voice-cloning/snapshots/a3055dcb533cf2ec90458008a01e7cef550bae2a/languages/english_18m_2026-10/embeddings/alba.safetensors",
+          "revision": "a3055dcb533cf2ec90458008a01e7cef550bae2a",
+          "sha256": "87e935203ba6a410acaa4f8c60f530052dfa9bd30242c2766535925dfce6646c",
+          "uri": "hf://kyutai/pocket-tts-without-voice-cloning/languages/english_18m_2026-10/embeddings/alba.safetensors@a3055dcb533cf2ec90458008a01e7cef550bae2a"
+        },
+        {
+          "generation": "baseline",
+          "model": "english_18m_2026-10",
+          "name": "anna",
+          "path": "/private/tmp/pocket-tts-reference-assets/models--kyutai--pocket-tts-without-voice-cloning/snapshots/a3055dcb533cf2ec90458008a01e7cef550bae2a/languages/english_18m_2026-10/embeddings/anna.safetensors",
+          "revision": "a3055dcb533cf2ec90458008a01e7cef550bae2a",
+          "sha256": "80045f7eee5f8d73ff31431c2eb818b6184c741f8b30532afb3c6844b143db3e",
+          "uri": "hf://kyutai/pocket-tts-without-voice-cloning/languages/english_18m_2026-10/embeddings/anna.safetensors@a3055dcb533cf2ec90458008a01e7cef550bae2a",
+          "voice": "anna"
+        }
+      ]
+    },
+    "baseline/english_2m_2026-10": {
+      "assets": {
+        "tokenizer": {
+          "path": "/private/tmp/pocket-tts-reference-assets/models--kyutai--pocket-tts-without-voice-cloning/snapshots/08ffc58775e62aad9409511b9591c9af626270f3/languages/english_2m_2026-10/tokenizer.model",
+          "revision": "08ffc58775e62aad9409511b9591c9af626270f3",
+          "sha256": "d461765ae179566678c93091c5fa6f2984c31bbe990bf1aa62d92c64d91bc3f6",
+          "uri": "hf://kyutai/pocket-tts-without-voice-cloning/languages/english_2m_2026-10/tokenizer.model@08ffc58775e62aad9409511b9591c9af626270f3"
+        },
+        "weights": {
+          "path": "/private/tmp/pocket-tts-reference-assets/models--kyutai--pocket-tts-without-voice-cloning/snapshots/a3055dcb533cf2ec90458008a01e7cef550bae2a/languages/english_2m_2026-10/model.safetensors",
+          "revision": "a3055dcb533cf2ec90458008a01e7cef550bae2a",
+          "sha256": "919455099932278fab2f299ef41a7421a605031cd6db8b19992c318cbdd0729d",
+          "uri": "hf://kyutai/pocket-tts-without-voice-cloning/languages/english_2m_2026-10/model.safetensors@a3055dcb533cf2ec90458008a01e7cef550bae2a"
+        }
+      },
+      "config_sha256": "f57a3509511fa33864329cde219345fbd183764e93cb2f9bf6c200ced6a41725",
+      "identity": {
+        "config_sha256": "9cf2a5e3416fde9abb351dfdf8d4766330ae3fd341f8e46a1229d2ba4ca91c96",
+        "heads": [
+          [
+            5,
+            2
+          ],
+          [
+            5,
+            0
+          ]
+        ],
+        "modes": [
+          "independent_segments"
+        ],
+        "preset_revision": "a3055dcb533cf2ec90458008a01e7cef550bae2a",
+        "protocol_sha256": "49b7c2187a81e5eaad2c5f01bdc6bb76b74686e1354a44e256f9e5480c50359d",
+        "tokenizer": "hf://kyutai/pocket-tts-without-voice-cloning/languages/english_2m_2026-10/tokenizer.model@08ffc58775e62aad9409511b9591c9af626270f3",
+        "weights": "hf://kyutai/pocket-tts-without-voice-cloning/languages/english_2m_2026-10/model.safetensors@a3055dcb533cf2ec90458008a01e7cef550bae2a"
+      },
+      "voices": [
+        {
+          "name": "alba",
+          "path": "/private/tmp/pocket-tts-reference-assets/models--kyutai--pocket-tts-without-voice-cloning/snapshots/a3055dcb533cf2ec90458008a01e7cef550bae2a/languages/english_2m_2026-10/embeddings/alba.safetensors",
+          "revision": "a3055dcb533cf2ec90458008a01e7cef550bae2a",
+          "sha256": "d255da4fe63e9501e19bedb9dddae8788d0ea080515c101e1f3e2ebdf68e3fea",
+          "uri": "hf://kyutai/pocket-tts-without-voice-cloning/languages/english_2m_2026-10/embeddings/alba.safetensors@a3055dcb533cf2ec90458008a01e7cef550bae2a"
+        },
+        {
+          "generation": "baseline",
+          "model": "english_2m_2026-10",
+          "name": "anna",
+          "path": "/private/tmp/pocket-tts-reference-assets/models--kyutai--pocket-tts-without-voice-cloning/snapshots/a3055dcb533cf2ec90458008a01e7cef550bae2a/languages/english_2m_2026-10/embeddings/anna.safetensors",
+          "revision": "a3055dcb533cf2ec90458008a01e7cef550bae2a",
+          "sha256": "59c128680209e3d5c82bbdb1ce3770598560d8d1482f761569439dc585bcb6bb",
+          "uri": "hf://kyutai/pocket-tts-without-voice-cloning/languages/english_2m_2026-10/embeddings/anna.safetensors@a3055dcb533cf2ec90458008a01e7cef550bae2a",
+          "voice": "anna"
+        }
+      ]
+    },
+    "baseline/english_7m_2026-10": {
+      "assets": {
+        "tokenizer": {
+          "path": "/private/tmp/pocket-tts-reference-assets/models--kyutai--pocket-tts-without-voice-cloning/snapshots/08ffc58775e62aad9409511b9591c9af626270f3/languages/english_7m_2026-10/tokenizer.model",
+          "revision": "08ffc58775e62aad9409511b9591c9af626270f3",
+          "sha256": "d461765ae179566678c93091c5fa6f2984c31bbe990bf1aa62d92c64d91bc3f6",
+          "uri": "hf://kyutai/pocket-tts-without-voice-cloning/languages/english_7m_2026-10/tokenizer.model@08ffc58775e62aad9409511b9591c9af626270f3"
+        },
+        "weights": {
+          "path": "/private/tmp/pocket-tts-reference-assets/models--kyutai--pocket-tts-without-voice-cloning/snapshots/08ffc58775e62aad9409511b9591c9af626270f3/languages/english_7m_2026-10/model.safetensors",
+          "revision": "08ffc58775e62aad9409511b9591c9af626270f3",
+          "sha256": "1fa785b8af3ca981d7324341050644d6e53d1cdca4e5f81cf01c063167a26574",
+          "uri": "hf://kyutai/pocket-tts-without-voice-cloning/languages/english_7m_2026-10/model.safetensors@08ffc58775e62aad9409511b9591c9af626270f3"
+        }
+      },
+      "config_sha256": "cbbbad017018d86cd936207f9e33efc0556a32084d4a7bbfd522d5b5feb647a7",
+      "identity": {
+        "config_sha256": "ba080fd803803ab7da63bbab3475a62f76a0dd026ad167eec7be30c2d7dae32b",
+        "heads": [
+          [
+            5,
+            3
+          ],
+          [
+            4,
+            3
+          ]
+        ],
+        "modes": [
+          "independent_segments"
+        ],
+        "preset_revision": "a3055dcb533cf2ec90458008a01e7cef550bae2a",
+        "protocol_sha256": "49b7c2187a81e5eaad2c5f01bdc6bb76b74686e1354a44e256f9e5480c50359d",
+        "tokenizer": "hf://kyutai/pocket-tts-without-voice-cloning/languages/english_7m_2026-10/tokenizer.model@08ffc58775e62aad9409511b9591c9af626270f3",
+        "weights": "hf://kyutai/pocket-tts-without-voice-cloning/languages/english_7m_2026-10/model.safetensors@08ffc58775e62aad9409511b9591c9af626270f3"
+      },
+      "voices": [
+        {
+          "name": "alba",
+          "path": "/private/tmp/pocket-tts-reference-assets/models--kyutai--pocket-tts-without-voice-cloning/snapshots/a3055dcb533cf2ec90458008a01e7cef550bae2a/languages/english_7m_2026-10/embeddings/alba.safetensors",
+          "revision": "a3055dcb533cf2ec90458008a01e7cef550bae2a",
+          "sha256": "8307fe8dbff71c32002a1042ae9c698696d712c8a0c0429c120e56e0c0270bcc",
+          "uri": "hf://kyutai/pocket-tts-without-voice-cloning/languages/english_7m_2026-10/embeddings/alba.safetensors@a3055dcb533cf2ec90458008a01e7cef550bae2a"
+        },
+        {
+          "generation": "baseline",
+          "model": "english_7m_2026-10",
+          "name": "anna",
+          "path": "/private/tmp/pocket-tts-reference-assets/models--kyutai--pocket-tts-without-voice-cloning/snapshots/a3055dcb533cf2ec90458008a01e7cef550bae2a/languages/english_7m_2026-10/embeddings/anna.safetensors",
+          "revision": "a3055dcb533cf2ec90458008a01e7cef550bae2a",
+          "sha256": "2834123280d7de036c9c3414b76732e58c0d10f17ab7e99e1ec63cf334f53317",
+          "uri": "hf://kyutai/pocket-tts-without-voice-cloning/languages/english_7m_2026-10/embeddings/anna.safetensors@a3055dcb533cf2ec90458008a01e7cef550bae2a",
+          "voice": "anna"
+        }
+      ]
+    },
+    "target/english": {
+      "assets": {
+        "tokenizer": {
+          "path": "/private/tmp/pocket-tts-reference-assets/models--kyutai--pocket-tts-without-voice-cloning/snapshots/00eac05ed3d16bdc3f6b5d598874019c34a89214/languages/english/tokenizer.json",
+          "revision": "00eac05ed3d16bdc3f6b5d598874019c34a89214",
+          "sha256": "f498428e1eafee50492f7be13dc9bfafcfc12e508cd0eb1b01c92ecd5d8c6687",
+          "uri": "hf://kyutai/pocket-tts-without-voice-cloning/languages/english/tokenizer.json@00eac05ed3d16bdc3f6b5d598874019c34a89214"
+        },
+        "weights": {
+          "path": "/private/tmp/pocket-tts-reference-assets/models--kyutai--pocket-tts-without-voice-cloning/snapshots/a7056f505a4a8ca72d8b5fb1440071d6f1a35739/languages/english/model.safetensors",
+          "revision": "a7056f505a4a8ca72d8b5fb1440071d6f1a35739",
+          "sha256": "4c56cbd171c63e8a26ea61f5d48b8a0cd8f3c51f4652c0ab9a19bfcced8c931d",
+          "uri": "hf://kyutai/pocket-tts-without-voice-cloning/languages/english/model.safetensors@a7056f505a4a8ca72d8b5fb1440071d6f1a35739"
+        }
+      },
+      "config_sha256": "d9fb4f0e573fe679a35343ff685a3b7bf9d9a438a9d63b3f8bca1d59683dd5fc",
+      "identity": {
+        "config_sha256": "8d0995b68708db77558b1a385df1fca7fd2f3d240da7619f864a9d37a7154af6",
+        "heads": [
+          [
+            3,
+            8
+          ],
+          [
+            2,
+            0
+          ]
+        ],
+        "modes": [
+          "independent_segments"
+        ],
+        "preset_revision": "a7056f505a4a8ca72d8b5fb1440071d6f1a35739",
+        "protocol_sha256": "49b7c2187a81e5eaad2c5f01bdc6bb76b74686e1354a44e256f9e5480c50359d",
+        "tokenizer": "hf://kyutai/pocket-tts-without-voice-cloning/languages/english/tokenizer.json@00eac05ed3d16bdc3f6b5d598874019c34a89214",
+        "weights": "hf://kyutai/pocket-tts-without-voice-cloning/languages/english/model.safetensors@a7056f505a4a8ca72d8b5fb1440071d6f1a35739"
+      },
+      "voices": [
+        {
+          "name": "alba",
+          "path": "/private/tmp/pocket-tts-reference-assets/models--kyutai--pocket-tts-without-voice-cloning/snapshots/a7056f505a4a8ca72d8b5fb1440071d6f1a35739/languages/english/embeddings/alba.safetensors",
+          "revision": "a7056f505a4a8ca72d8b5fb1440071d6f1a35739",
+          "sha256": "5850f417028fb2bf6de31e5e395e56ee7a21ac0e52ef31aebd4a6a2847d72e9c",
+          "uri": "hf://kyutai/pocket-tts-without-voice-cloning/languages/english/embeddings/alba.safetensors@a7056f505a4a8ca72d8b5fb1440071d6f1a35739"
+        },
+        {
+          "generation": "target",
+          "model": "english",
+          "name": "anna",
+          "path": "/private/tmp/pocket-tts-reference-assets/models--kyutai--pocket-tts-without-voice-cloning/snapshots/a7056f505a4a8ca72d8b5fb1440071d6f1a35739/languages/english/embeddings/anna.safetensors",
+          "revision": "a7056f505a4a8ca72d8b5fb1440071d6f1a35739",
+          "sha256": "626a19a37e3cbf5cac1e6893748c3f0dd2081b26b1ce787ae0deb42cb1ddb7f6",
+          "uri": "hf://kyutai/pocket-tts-without-voice-cloning/languages/english/embeddings/anna.safetensors@a7056f505a4a8ca72d8b5fb1440071d6f1a35739",
+          "voice": "anna"
+        }
+      ]
+    },
+    "target/english_18m_2026-10": {
+      "assets": {
+        "tokenizer": {
+          "path": "/private/tmp/pocket-tts-reference-assets/models--kyutai--pocket-tts-without-voice-cloning/snapshots/08ffc58775e62aad9409511b9591c9af626270f3/languages/english_18m_2026-10/tokenizer.model",
+          "revision": "08ffc58775e62aad9409511b9591c9af626270f3",
+          "sha256": "d461765ae179566678c93091c5fa6f2984c31bbe990bf1aa62d92c64d91bc3f6",
+          "uri": "hf://kyutai/pocket-tts-without-voice-cloning/languages/english_18m_2026-10/tokenizer.model@08ffc58775e62aad9409511b9591c9af626270f3"
+        },
+        "weights": {
+          "path": "/private/tmp/pocket-tts-reference-assets/models--kyutai--pocket-tts-without-voice-cloning/snapshots/a7056f505a4a8ca72d8b5fb1440071d6f1a35739/languages/english_18m_2026-10/model.safetensors",
+          "revision": "a7056f505a4a8ca72d8b5fb1440071d6f1a35739",
+          "sha256": "599329dcea2f2a8d17b575e1c6e11b78822453c9073040d55c26faadf4883188",
+          "uri": "hf://kyutai/pocket-tts-without-voice-cloning/languages/english_18m_2026-10/model.safetensors@a7056f505a4a8ca72d8b5fb1440071d6f1a35739"
+        }
+      },
+      "config_sha256": "b64646069035f42458d54bb7562c69c71be9f5e67c4dc8340a5d774ee733fce7",
+      "identity": {
+        "config_sha256": "3ec91f2f298d3fd283b98093d432f236c30523262f74e7e820a60d9625426700",
+        "heads": [
+          [
+            5,
+            3
+          ]
+        ],
+        "modes": [
+          "independent_segments"
+        ],
+        "preset_revision": "a7056f505a4a8ca72d8b5fb1440071d6f1a35739",
+        "protocol_sha256": "49b7c2187a81e5eaad2c5f01bdc6bb76b74686e1354a44e256f9e5480c50359d",
+        "tokenizer": "hf://kyutai/pocket-tts-without-voice-cloning/languages/english_18m_2026-10/tokenizer.model@08ffc58775e62aad9409511b9591c9af626270f3",
+        "weights": "hf://kyutai/pocket-tts-without-voice-cloning/languages/english_18m_2026-10/model.safetensors@a7056f505a4a8ca72d8b5fb1440071d6f1a35739"
+      },
+      "voices": [
+        {
+          "name": "alba",
+          "path": "/private/tmp/pocket-tts-reference-assets/models--kyutai--pocket-tts-without-voice-cloning/snapshots/a7056f505a4a8ca72d8b5fb1440071d6f1a35739/languages/english_18m_2026-10/embeddings/alba.safetensors",
+          "revision": "a7056f505a4a8ca72d8b5fb1440071d6f1a35739",
+          "sha256": "11554cbe9f3d3a3e10722932df9952bb44928e534f7af3200524659166b5627a",
+          "uri": "hf://kyutai/pocket-tts-without-voice-cloning/languages/english_18m_2026-10/embeddings/alba.safetensors@a7056f505a4a8ca72d8b5fb1440071d6f1a35739"
+        },
+        {
+          "generation": "target",
+          "model": "english_18m_2026-10",
+          "name": "anna",
+          "path": "/private/tmp/pocket-tts-reference-assets/models--kyutai--pocket-tts-without-voice-cloning/snapshots/a7056f505a4a8ca72d8b5fb1440071d6f1a35739/languages/english_18m_2026-10/embeddings/anna.safetensors",
+          "revision": "a7056f505a4a8ca72d8b5fb1440071d6f1a35739",
+          "sha256": "d4c2f3660183b58d6fedd428ad59ba07ff4ea9f26a16295aba127e281c746450",
+          "uri": "hf://kyutai/pocket-tts-without-voice-cloning/languages/english_18m_2026-10/embeddings/anna.safetensors@a7056f505a4a8ca72d8b5fb1440071d6f1a35739",
+          "voice": "anna"
+        }
+      ]
+    },
+    "target/english_2m_2026-10": {
+      "assets": {
+        "tokenizer": {
+          "path": "/private/tmp/pocket-tts-reference-assets/models--kyutai--pocket-tts-without-voice-cloning/snapshots/08ffc58775e62aad9409511b9591c9af626270f3/languages/english_2m_2026-10/tokenizer.model",
+          "revision": "08ffc58775e62aad9409511b9591c9af626270f3",
+          "sha256": "d461765ae179566678c93091c5fa6f2984c31bbe990bf1aa62d92c64d91bc3f6",
+          "uri": "hf://kyutai/pocket-tts-without-voice-cloning/languages/english_2m_2026-10/tokenizer.model@08ffc58775e62aad9409511b9591c9af626270f3"
+        },
+        "weights": {
+          "path": "/private/tmp/pocket-tts-reference-assets/models--kyutai--pocket-tts-without-voice-cloning/snapshots/a7056f505a4a8ca72d8b5fb1440071d6f1a35739/languages/english_2m_2026-10/model.safetensors",
+          "revision": "a7056f505a4a8ca72d8b5fb1440071d6f1a35739",
+          "sha256": "74b5fcec78f552580d54010029275beff2e2767596b780dcd3bc022beacfcc8c",
+          "uri": "hf://kyutai/pocket-tts-without-voice-cloning/languages/english_2m_2026-10/model.safetensors@a7056f505a4a8ca72d8b5fb1440071d6f1a35739"
+        }
+      },
+      "config_sha256": "5825e0515176713a64d1631617ec304c743971ea37ac4d3b139283350f4b0ac8",
+      "identity": {
+        "config_sha256": "e1594ade946a6b8c30b11d1a171e6332ab8c8a76c36d01ae9694bb1027253146",
+        "heads": [
+          [
+            5,
+            2
+          ],
+          [
+            5,
+            0
+          ]
+        ],
+        "modes": [
+          "independent_segments"
+        ],
+        "preset_revision": "a7056f505a4a8ca72d8b5fb1440071d6f1a35739",
+        "protocol_sha256": "49b7c2187a81e5eaad2c5f01bdc6bb76b74686e1354a44e256f9e5480c50359d",
+        "tokenizer": "hf://kyutai/pocket-tts-without-voice-cloning/languages/english_2m_2026-10/tokenizer.model@08ffc58775e62aad9409511b9591c9af626270f3",
+        "weights": "hf://kyutai/pocket-tts-without-voice-cloning/languages/english_2m_2026-10/model.safetensors@a7056f505a4a8ca72d8b5fb1440071d6f1a35739"
+      },
+      "voices": [
+        {
+          "name": "alba",
+          "path": "/private/tmp/pocket-tts-reference-assets/models--kyutai--pocket-tts-without-voice-cloning/snapshots/a7056f505a4a8ca72d8b5fb1440071d6f1a35739/languages/english_2m_2026-10/embeddings/alba.safetensors",
+          "revision": "a7056f505a4a8ca72d8b5fb1440071d6f1a35739",
+          "sha256": "3f561ebfdb6670e89b441bcdf35b3e86e25a620dfaa4eaf5637a63833d367b7c",
+          "uri": "hf://kyutai/pocket-tts-without-voice-cloning/languages/english_2m_2026-10/embeddings/alba.safetensors@a7056f505a4a8ca72d8b5fb1440071d6f1a35739"
+        },
+        {
+          "generation": "target",
+          "model": "english_2m_2026-10",
+          "name": "anna",
+          "path": "/private/tmp/pocket-tts-reference-assets/models--kyutai--pocket-tts-without-voice-cloning/snapshots/a7056f505a4a8ca72d8b5fb1440071d6f1a35739/languages/english_2m_2026-10/embeddings/anna.safetensors",
+          "revision": "a7056f505a4a8ca72d8b5fb1440071d6f1a35739",
+          "sha256": "577dbc7a2fee7f62d776476505525bb50ad2f26c8f9dde98bcaaa92a1e33c540",
+          "uri": "hf://kyutai/pocket-tts-without-voice-cloning/languages/english_2m_2026-10/embeddings/anna.safetensors@a7056f505a4a8ca72d8b5fb1440071d6f1a35739",
+          "voice": "anna"
+        }
+      ]
+    },
+    "target/english_7m_2026-10": {
+      "assets": {
+        "tokenizer": {
+          "path": "/private/tmp/pocket-tts-reference-assets/models--kyutai--pocket-tts-without-voice-cloning/snapshots/08ffc58775e62aad9409511b9591c9af626270f3/languages/english_7m_2026-10/tokenizer.model",
+          "revision": "08ffc58775e62aad9409511b9591c9af626270f3",
+          "sha256": "d461765ae179566678c93091c5fa6f2984c31bbe990bf1aa62d92c64d91bc3f6",
+          "uri": "hf://kyutai/pocket-tts-without-voice-cloning/languages/english_7m_2026-10/tokenizer.model@08ffc58775e62aad9409511b9591c9af626270f3"
+        },
+        "weights": {
+          "path": "/private/tmp/pocket-tts-reference-assets/models--kyutai--pocket-tts-without-voice-cloning/snapshots/a7056f505a4a8ca72d8b5fb1440071d6f1a35739/languages/english_7m_2026-10/model.safetensors",
+          "revision": "a7056f505a4a8ca72d8b5fb1440071d6f1a35739",
+          "sha256": "aea704a2989277c1a700abc16fb1442cb6baa2fa9ad32251ef7a5f91e4eb7d58",
+          "uri": "hf://kyutai/pocket-tts-without-voice-cloning/languages/english_7m_2026-10/model.safetensors@a7056f505a4a8ca72d8b5fb1440071d6f1a35739"
+        }
+      },
+      "config_sha256": "5b3e37105d52277e38c38e8fe09f9fa916c5e742c8a921009bf27a80a39e8e86",
+      "identity": {
+        "config_sha256": "b47f072c108ac81ea1d10bb681181aefce7900c02c1dd53d722744d01afe8ca7",
+        "heads": [
+          [
+            5,
+            3
+          ],
+          [
+            4,
+            3
+          ]
+        ],
+        "modes": [
+          "independent_segments"
+        ],
+        "preset_revision": "a7056f505a4a8ca72d8b5fb1440071d6f1a35739",
+        "protocol_sha256": "49b7c2187a81e5eaad2c5f01bdc6bb76b74686e1354a44e256f9e5480c50359d",
+        "tokenizer": "hf://kyutai/pocket-tts-without-voice-cloning/languages/english_7m_2026-10/tokenizer.model@08ffc58775e62aad9409511b9591c9af626270f3",
+        "weights": "hf://kyutai/pocket-tts-without-voice-cloning/languages/english_7m_2026-10/model.safetensors@a7056f505a4a8ca72d8b5fb1440071d6f1a35739"
+      },
+      "voices": [
+        {
+          "name": "alba",
+          "path": "/private/tmp/pocket-tts-reference-assets/models--kyutai--pocket-tts-without-voice-cloning/snapshots/a7056f505a4a8ca72d8b5fb1440071d6f1a35739/languages/english_7m_2026-10/embeddings/alba.safetensors",
+          "revision": "a7056f505a4a8ca72d8b5fb1440071d6f1a35739",
+          "sha256": "fef27ae7a34132e88c81090316145671362da386ab4e5c6b048e5d16800d746b",
+          "uri": "hf://kyutai/pocket-tts-without-voice-cloning/languages/english_7m_2026-10/embeddings/alba.safetensors@a7056f505a4a8ca72d8b5fb1440071d6f1a35739"
+        },
+        {
+          "generation": "target",
+          "model": "english_7m_2026-10",
+          "name": "anna",
+          "path": "/private/tmp/pocket-tts-reference-assets/models--kyutai--pocket-tts-without-voice-cloning/snapshots/a7056f505a4a8ca72d8b5fb1440071d6f1a35739/languages/english_7m_2026-10/embeddings/anna.safetensors",
+          "revision": "a7056f505a4a8ca72d8b5fb1440071d6f1a35739",
+          "sha256": "7d76ede64b5a1bd0f72523f1c621e86019bb43fa92101a076ed90d6aa1a980ba",
+          "uri": "hf://kyutai/pocket-tts-without-voice-cloning/languages/english_7m_2026-10/embeddings/anna.safetensors@a7056f505a4a8ca72d8b5fb1440071d6f1a35739",
+          "voice": "anna"
+        }
+      ]
+    }
+  },
+  "cargo_lock_sha256": "db9ea82cf9cd86c1eabdfdb7b9657f7a345077b5209d8e1f00449e845a4da021",
+  "protocol_sha256": "49b7c2187a81e5eaad2c5f01bdc6bb76b74686e1354a44e256f9e5480c50359d",
+  "source_files": {
+    "crates/pocket-tts/src/audio.rs": "c196e66ede7e92d1fdc651361b09f38942fdb7420fdd9835896743e75787df6f",
+    "crates/pocket-tts/src/models/flow_lm.rs": "d46254059b8218676933c4a67be9363273dbb361548628efeac21ac26e43adae",
+    "crates/pocket-tts/src/text.rs": "a006d715331c7c7d2c0fe298787dff2841104196a46ae03b9ed4ebc689551b26",
+    "crates/pocket-tts/src/timestamp_calibration.rs": "04274f4c28bca6d69cbf107a9312e96887c66fa694494d18b7ff46ea98fad884",
+    "crates/pocket-tts/src/timestamps/alignment.rs": "43edace379173922e67346e3e87c2432ca50e0c878aff3d296a01e15dc67294f",
+    "crates/pocket-tts/src/timestamps/attention.rs": "1a55214896e52277995b6447a041071ce9546ab5bdca4da927ae036564662a59",
+    "crates/pocket-tts/src/timestamps/text.rs": "f84d5471737bbb0b223a05b6989e3f9c5eea9bfb06d1608610584fcb5ee1ee70",
+    "crates/pocket-tts/src/tts_model.rs": "c45cf7d098f07c7be52f5c48c21820386a4873a62904695f937998f1179b0f68",
+    "scripts/calibrate_timestamp_heads.py": "fdd8c40063edf24f27b2789fbfad4c3f0c21a6954f0e36ef98308cd58b3fd948"
+  }
+}

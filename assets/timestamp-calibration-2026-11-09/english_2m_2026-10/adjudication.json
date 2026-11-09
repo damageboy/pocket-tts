@@ -1,0 +1,11 @@
+{
+  "model": "english_2m_2026-10",
+  "phase": "before numerical old/new comparison",
+  "inspected": [
+    "numeric both voices old/new",
+    "all lexical mismatch transcripts",
+    "target eval-prose Anna final frame gates"
+  ],
+  "policy": "Frozen exact lexical/number/orthographic matching only. No substitutions for cafe/calf/cave, Oh/All, no/know, or malformed numeric speech. These are unresolved speech-versus-ASR ambiguities, retained as unmatched with full-source denominator. Extra people and7 are reported without invented source events; ASR confidence/frame inspection cannot certify spoken acceptance. No holdout removal or metric change.",
+  "status": "lexical matching adjudicated; acoustic truth remains uncertain; no audible acceptance"
+}

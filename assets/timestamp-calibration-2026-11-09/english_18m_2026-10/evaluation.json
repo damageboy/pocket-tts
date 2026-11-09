@@ -1,0 +1,1415 @@
+{
+  "ambiguity_adjudication": "Reviewed before comparison; see adjudication.json. Unresolved cases retain frozen exact matching and full denominator.",
+  "audible_acceptance": "pending user testing",
+  "baseline": {
+    "asr_extra": 7,
+    "asr_missing": 7,
+    "asr_repeated": 0,
+    "cases": [
+      {
+        "asr_extra": [],
+        "asr_missing": [],
+        "asr_repeated": [],
+        "id": "eval-prose",
+        "matched_words": 14,
+        "source_words": 14,
+        "timestamp_missing": 0,
+        "voice": "alba",
+        "zero_duration_events": []
+      },
+      {
+        "asr_extra": [
+          "simple."
+        ],
+        "asr_missing": [],
+        "asr_repeated": [],
+        "id": "eval-prose",
+        "matched_words": 14,
+        "source_words": 14,
+        "timestamp_missing": 0,
+        "voice": "anna",
+        "zero_duration_events": []
+      },
+      {
+        "asr_extra": [
+          "and"
+        ],
+        "asr_missing": [
+          "20",
+          "in",
+          "2025"
+        ],
+        "asr_repeated": [],
+        "id": "eval-number",
+        "matched_words": 4,
+        "source_words": 7,
+        "timestamp_missing": 0,
+        "voice": "alba",
+        "zero_duration_events": []
+      },
+      {
+        "asr_extra": [
+          "a",
+          "crime"
+        ],
+        "asr_missing": [
+          "20",
+          "2025"
+        ],
+        "asr_repeated": [],
+        "id": "eval-number",
+        "matched_words": 5,
+        "source_words": 7,
+        "timestamp_missing": 0,
+        "voice": "anna",
+        "zero_duration_events": []
+      },
+      {
+        "asr_extra": [],
+        "asr_missing": [],
+        "asr_repeated": [],
+        "id": "eval-punctuation",
+        "matched_words": 11,
+        "source_words": 11,
+        "timestamp_missing": 0,
+        "voice": "alba",
+        "zero_duration_events": []
+      },
+      {
+        "asr_extra": [],
+        "asr_missing": [],
+        "asr_repeated": [],
+        "id": "eval-punctuation",
+        "matched_words": 11,
+        "source_words": 11,
+        "timestamp_missing": 0,
+        "voice": "anna",
+        "zero_duration_events": []
+      },
+      {
+        "asr_extra": [],
+        "asr_missing": [],
+        "asr_repeated": [],
+        "id": "eval-repeat",
+        "matched_words": 12,
+        "source_words": 12,
+        "timestamp_missing": 0,
+        "voice": "alba",
+        "zero_duration_events": []
+      },
+      {
+        "asr_extra": [],
+        "asr_missing": [],
+        "asr_repeated": [],
+        "id": "eval-repeat",
+        "matched_words": 12,
+        "source_words": 12,
+        "timestamp_missing": 0,
+        "voice": "anna",
+        "zero_duration_events": []
+      },
+      {
+        "asr_extra": [],
+        "asr_missing": [],
+        "asr_repeated": [],
+        "id": "eval-conversation",
+        "matched_words": 14,
+        "source_words": 14,
+        "timestamp_missing": 0,
+        "voice": "alba",
+        "zero_duration_events": []
+      },
+      {
+        "asr_extra": [
+          "you"
+        ],
+        "asr_missing": [],
+        "asr_repeated": [],
+        "id": "eval-conversation",
+        "matched_words": 14,
+        "source_words": 14,
+        "timestamp_missing": 0,
+        "voice": "anna",
+        "zero_duration_events": []
+      },
+      {
+        "asr_extra": [
+          "caf\u00e9"
+        ],
+        "asr_missing": [
+          "cafe"
+        ],
+        "asr_repeated": [],
+        "id": "eval-chunks",
+        "matched_words": 55,
+        "source_words": 56,
+        "timestamp_missing": 0,
+        "voice": "alba",
+        "zero_duration_events": []
+      },
+      {
+        "asr_extra": [
+          "caf\u00e9"
+        ],
+        "asr_missing": [
+          "cafe"
+        ],
+        "asr_repeated": [],
+        "id": "eval-chunks",
+        "matched_words": 55,
+        "source_words": 56,
+        "timestamp_missing": 0,
+        "voice": "anna",
+        "zero_duration_events": []
+      }
+    ],
+    "coverage": 0.9692982456140351,
+    "end_mean": 0.060723981900452514,
+    "end_p95": 0.22000000000000064,
+    "matched_words": 221,
+    "pooled_mean": 0.08280542986425342,
+    "pooled_p95": 0.3200000000000003,
+    "source_words": 228,
+    "start_mean": 0.10488687782805432,
+    "start_p95": 0.5799999999999996,
+    "timestamp_missing": 0
+  },
+  "decision": "retain historical bundle; target replacement deferred",
+  "diagnostics": {
+    "baseline_common": {
+      "end_mean": 0.060723981900452514,
+      "end_p95": 0.22000000000000064,
+      "matched_words": 221,
+      "pooled_mean": 0.08280542986425342,
+      "pooled_p95": 0.3200000000000003,
+      "start_mean": 0.10488687782805432,
+      "start_p95": 0.5799999999999996
+    },
+    "per_case": [
+      {
+        "baseline": {
+          "end_mean": 0.06,
+          "end_p95": 0.14799999999999994,
+          "matched_words": 14,
+          "pooled_mean": 0.05857142857142857,
+          "pooled_p95": 0.146,
+          "start_mean": 0.05714285714285716,
+          "start_p95": 0.13400000000000006
+        },
+        "baseline_common": {
+          "end_mean": 0.06,
+          "end_p95": 0.14799999999999994,
+          "matched_words": 14,
+          "pooled_mean": 0.05857142857142857,
+          "pooled_p95": 0.146,
+          "start_mean": 0.05714285714285716,
+          "start_p95": 0.13400000000000006
+        },
+        "common_source_indices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13
+        ],
+        "id": "eval-prose",
+        "target": {
+          "end_mean": 0.05857142857142859,
+          "end_p95": 0.1889999999999999,
+          "matched_words": 14,
+          "pooled_mean": 0.054285714285714305,
+          "pooled_p95": 0.15299999999999997,
+          "start_mean": 0.05000000000000003,
+          "start_p95": 0.147
+        },
+        "target_common": {
+          "end_mean": 0.05857142857142859,
+          "end_p95": 0.1889999999999999,
+          "matched_words": 14,
+          "pooled_mean": 0.054285714285714305,
+          "pooled_p95": 0.15299999999999997,
+          "start_mean": 0.05000000000000003,
+          "start_p95": 0.147
+        },
+        "voice": "alba"
+      },
+      {
+        "baseline": {
+          "end_mean": 0.07142857142857142,
+          "end_p95": 0.2070000000000001,
+          "matched_words": 14,
+          "pooled_mean": 0.06999999999999998,
+          "pooled_p95": 0.21300000000000002,
+          "start_mean": 0.06857142857142855,
+          "start_p95": 0.18099999999999997
+        },
+        "baseline_common": {
+          "end_mean": 0.07142857142857142,
+          "end_p95": 0.2070000000000001,
+          "matched_words": 14,
+          "pooled_mean": 0.06999999999999998,
+          "pooled_p95": 0.21300000000000002,
+          "start_mean": 0.06857142857142855,
+          "start_p95": 0.18099999999999997
+        },
+        "common_source_indices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13
+        ],
+        "id": "eval-prose",
+        "target": {
+          "end_mean": 0.06714285714285718,
+          "end_p95": 0.18700000000000017,
+          "matched_words": 14,
+          "pooled_mean": 0.06571428571428574,
+          "pooled_p95": 0.18000000000000016,
+          "start_mean": 0.06428571428571431,
+          "start_p95": 0.16700000000000004
+        },
+        "target_common": {
+          "end_mean": 0.06714285714285718,
+          "end_p95": 0.18700000000000017,
+          "matched_words": 14,
+          "pooled_mean": 0.06571428571428574,
+          "pooled_p95": 0.18000000000000016,
+          "start_mean": 0.06428571428571431,
+          "start_p95": 0.16700000000000004
+        },
+        "voice": "anna"
+      },
+      {
+        "baseline": {
+          "end_mean": 0.19000000000000006,
+          "end_p95": 0.44299999999999995,
+          "matched_words": 4,
+          "pooled_mean": 0.20500000000000004,
+          "pooled_p95": 0.604,
+          "start_mean": 0.22,
+          "start_p95": 0.5759999999999998
+        },
+        "baseline_common": {
+          "end_mean": 0.19000000000000006,
+          "end_p95": 0.44299999999999995,
+          "matched_words": 4,
+          "pooled_mean": 0.20500000000000004,
+          "pooled_p95": 0.604,
+          "start_mean": 0.22,
+          "start_p95": 0.5759999999999998
+        },
+        "common_source_indices": [
+          0,
+          1,
+          2,
+          4
+        ],
+        "id": "eval-number",
+        "target": {
+          "end_mean": 0.15428571428571433,
+          "end_p95": 0.4399999999999997,
+          "matched_words": 7,
+          "pooled_mean": 0.12571428571428575,
+          "pooled_p95": 0.2999999999999999,
+          "start_mean": 0.09714285714285717,
+          "start_p95": 0.15999999999999998
+        },
+        "target_common": {
+          "end_mean": 0.1,
+          "end_p95": 0.15399999999999991,
+          "matched_words": 4,
+          "pooled_mean": 0.10000000000000002,
+          "pooled_p95": 0.15999999999999998,
+          "start_mean": 0.10000000000000003,
+          "start_p95": 0.154
+        },
+        "voice": "alba"
+      },
+      {
+        "baseline": {
+          "end_mean": 0.09999999999999998,
+          "end_p95": 0.20399999999999996,
+          "matched_words": 5,
+          "pooled_mean": 0.148,
+          "pooled_p95": 0.31899999999999984,
+          "start_mean": 0.196,
+          "start_p95": 0.364
+        },
+        "baseline_common": {
+          "end_mean": 0.09999999999999998,
+          "end_p95": 0.20399999999999996,
+          "matched_words": 5,
+          "pooled_mean": 0.148,
+          "pooled_p95": 0.31899999999999984,
+          "start_mean": 0.196,
+          "start_p95": 0.364
+        },
+        "common_source_indices": [
+          0,
+          1,
+          2,
+          4,
+          5
+        ],
+        "id": "eval-number",
+        "target": {
+          "end_mean": 0.1371428571428571,
+          "end_p95": 0.25399999999999984,
+          "matched_words": 7,
+          "pooled_mean": 0.12428571428571425,
+          "pooled_p95": 0.24699999999999991,
+          "start_mean": 0.1114285714285714,
+          "start_p95": 0.21599999999999986
+        },
+        "target_common": {
+          "end_mean": 0.11199999999999995,
+          "end_p95": 0.22399999999999992,
+          "matched_words": 5,
+          "pooled_mean": 0.10999999999999996,
+          "pooled_p95": 0.20399999999999976,
+          "start_mean": 0.10799999999999996,
+          "start_p95": 0.15599999999999978
+        },
+        "voice": "anna"
+      },
+      {
+        "baseline": {
+          "end_mean": 0.047272727272727195,
+          "end_p95": 0.17999999999999983,
+          "matched_words": 11,
+          "pooled_mean": 0.09999999999999995,
+          "pooled_p95": 0.4739999999999999,
+          "start_mean": 0.1527272727272727,
+          "start_p95": 0.5599999999999998
+        },
+        "baseline_common": {
+          "end_mean": 0.047272727272727195,
+          "end_p95": 0.17999999999999983,
+          "matched_words": 11,
+          "pooled_mean": 0.09999999999999995,
+          "pooled_p95": 0.4739999999999999,
+          "start_mean": 0.1527272727272727,
+          "start_p95": 0.5599999999999998
+        },
+        "common_source_indices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10
+        ],
+        "id": "eval-punctuation",
+        "target": {
+          "end_mean": 0.058181818181818175,
+          "end_p95": 0.21999999999999986,
+          "matched_words": 11,
+          "pooled_mean": 0.10636363636363635,
+          "pooled_p95": 0.5109999999999999,
+          "start_mean": 0.15454545454545454,
+          "start_p95": 0.5799999999999998
+        },
+        "target_common": {
+          "end_mean": 0.058181818181818175,
+          "end_p95": 0.21999999999999986,
+          "matched_words": 11,
+          "pooled_mean": 0.10636363636363635,
+          "pooled_p95": 0.5109999999999999,
+          "start_mean": 0.15454545454545454,
+          "start_p95": 0.5799999999999998
+        },
+        "voice": "alba"
+      },
+      {
+        "baseline": {
+          "end_mean": 0.07636363636363637,
+          "end_p95": 0.19999999999999996,
+          "matched_words": 11,
+          "pooled_mean": 0.18090909090909088,
+          "pooled_p95": 0.6559999999999999,
+          "start_mean": 0.2854545454545454,
+          "start_p95": 0.8599999999999999
+        },
+        "baseline_common": {
+          "end_mean": 0.07636363636363637,
+          "end_p95": 0.19999999999999996,
+          "matched_words": 11,
+          "pooled_mean": 0.18090909090909088,
+          "pooled_p95": 0.6559999999999999,
+          "start_mean": 0.2854545454545454,
+          "start_p95": 0.8599999999999999
+        },
+        "common_source_indices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10
+        ],
+        "id": "eval-punctuation",
+        "target": {
+          "end_mean": 0.08181818181818187,
+          "end_p95": 0.2300000000000001,
+          "matched_words": 11,
+          "pooled_mean": 0.13090909090909097,
+          "pooled_p95": 0.39499999999999996,
+          "start_mean": 0.18000000000000005,
+          "start_p95": 0.6000000000000001
+        },
+        "target_common": {
+          "end_mean": 0.08181818181818187,
+          "end_p95": 0.2300000000000001,
+          "matched_words": 11,
+          "pooled_mean": 0.13090909090909097,
+          "pooled_p95": 0.39499999999999996,
+          "start_mean": 0.18000000000000005,
+          "start_p95": 0.6000000000000001
+        },
+        "voice": "anna"
+      },
+      {
+        "baseline": {
+          "end_mean": 0.053333333333333365,
+          "end_p95": 0.205,
+          "matched_words": 12,
+          "pooled_mean": 0.0716666666666667,
+          "pooled_p95": 0.31099999999999994,
+          "start_mean": 0.09000000000000004,
+          "start_p95": 0.3560000000000001
+        },
+        "baseline_common": {
+          "end_mean": 0.053333333333333365,
+          "end_p95": 0.205,
+          "matched_words": 12,
+          "pooled_mean": 0.0716666666666667,
+          "pooled_p95": 0.31099999999999994,
+          "start_mean": 0.09000000000000004,
+          "start_p95": 0.3560000000000001
+        },
+        "common_source_indices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11
+        ],
+        "id": "eval-repeat",
+        "target": {
+          "end_mean": 0.048333333333333346,
+          "end_p95": 0.16299999999999998,
+          "matched_words": 12,
+          "pooled_mean": 0.06416666666666666,
+          "pooled_p95": 0.24000000000000019,
+          "start_mean": 0.08,
+          "start_p95": 0.3029999999999998
+        },
+        "target_common": {
+          "end_mean": 0.048333333333333346,
+          "end_p95": 0.16299999999999998,
+          "matched_words": 12,
+          "pooled_mean": 0.06416666666666666,
+          "pooled_p95": 0.24000000000000019,
+          "start_mean": 0.08,
+          "start_p95": 0.3029999999999998
+        },
+        "voice": "alba"
+      },
+      {
+        "baseline": {
+          "end_mean": 0.0633333333333334,
+          "end_p95": 0.22700000000000023,
+          "matched_words": 12,
+          "pooled_mean": 0.07750000000000004,
+          "pooled_p95": 0.25100000000000044,
+          "start_mean": 0.09166666666666667,
+          "start_p95": 0.36199999999999977
+        },
+        "baseline_common": {
+          "end_mean": 0.0633333333333334,
+          "end_p95": 0.22700000000000023,
+          "matched_words": 12,
+          "pooled_mean": 0.07750000000000004,
+          "pooled_p95": 0.25100000000000044,
+          "start_mean": 0.09166666666666667,
+          "start_p95": 0.36199999999999977
+        },
+        "common_source_indices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11
+        ],
+        "id": "eval-repeat",
+        "target": {
+          "end_mean": 0.06166666666666664,
+          "end_p95": 0.196,
+          "matched_words": 12,
+          "pooled_mean": 0.07083333333333332,
+          "pooled_p95": 0.22799999999999998,
+          "start_mean": 0.07999999999999997,
+          "start_p95": 0.3039999999999997
+        },
+        "target_common": {
+          "end_mean": 0.06166666666666664,
+          "end_p95": 0.196,
+          "matched_words": 12,
+          "pooled_mean": 0.07083333333333332,
+          "pooled_p95": 0.22799999999999998,
+          "start_mean": 0.07999999999999997,
+          "start_p95": 0.3039999999999997
+        },
+        "voice": "anna"
+      },
+      {
+        "baseline": {
+          "end_mean": 0.04285714285714285,
+          "end_p95": 0.1439999999999999,
+          "matched_words": 14,
+          "pooled_mean": 0.06428571428571427,
+          "pooled_p95": 0.2789999999999998,
+          "start_mean": 0.0857142857142857,
+          "start_p95": 0.30299999999999994
+        },
+        "baseline_common": {
+          "end_mean": 0.04285714285714285,
+          "end_p95": 0.1439999999999999,
+          "matched_words": 14,
+          "pooled_mean": 0.06428571428571427,
+          "pooled_p95": 0.2789999999999998,
+          "start_mean": 0.0857142857142857,
+          "start_p95": 0.30299999999999994
+        },
+        "common_source_indices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13
+        ],
+        "id": "eval-conversation",
+        "target": {
+          "end_mean": 0.047142857142857104,
+          "end_p95": 0.17599999999999993,
+          "matched_words": 14,
+          "pooled_mean": 0.05999999999999996,
+          "pooled_p95": 0.2659999999999998,
+          "start_mean": 0.07285714285714283,
+          "start_p95": 0.3169999999999999
+        },
+        "target_common": {
+          "end_mean": 0.047142857142857104,
+          "end_p95": 0.17599999999999993,
+          "matched_words": 14,
+          "pooled_mean": 0.05999999999999996,
+          "pooled_p95": 0.2659999999999998,
+          "start_mean": 0.07285714285714283,
+          "start_p95": 0.3169999999999999
+        },
+        "voice": "alba"
+      },
+      {
+        "baseline": {
+          "end_mean": 0.04428571428571431,
+          "end_p95": 0.16399999999999992,
+          "matched_words": 14,
+          "pooled_mean": 0.07785714285714286,
+          "pooled_p95": 0.26399999999999996,
+          "start_mean": 0.11142857142857142,
+          "start_p95": 0.48899999999999966
+        },
+        "baseline_common": {
+          "end_mean": 0.04428571428571431,
+          "end_p95": 0.16399999999999992,
+          "matched_words": 14,
+          "pooled_mean": 0.07785714285714286,
+          "pooled_p95": 0.26399999999999996,
+          "start_mean": 0.11142857142857142,
+          "start_p95": 0.48899999999999966
+        },
+        "common_source_indices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13
+        ],
+        "id": "eval-conversation",
+        "target": {
+          "end_mean": 0.05571428571428573,
+          "end_p95": 0.18199999999999997,
+          "matched_words": 14,
+          "pooled_mean": 0.08857142857142859,
+          "pooled_p95": 0.2249999999999997,
+          "start_mean": 0.12142857142857144,
+          "start_p95": 0.47499999999999964
+        },
+        "target_common": {
+          "end_mean": 0.05571428571428573,
+          "end_p95": 0.18199999999999997,
+          "matched_words": 14,
+          "pooled_mean": 0.08857142857142859,
+          "pooled_p95": 0.2249999999999997,
+          "start_mean": 0.12142857142857144,
+          "start_p95": 0.47499999999999964
+        },
+        "voice": "anna"
+      },
+      {
+        "baseline": {
+          "end_mean": 0.04981818181818182,
+          "end_p95": 0.1440000000000005,
+          "matched_words": 55,
+          "pooled_mean": 0.06763636363636365,
+          "pooled_p95": 0.22199999999999906,
+          "start_mean": 0.08545454545454548,
+          "start_p95": 0.3659999999999989
+        },
+        "baseline_common": {
+          "end_mean": 0.04981818181818182,
+          "end_p95": 0.1440000000000005,
+          "matched_words": 55,
+          "pooled_mean": 0.06763636363636365,
+          "pooled_p95": 0.22199999999999906,
+          "start_mean": 0.08545454545454548,
+          "start_p95": 0.3659999999999989
+        },
+        "common_source_indices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24,
+          25,
+          26,
+          27,
+          28,
+          30,
+          31,
+          32,
+          33,
+          34,
+          35,
+          36,
+          37,
+          38,
+          39,
+          40,
+          41,
+          42,
+          43,
+          44,
+          45,
+          46,
+          47,
+          48,
+          49,
+          50,
+          51,
+          52,
+          53,
+          54,
+          55
+        ],
+        "id": "eval-chunks",
+        "target": {
+          "end_mean": 0.05785714285714294,
+          "end_p95": 0.15999999999999948,
+          "matched_words": 56,
+          "pooled_mean": 0.07214285714285724,
+          "pooled_p95": 0.18000000000000005,
+          "start_mean": 0.08642857142857152,
+          "start_p95": 0.3299999999999999
+        },
+        "target_common": {
+          "end_mean": 0.056363636363636435,
+          "end_p95": 0.15999999999999953,
+          "matched_words": 55,
+          "pooled_mean": 0.0718181818181819,
+          "pooled_p95": 0.18000000000000005,
+          "start_mean": 0.08727272727272738,
+          "start_p95": 0.34799999999999887
+        },
+        "voice": "alba"
+      },
+      {
+        "baseline": {
+          "end_mean": 0.06545454545454554,
+          "end_p95": 0.23200000000000034,
+          "matched_words": 55,
+          "pooled_mean": 0.07909090909090918,
+          "pooled_p95": 0.26,
+          "start_mean": 0.09272727272727281,
+          "start_p95": 0.3859999999999989
+        },
+        "baseline_common": {
+          "end_mean": 0.06545454545454554,
+          "end_p95": 0.23200000000000034,
+          "matched_words": 55,
+          "pooled_mean": 0.07909090909090918,
+          "pooled_p95": 0.26,
+          "start_mean": 0.09272727272727281,
+          "start_p95": 0.3859999999999989
+        },
+        "common_source_indices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24,
+          25,
+          26,
+          27,
+          28,
+          30,
+          31,
+          32,
+          33,
+          34,
+          35,
+          36,
+          37,
+          38,
+          39,
+          40,
+          41,
+          42,
+          43,
+          44,
+          45,
+          46,
+          47,
+          48,
+          49,
+          50,
+          51,
+          52,
+          53,
+          54,
+          55
+        ],
+        "id": "eval-chunks",
+        "target": {
+          "end_mean": 0.050357142857142816,
+          "end_p95": 0.17999999999999972,
+          "matched_words": 56,
+          "pooled_mean": 0.06999999999999997,
+          "pooled_p95": 0.24899999999999897,
+          "start_mean": 0.08964285714285712,
+          "start_p95": 0.39500000000000024
+        },
+        "target_common": {
+          "end_mean": 0.04909090909090903,
+          "end_p95": 0.18399999999999941,
+          "matched_words": 55,
+          "pooled_mean": 0.06999999999999995,
+          "pooled_p95": 0.2509999999999993,
+          "start_mean": 0.09090909090909086,
+          "start_p95": 0.42199999999999876
+        },
+        "voice": "anna"
+      }
+    ],
+    "target_common": {
+      "end_mean": 0.058009049773755664,
+      "end_p95": 0.23999999999999844,
+      "matched_words": 221,
+      "pooled_mean": 0.07574660633484163,
+      "pooled_p95": 0.2600000000000001,
+      "start_mean": 0.09348416289592762,
+      "start_p95": 0.45999999999999996
+    },
+    "use": "diagnostic only; does not override frozen promotion gate",
+    "worst_boundaries": [
+      {
+        "asr_end": 2.84,
+        "asr_start": 2.78,
+        "bundle": "baseline",
+        "end": 2.88,
+        "end_error": 0.040000000000000036,
+        "id": "eval-conversation",
+        "index": 7,
+        "start": 1.68,
+        "start_error": 1.0999999999999999,
+        "trace_path": "/private/tmp/pocket-tts-calibration-defaults/baseline/english_18m_2026-10/evaluation/eval-conversation-anna.json",
+        "voice": "anna",
+        "wav_path": "/private/tmp/pocket-tts-calibration-defaults/baseline/english_18m_2026-10/evaluation/eval-conversation-anna.wav",
+        "word": "Thanks"
+      },
+      {
+        "asr_end": 2.9,
+        "asr_start": 2.9,
+        "bundle": "target",
+        "end": 3.04,
+        "end_error": 0.14000000000000012,
+        "id": "eval-conversation",
+        "index": 7,
+        "start": 1.84,
+        "start_error": 1.0599999999999998,
+        "trace_path": "/private/tmp/pocket-tts-calibration-defaults/target/english_18m_2026-10/evaluation/eval-conversation-anna.json",
+        "voice": "anna",
+        "wav_path": "/private/tmp/pocket-tts-calibration-defaults/target/english_18m_2026-10/evaluation/eval-conversation-anna.wav",
+        "word": "Thanks"
+      },
+      {
+        "asr_end": 3.3,
+        "asr_start": 3.3,
+        "bundle": "baseline",
+        "end": 3.44,
+        "end_error": 0.14000000000000012,
+        "id": "eval-punctuation",
+        "index": 5,
+        "start": 2.24,
+        "start_error": 1.0599999999999996,
+        "trace_path": "/private/tmp/pocket-tts-calibration-defaults/baseline/english_18m_2026-10/evaluation/eval-punctuation-anna.json",
+        "voice": "anna",
+        "wav_path": "/private/tmp/pocket-tts-calibration-defaults/baseline/english_18m_2026-10/evaluation/eval-punctuation-anna.wav",
+        "word": "Perhaps"
+      },
+      {
+        "asr_end": 3.46,
+        "asr_start": 3.44,
+        "bundle": "target",
+        "end": 3.44,
+        "end_error": 0.020000000000000018,
+        "id": "eval-chunks",
+        "index": 10,
+        "start": 2.56,
+        "start_error": 0.8799999999999999,
+        "trace_path": "/private/tmp/pocket-tts-calibration-defaults/target/english_18m_2026-10/evaluation/eval-chunks-anna.json",
+        "voice": "anna",
+        "wav_path": "/private/tmp/pocket-tts-calibration-defaults/target/english_18m_2026-10/evaluation/eval-chunks-anna.wav",
+        "word": "They"
+      },
+      {
+        "asr_end": 11.18,
+        "asr_start": 11.04,
+        "bundle": "target",
+        "end": 11.2,
+        "end_error": 0.019999999999999574,
+        "id": "eval-chunks",
+        "index": 35,
+        "start": 10.16,
+        "start_error": 0.879999999999999,
+        "trace_path": "/private/tmp/pocket-tts-calibration-defaults/target/english_18m_2026-10/evaluation/eval-chunks-anna.json",
+        "voice": "anna",
+        "wav_path": "/private/tmp/pocket-tts-calibration-defaults/target/english_18m_2026-10/evaluation/eval-chunks-anna.wav",
+        "word": "After"
+      },
+      {
+        "asr_end": 14.16,
+        "asr_start": 14.06,
+        "bundle": "baseline",
+        "end": 14.16,
+        "end_error": 0.0,
+        "id": "eval-chunks",
+        "index": 46,
+        "start": 13.2,
+        "start_error": 0.8600000000000012,
+        "trace_path": "/private/tmp/pocket-tts-calibration-defaults/baseline/english_18m_2026-10/evaluation/eval-chunks-anna.json",
+        "voice": "anna",
+        "wav_path": "/private/tmp/pocket-tts-calibration-defaults/baseline/english_18m_2026-10/evaluation/eval-chunks-anna.wav",
+        "word": "By"
+      },
+      {
+        "asr_end": 12.7,
+        "asr_start": 12.58,
+        "bundle": "baseline",
+        "end": 12.72,
+        "end_error": 0.02000000000000135,
+        "id": "eval-chunks",
+        "index": 46,
+        "start": 11.76,
+        "start_error": 0.8200000000000003,
+        "trace_path": "/private/tmp/pocket-tts-calibration-defaults/baseline/english_18m_2026-10/evaluation/eval-chunks-alba.json",
+        "voice": "alba",
+        "wav_path": "/private/tmp/pocket-tts-calibration-defaults/baseline/english_18m_2026-10/evaluation/eval-chunks-alba.wav",
+        "word": "By"
+      },
+      {
+        "asr_end": 10.56,
+        "asr_start": 10.42,
+        "bundle": "baseline",
+        "end": 10.56,
+        "end_error": 0.0,
+        "id": "eval-chunks",
+        "index": 35,
+        "start": 9.6,
+        "start_error": 0.8200000000000003,
+        "trace_path": "/private/tmp/pocket-tts-calibration-defaults/baseline/english_18m_2026-10/evaluation/eval-chunks-anna.json",
+        "voice": "anna",
+        "wav_path": "/private/tmp/pocket-tts-calibration-defaults/baseline/english_18m_2026-10/evaluation/eval-chunks-anna.wav",
+        "word": "After"
+      },
+      {
+        "asr_end": 14.76,
+        "asr_start": 14.72,
+        "bundle": "target",
+        "end": 14.8,
+        "end_error": 0.040000000000000924,
+        "id": "eval-chunks",
+        "index": 46,
+        "start": 13.92,
+        "start_error": 0.8000000000000007,
+        "trace_path": "/private/tmp/pocket-tts-calibration-defaults/target/english_18m_2026-10/evaluation/eval-chunks-anna.json",
+        "voice": "anna",
+        "wav_path": "/private/tmp/pocket-tts-calibration-defaults/target/english_18m_2026-10/evaluation/eval-chunks-anna.wav",
+        "word": "By"
+      },
+      {
+        "asr_end": 2.56,
+        "asr_start": 2.56,
+        "bundle": "target",
+        "end": 2.72,
+        "end_error": 0.16000000000000014,
+        "id": "eval-punctuation",
+        "index": 5,
+        "start": 1.76,
+        "start_error": 0.8,
+        "trace_path": "/private/tmp/pocket-tts-calibration-defaults/target/english_18m_2026-10/evaluation/eval-punctuation-anna.json",
+        "voice": "anna",
+        "wav_path": "/private/tmp/pocket-tts-calibration-defaults/target/english_18m_2026-10/evaluation/eval-punctuation-anna.wav",
+        "word": "Perhaps"
+      },
+      {
+        "asr_end": 2.86,
+        "asr_start": 2.84,
+        "bundle": "baseline",
+        "end": 2.88,
+        "end_error": 0.020000000000000018,
+        "id": "eval-chunks",
+        "index": 10,
+        "start": 2.08,
+        "start_error": 0.7599999999999998,
+        "trace_path": "/private/tmp/pocket-tts-calibration-defaults/baseline/english_18m_2026-10/evaluation/eval-chunks-alba.json",
+        "voice": "alba",
+        "wav_path": "/private/tmp/pocket-tts-calibration-defaults/baseline/english_18m_2026-10/evaluation/eval-chunks-alba.wav",
+        "word": "They"
+      },
+      {
+        "asr_end": 3.1,
+        "asr_start": 3.08,
+        "bundle": "baseline",
+        "end": 3.12,
+        "end_error": 0.020000000000000018,
+        "id": "eval-chunks",
+        "index": 10,
+        "start": 2.4,
+        "start_error": 0.6800000000000002,
+        "trace_path": "/private/tmp/pocket-tts-calibration-defaults/baseline/english_18m_2026-10/evaluation/eval-chunks-anna.json",
+        "voice": "anna",
+        "wav_path": "/private/tmp/pocket-tts-calibration-defaults/baseline/english_18m_2026-10/evaluation/eval-chunks-anna.wav",
+        "word": "They"
+      },
+      {
+        "asr_end": 9.44,
+        "asr_start": 9.3,
+        "bundle": "baseline",
+        "end": 9.44,
+        "end_error": 0.0,
+        "id": "eval-chunks",
+        "index": 35,
+        "start": 8.64,
+        "start_error": 0.6600000000000001,
+        "trace_path": "/private/tmp/pocket-tts-calibration-defaults/baseline/english_18m_2026-10/evaluation/eval-chunks-alba.json",
+        "voice": "alba",
+        "wav_path": "/private/tmp/pocket-tts-calibration-defaults/baseline/english_18m_2026-10/evaluation/eval-chunks-alba.wav",
+        "word": "After"
+      },
+      {
+        "asr_end": 1.48,
+        "asr_start": 0.86,
+        "bundle": "baseline",
+        "end": 1.6,
+        "end_error": 0.1200000000000001,
+        "id": "eval-number",
+        "index": 4,
+        "start": 1.52,
+        "start_error": 0.66,
+        "trace_path": "/private/tmp/pocket-tts-calibration-defaults/baseline/english_18m_2026-10/evaluation/eval-number-alba.json",
+        "voice": "alba",
+        "wav_path": "/private/tmp/pocket-tts-calibration-defaults/baseline/english_18m_2026-10/evaluation/eval-number-alba.wav",
+        "word": "visitors"
+      },
+      {
+        "asr_end": 1.66,
+        "asr_start": 1.54,
+        "bundle": "baseline",
+        "end": 1.6,
+        "end_error": 0.05999999999999983,
+        "id": "eval-punctuation",
+        "index": 2,
+        "start": 0.88,
+        "start_error": 0.66,
+        "trace_path": "/private/tmp/pocket-tts-calibration-defaults/baseline/english_18m_2026-10/evaluation/eval-punctuation-anna.json",
+        "voice": "anna",
+        "wav_path": "/private/tmp/pocket-tts-calibration-defaults/baseline/english_18m_2026-10/evaluation/eval-punctuation-anna.wav",
+        "word": "Is"
+      },
+      {
+        "asr_end": 2.98,
+        "asr_start": 2.88,
+        "bundle": "baseline",
+        "end": 2.96,
+        "end_error": 0.020000000000000018,
+        "id": "eval-punctuation",
+        "index": 6,
+        "start": 2.24,
+        "start_error": 0.6399999999999997,
+        "trace_path": "/private/tmp/pocket-tts-calibration-defaults/baseline/english_18m_2026-10/evaluation/eval-punctuation-alba.json",
+        "voice": "alba",
+        "wav_path": "/private/tmp/pocket-tts-calibration-defaults/baseline/english_18m_2026-10/evaluation/eval-punctuation-alba.wav",
+        "word": "let"
+      },
+      {
+        "asr_end": 2.98,
+        "asr_start": 2.88,
+        "bundle": "target",
+        "end": 2.96,
+        "end_error": 0.020000000000000018,
+        "id": "eval-punctuation",
+        "index": 6,
+        "start": 2.24,
+        "start_error": 0.6399999999999997,
+        "trace_path": "/private/tmp/pocket-tts-calibration-defaults/target/english_18m_2026-10/evaluation/eval-punctuation-alba.json",
+        "voice": "alba",
+        "wav_path": "/private/tmp/pocket-tts-calibration-defaults/target/english_18m_2026-10/evaluation/eval-punctuation-alba.wav",
+        "word": "let"
+      },
+      {
+        "asr_end": 12.22,
+        "asr_start": 12.14,
+        "bundle": "target",
+        "end": 12.24,
+        "end_error": 0.019999999999999574,
+        "id": "eval-chunks",
+        "index": 46,
+        "start": 11.52,
+        "start_error": 0.620000000000001,
+        "trace_path": "/private/tmp/pocket-tts-calibration-defaults/target/english_18m_2026-10/evaluation/eval-chunks-alba.json",
+        "voice": "alba",
+        "wav_path": "/private/tmp/pocket-tts-calibration-defaults/target/english_18m_2026-10/evaluation/eval-chunks-alba.wav",
+        "word": "By"
+      },
+      {
+        "asr_end": 2.66,
+        "asr_start": 2.62,
+        "bundle": "target",
+        "end": 2.64,
+        "end_error": 0.020000000000000018,
+        "id": "eval-chunks",
+        "index": 10,
+        "start": 2.0,
+        "start_error": 0.6200000000000001,
+        "trace_path": "/private/tmp/pocket-tts-calibration-defaults/target/english_18m_2026-10/evaluation/eval-chunks-alba.json",
+        "voice": "alba",
+        "wav_path": "/private/tmp/pocket-tts-calibration-defaults/target/english_18m_2026-10/evaluation/eval-chunks-alba.wav",
+        "word": "They"
+      },
+      {
+        "asr_end": 5.8,
+        "asr_start": 5.58,
+        "bundle": "baseline",
+        "end": 6.4,
+        "end_error": 0.6000000000000005,
+        "id": "eval-chunks",
+        "index": 22,
+        "start": 5.6,
+        "start_error": 0.019999999999999574,
+        "trace_path": "/private/tmp/pocket-tts-calibration-defaults/baseline/english_18m_2026-10/evaluation/eval-chunks-anna.json",
+        "voice": "anna",
+        "wav_path": "/private/tmp/pocket-tts-calibration-defaults/baseline/english_18m_2026-10/evaluation/eval-chunks-anna.wav",
+        "word": "harbor"
+      }
+    ]
+  },
+  "gate": {
+    "failures": [
+      "end_mean",
+      "end_p95"
+    ],
+    "passed": false
+  },
+  "heads": [
+    [
+      5,
+      3
+    ]
+  ],
+  "identity": {
+    "config_sha256": "3ec91f2f298d3fd283b98093d432f236c30523262f74e7e820a60d9625426700",
+    "heads": [
+      [
+        5,
+        3
+      ]
+    ],
+    "modes": [
+      "independent_segments"
+    ],
+    "preset_revision": "a7056f505a4a8ca72d8b5fb1440071d6f1a35739",
+    "protocol_sha256": "49b7c2187a81e5eaad2c5f01bdc6bb76b74686e1354a44e256f9e5480c50359d",
+    "tokenizer": "hf://kyutai/pocket-tts-without-voice-cloning/languages/english_18m_2026-10/tokenizer.model@08ffc58775e62aad9409511b9591c9af626270f3",
+    "weights": "hf://kyutai/pocket-tts-without-voice-cloning/languages/english_18m_2026-10/model.safetensors@a7056f505a4a8ca72d8b5fb1440071d6f1a35739"
+  },
+  "model": "english_18m_2026-10",
+  "promoted": false,
+  "protocol_sha256": "49b7c2187a81e5eaad2c5f01bdc6bb76b74686e1354a44e256f9e5480c50359d",
+  "selection_sha256": "3328f7d453b453059541b12e9cfaab7f3afa23cc378bef0598dd1ef48706e9f3",
+  "target": {
+    "asr_extra": 3,
+    "asr_missing": 0,
+    "asr_repeated": 0,
+    "cases": [
+      {
+        "asr_extra": [],
+        "asr_missing": [],
+        "asr_repeated": [],
+        "id": "eval-prose",
+        "matched_words": 14,
+        "source_words": 14,
+        "timestamp_missing": 0,
+        "voice": "alba",
+        "zero_duration_events": []
+      },
+      {
+        "asr_extra": [],
+        "asr_missing": [],
+        "asr_repeated": [],
+        "id": "eval-prose",
+        "matched_words": 14,
+        "source_words": 14,
+        "timestamp_missing": 0,
+        "voice": "anna",
+        "zero_duration_events": []
+      },
+      {
+        "asr_extra": [],
+        "asr_missing": [],
+        "asr_repeated": [],
+        "id": "eval-number",
+        "matched_words": 7,
+        "source_words": 7,
+        "timestamp_missing": 0,
+        "voice": "alba",
+        "zero_duration_events": []
+      },
+      {
+        "asr_extra": [],
+        "asr_missing": [],
+        "asr_repeated": [],
+        "id": "eval-number",
+        "matched_words": 7,
+        "source_words": 7,
+        "timestamp_missing": 0,
+        "voice": "anna",
+        "zero_duration_events": []
+      },
+      {
+        "asr_extra": [],
+        "asr_missing": [],
+        "asr_repeated": [],
+        "id": "eval-punctuation",
+        "matched_words": 11,
+        "source_words": 11,
+        "timestamp_missing": 0,
+        "voice": "alba",
+        "zero_duration_events": []
+      },
+      {
+        "asr_extra": [
+          "school.",
+          "7"
+        ],
+        "asr_missing": [],
+        "asr_repeated": [],
+        "id": "eval-punctuation",
+        "matched_words": 11,
+        "source_words": 11,
+        "timestamp_missing": 0,
+        "voice": "anna",
+        "zero_duration_events": []
+      },
+      {
+        "asr_extra": [],
+        "asr_missing": [],
+        "asr_repeated": [],
+        "id": "eval-repeat",
+        "matched_words": 12,
+        "source_words": 12,
+        "timestamp_missing": 0,
+        "voice": "alba",
+        "zero_duration_events": []
+      },
+      {
+        "asr_extra": [],
+        "asr_missing": [],
+        "asr_repeated": [],
+        "id": "eval-repeat",
+        "matched_words": 12,
+        "source_words": 12,
+        "timestamp_missing": 0,
+        "voice": "anna",
+        "zero_duration_events": []
+      },
+      {
+        "asr_extra": [],
+        "asr_missing": [],
+        "asr_repeated": [],
+        "id": "eval-conversation",
+        "matched_words": 14,
+        "source_words": 14,
+        "timestamp_missing": 0,
+        "voice": "alba",
+        "zero_duration_events": []
+      },
+      {
+        "asr_extra": [
+          "you"
+        ],
+        "asr_missing": [],
+        "asr_repeated": [],
+        "id": "eval-conversation",
+        "matched_words": 14,
+        "source_words": 14,
+        "timestamp_missing": 0,
+        "voice": "anna",
+        "zero_duration_events": []
+      },
+      {
+        "asr_extra": [],
+        "asr_missing": [],
+        "asr_repeated": [],
+        "id": "eval-chunks",
+        "matched_words": 56,
+        "source_words": 56,
+        "timestamp_missing": 0,
+        "voice": "alba",
+        "zero_duration_events": []
+      },
+      {
+        "asr_extra": [],
+        "asr_missing": [],
+        "asr_repeated": [],
+        "id": "eval-chunks",
+        "matched_words": 56,
+        "source_words": 56,
+        "timestamp_missing": 0,
+        "voice": "anna",
+        "zero_duration_events": []
+      }
+    ],
+    "coverage": 1.0,
+    "end_mean": 0.062105263157894754,
+    "end_p95": 0.2399999999999999,
+    "matched_words": 228,
+    "pooled_mean": 0.07763157894736844,
+    "pooled_p95": 0.2600000000000001,
+    "source_words": 228,
+    "start_mean": 0.09315789473684213,
+    "start_p95": 0.4389999999999986,
+    "timestamp_missing": 0
+  }
+}

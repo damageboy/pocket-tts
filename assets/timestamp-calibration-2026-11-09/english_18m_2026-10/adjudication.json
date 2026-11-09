@@ -1,0 +1,117 @@
+{
+  "model": "english_18m_2026-10",
+  "phase": "before numerical old/new comparison",
+  "policy": "Frozen exact lexical, numerical and two orthographic equivalences retained. Malformed numeric text, the/to, and unexpected suffix words remain unmatched; no invented boundaries. Cafe/caf\u00e9 is an orthographic ASR artifact but was not in the frozen equivalence list, so remains unmatched in official metrics (no post-heldout normalization extension). Common-word diagnostics separately remove population differences without overriding the gate. Full source-word denominator preserved.",
+  "reviewed_cases": [
+    {
+      "generation": "baseline",
+      "id": "eval-prose",
+      "voice": "anna",
+      "transcript": " A gentle breeze moved the curtains as Daniel placed the book on the table.  simple.",
+      "missing": [],
+      "extra": [
+        "simple."
+      ]
+    },
+    {
+      "generation": "baseline",
+      "id": "eval-number",
+      "voice": "alba",
+      "transcript": " the museum welcomed visitors and",
+      "missing": [
+        "20",
+        "in",
+        "2025"
+      ],
+      "extra": [
+        "and"
+      ]
+    },
+    {
+      "generation": "baseline",
+      "id": "eval-number",
+      "voice": "anna",
+      "transcript": " The museum welcomed visitors in a crime",
+      "missing": [
+        "20",
+        "2025"
+      ],
+      "extra": [
+        "a",
+        "crime"
+      ]
+    },
+    {
+      "generation": "baseline",
+      "id": "eval-conversation",
+      "voice": "anna",
+      "transcript": " Would you like another cup of tea?  Thanks, but I really have to leave.  you",
+      "missing": [],
+      "extra": [
+        "you"
+      ]
+    },
+    {
+      "generation": "baseline",
+      "id": "eval-chunks",
+      "voice": "alba",
+      "transcript": " On Saturday the family took a train to the coast.  They walked along the beach and watched the boats returning to the harbor.  At noon they found a small caf\u00e9 beside an old stone bridge.  After lunch they visited the lighthouse and climbed the narrow stairs.  By evening everyone was tired and ready to travel home.",
+      "missing": [
+        "cafe"
+      ],
+      "extra": [
+        "caf\u00e9"
+      ]
+    },
+    {
+      "generation": "baseline",
+      "id": "eval-chunks",
+      "voice": "anna",
+      "transcript": " On Saturday the family took a train to the coast.  They walked along the beach and watched the boats returning to the harbour.  At noon they found a small caf\u00e9 beside an old stone bridge.  After lunch they visited the lighthouse and climbed the narrow stairs.  By evening everyone was tired and ready to travel home.",
+      "missing": [
+        "cafe"
+      ],
+      "extra": [
+        "caf\u00e9"
+      ]
+    },
+    {
+      "generation": "target",
+      "id": "eval-number",
+      "voice": "alba",
+      "transcript": " The museum welcomed 20 visitors in 2025.",
+      "missing": [],
+      "extra": []
+    },
+    {
+      "generation": "target",
+      "id": "eval-number",
+      "voice": "anna",
+      "transcript": " The museum welcomed 20 visitors in 2025.",
+      "missing": [],
+      "extra": []
+    },
+    {
+      "generation": "target",
+      "id": "eval-punctuation",
+      "voice": "anna",
+      "transcript": " Oh no, is that yours? Perhaps, let us check the label.  school.  7",
+      "missing": [],
+      "extra": [
+        "school.",
+        "7"
+      ]
+    },
+    {
+      "generation": "target",
+      "id": "eval-conversation",
+      "voice": "anna",
+      "transcript": " Would you like another cup of tea?  Thanks, but I really have to leave.  you",
+      "missing": [],
+      "extra": [
+        "you"
+      ]
+    }
+  ],
+  "acoustic_status": "uncertain ASR boundaries; audible acceptance pending"
+}

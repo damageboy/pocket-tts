@@ -64,8 +64,8 @@
       }
     },
     "replace_characters": {
-      "‘": "'",
-      "’": "'"
+      "\u2018": "'",
+      "\u2019": "'"
     },
     "weights_path": "hf://kyutai/pocket-tts/languages/english/model.safetensors@db04f0e653473e5c7333c69686ac92b7460b0c1d",
     "weights_path_without_voice_cloning": "hf://kyutai/pocket-tts-without-voice-cloning/languages/english/model.safetensors@a7056f505a4a8ca72d8b5fb1440071d6f1a35739"
@@ -89,9 +89,11 @@
     "config.yaml": "8d0995b68708db77558b1a385df1fca7fd2f3d240da7619f864a9d37a7154af6",
     "model.safetensors": "a950aca079a500d2e396880188129a8559093a7c1de8fe08c6a927f1ee5fc683",
     "prompt.safetensors": "121693266b222ac00964f6b3291e9b0d2e863f3272b1d784f4b531c2cc331cc8",
+    "rust-config.yaml": "e67e6b4a4dd72b2d80bc2c620f448a92ebb21d26935adee29a8b40a7d2a3880f",
     "text.json": "ea342e8c623eccace36c385c7599857daabce274413cde8990c6a8cec5a18fb2"
   },
   "fixed_noise": "sin(arange(ldim)*0.13 + step)*sqrt(0.3)",
+  "fixture_config_path": "rust-config.yaml",
   "fixture_sha256": "a950aca079a500d2e396880188129a8559093a7c1de8fe08c6a927f1ee5fc683",
   "has_voice_cloning": false,
   "language": "english",
@@ -124,8 +126,8 @@
     "pad_with_spaces_for_short_inputs": false,
     "remove_semicolons": false,
     "replace_characters": {
-      "‘": "'",
-      "’": "'"
+      "\u2018": "'",
+      "\u2019": "'"
     }
   },
   "packages": {
@@ -340,6 +342,29 @@
     "voice.transformer.layers.5.self_attn.pad"
   ],
   "text": "The price is 3.14 euros, not twelve.",
+  "timestamp_calibration": {
+    "evidence": "assets/timestamp-calibration-2026-11-09/english/evaluation.json",
+    "gate": {
+      "failures": [
+        "start_p95",
+        "pooled_p95"
+      ],
+      "passed": false
+    },
+    "heads": [
+      [
+        3,
+        8
+      ],
+      [
+        3,
+        14
+      ]
+    ],
+    "protocol_sha256": "49b7c2187a81e5eaad2c5f01bdc6bb76b74686e1354a44e256f9e5480c50359d",
+    "status": "deferred: heldout gate failed",
+    "supported_validation_mode": "independent_segments; continuation deferred to Task5"
+  },
   "token_ids": [
     364,
     1694,

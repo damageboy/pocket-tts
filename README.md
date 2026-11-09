@@ -46,7 +46,10 @@ Their default EOS threshold is −1 instead of −4; explicit overrides still wo
 Smaller size alone does not establish real-time performance on mobile hardware.
 
 Configs pin weights and JSON or SentencePiece tokenizers; stock voice states have a separate
-pinned revision. These states contain weight-specific attention caches: do not
+pinned `preset_voice_revision` in each YAML, consumed by both native and browser
+loaders. Unchanged timestamp checkpoints retain their historical preset revision;
+upstream's regenerated states are deferred until separately validated. These
+states contain weight-specific attention caches: do not
 mix them with custom weights. Native loading falls back to public preset-only
 weights when cloning weights cannot be downloaded. WAV cloning then returns an
 error; use a preset or obtain access to the gated cloning weights. Browser
@@ -54,8 +57,12 @@ automatic downloads use the public bundle. Raw-byte/manual loaders cannot infer
 weight provenance; callers must set `has_voice_cloning` correctly.
 
 The existing `--lsd-decode-steps` flag remains an alias for
-`--sampler-decode-steps`; the config chooses LSD or flow matching. Unreleased
-October weights, end-on-pause preprocessing and drifting are **not** included.
+`--sampler-decode-steps`; the config chooses LSD, flow matching, drifting or
+pointwise sampling. The pinned November source also supplies `english_2026-10`,
+`english_2026-09_2`, `english_drifting_26-09`, and the three October small
+`_refl_2026-10` reward-tuned variants. These six added configs are audio-only;
+timestamp support is never inferred from matching layer/head dimensions.
+End-on-pause preprocessing and the fresh-decoder onset fade are included.
 See the [resync plan and validation record](docs/superpowers/plans/2026-10-05-upstream-v3-resync.md)
 for reproducible Python comparisons and remaining acceptance limits.
 
@@ -206,18 +213,29 @@ highlighting to the demo UI or change the HTTP audio-stream format.
   without `timestamp_heads`. Custom selections must be calibrated for the actual
   weights, not just chosen to fit the layer/head dimensions.
 
-The small-model heads were selected independently for each pinned checkpoint:
-18M `(5, 3)`, 7M `(5, 3), (4, 3)`, and 2M `(5, 2), (5, 0)` (zero-based
-layer/query-head indices, not KV-head indices). Calibration captured text-only
-attention during upstream synthesis at temperature 0.3, mapped it to words,
-and applied the streaming aligner's voiced-frame and monotonic-transition rules.
-Candidate single heads and pairs were ranked against faster-whisper `base.en`
-word starts on two utterances with Alba and Anna, then checked on two different
-utterances with both voices. Held-out mean absolute start-time differences were
-82 ms, 101 ms and 86 ms respectively, with no missing aligned words among the
-ASR-matched words. This is a small calibration set and an ASR comparison, not
-human-labelled ground truth or an accuracy guarantee. Runtime timestamps still
-come from attention and PCM alone; Whisper is not a runtime dependency.
+The current small-model selections are 18M `(5, 3)`, 7M `(5, 3)`, and
+2M `(5, 2), (5, 0)` (zero-based layer/query-head indices). The November 9
+update promotes only 7M's new weights and matching presets. On the frozen
+six-text held-out corpus with Alba and Anna, its matched coverage improved
+from 220/228 to 227/228 words; mean absolute start/end differences from ASR
+improved from 109.8/71.7 ms to 95.2/67.5 ms. All six boundary-error gates passed.
+
+English/default, 18M, and 2M retain their historical weights, presets and heads:
+English failed the start/pooled tail-error gates, 18M failed the end-error gates,
+and 2M failed every boundary-error gate. Target text/runtime fixes still apply.
+Unchanged-weight timestamp bundles also retain their historical preset states;
+updating those states needs separate validation. Six newly listed English
+variants remain audio-only.
+
+[Calibration protocol, identities, complete metrics and reproduction commands](assets/timestamp-calibration-2026-11-09/README.md)
+include the deferred candidates. Calibration uses default temperature 0.3 and
+one sampler step, deterministic test-only seeds, six disjoint selection texts,
+and emitted PCM. Historical README figures (82/101/86 ms for the old small
+models) measured starts only on a different small corpus and are not comparable
+full-boundary results. ASR times are approximate; human listening acceptance
+remains pending. Runtime timestamps use attention and PCM alone; Whisper is
+not a runtime dependency. This calibration covers independent segments;
+continuation validation is separate.
 
 ### Model catalog consumer contract (schema version 1)
 
