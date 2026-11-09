@@ -112,16 +112,24 @@ pub(super) fn run(
 ) -> Result<GenerationTimings> {
     let rate = model.sample_rate as u32;
     let mut batches: Box<dyn Iterator<Item = Result<TimestampBatch>> + '_> = if args.no_highlight {
-        Box::new(model.generate_stream_long(text, voice).map(|chunk| {
-            Ok(TimestampBatch {
-                audio: chunk?.flatten_all()?.to_vec1::<f32>()?,
-                chunks_merged: 1,
-                ..Default::default()
-            })
-        }))
+        Box::new(
+            model
+                .generate_stream_long_with_options(text, voice, args.generation_options())
+                .map(|chunk| {
+                    Ok(TimestampBatch {
+                        audio: chunk?.flatten_all()?.to_vec1::<f32>()?,
+                        chunks_merged: 1,
+                        ..Default::default()
+                    })
+                }),
+        )
     } else {
         let mut stream = model
-            .generate_audio_with_timestamps_stream(text, voice)
+            .generate_audio_with_timestamps_stream_with_options(
+                text,
+                voice,
+                args.generation_options(),
+            )
             .context(
                 "Word tracking unavailable; use --play --no-highlight for audio-only playback",
             )?;

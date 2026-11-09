@@ -74,6 +74,7 @@ export default function App() {
 	const { buildVersion } = useMemo(getBootstrapConfig, []);
 	const [text, setText] = useState("It's small enough to fit in your pocket.");
 	const [selectedLanguage, setSelectedLanguage] = useState("english");
+	const [continuation, setContinuation] = useState(false);
 	const [isReinitializing, setIsReinitializing] = useState(false);
 	const [isPreparingVoice, setIsPreparingVoice] = useState(false);
 	const [selectedVoice, setSelectedVoice] = useState<string | null>("alba");
@@ -210,7 +211,7 @@ export default function App() {
 		try {
 			const voiceInput = await buildVoicePreparationInput();
 			const voiceSpec = await prepareVoice(voiceInput);
-			await generate(text, voiceSpec, timestamps);
+			await generate(text, voiceSpec, timestamps, { teacher_force_previous_chunk: continuation });
 		} catch (err) {
 			setVoiceError(err instanceof Error ? err.message : String(err));
 		} finally {
@@ -619,6 +620,11 @@ export default function App() {
 							)}
 						</CardContent>
 						<CardFooter className="bg-muted/5 border-t border-muted-foreground/5 py-4 flex flex-col gap-3">
+                            <label className="flex items-center gap-2 text-sm self-start">
+                                <input type="checkbox" checked={continuation} disabled={!isIdle || isPreparingVoice}
+                                    onChange={(event) => setContinuation(event.target.checked)} />
+                                Continue across text chunks (experimental)
+                            </label>
 							<div className="flex gap-2 w-full">
 								{isIdle ? (
 									<Button

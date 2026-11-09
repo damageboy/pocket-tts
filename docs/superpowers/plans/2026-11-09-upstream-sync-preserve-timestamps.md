@@ -36,13 +36,13 @@ Cancellation during continuation prefill/warmup and a final event-only batch mus
 
 - [x] 2026-11-09: identify both source baselines and inspect all 21 subsequent commit/file changes.
 - [x] 2026-11-09: trace current text, timestamp, decoder and model/preset selection paths.
-- [ ] Task 1: establish reproducible current and target reference fixtures.
-- [ ] Task 2: port chunker fixes with source-word mapping regressions.
-- [ ] Task 3: port prompt pause normalization and output fade.
-- [ ] Task 4: adopt matching bundles with validated timestamp heads.
-- [ ] Task 5: implement continuation in the shared streaming core and timestamp path.
-- [ ] Task 6: expose options consistently and complete native/WASM acceptance.
-- [ ] Task 7: synchronize Cargo package/dependency/lockfile versions with local release tag v4.0.1 and add packaging guards.
+- [x] Task 1: establish reproducible current and target reference fixtures (eight raw model parity checks, four PCM/event goldens, review approved).
+- [x] Task 2: port chunker fixes with source-word mapping regressions (123 package tests passed, both real-tokenizer families verified, review approved).
+- [x] Task 3: port prompt pause normalization and output fade (13 explicit model runs, source prompt parity, review approved).
+- [x] Task 4: evaluate matching bundles; promote 7M only, retain three failed replacement bundles; reviewed.
+- [x] Task 5: implement continuation in the shared streaming core and timestamp path; four Python-state fixture comparisons and shipped-model event/PCM checks passed.
+- [x] Task 6: expose options consistently; native build/tests/audio smoke and eight model-backed WASM checks passed. Manual browser/listening acceptance remains with the user.
+- [x] Task 7: synchronize Cargo package/dependency/lockfile and built artifact versions at 4.0.1; add packaging guards. Final integration creates the matching annotated local v4.0.1 tag.
 
 Each task is one reviewable milestone. Write its behavioral tests first, run the named checks to establish the expected failures, implement, rerun, then commit only its intended paths. Fixture/bootstrap checks in Task 1 verify provenance rather than requiring an artificial failing test. Follow the repository's living-plan conventions in `.agent/PLANS.md`; maintain the decisions and outcome sections below.
 
@@ -104,7 +104,7 @@ Run `cargo test --release -p pocket-tts --test upstream_audio --locked`, relevan
 
 First add tests proving native and browser asset resolution agree for each bundle, old snapshots remain reproducible through explicit fixtures, cache URLs include revisions, and a new bundle cannot inherit verified timestamp status just from matching dimensions. Update config-equality tests to exclude only the documented Rust extension fields (`timestamp_heads`, `preset_voice_revision`), while comparing all upstream fields.
 
-Copy target upstream config values at the pinned source SHA. Refresh existing English/small and October multilingual bundles atomically with matching presets; preserve tokenizer pins per config. Include earlier text-replacement maps. New English/small weights use cloning revision `db04f0e653473e5c7333c69686ac92b7460b0c1d` and public revision `a7056f505a4a8ca72d8b5fb1440071d6f1a35739`. Resolve other bundles from their target configs, never by assigning that weight revision indiscriminately.
+Copy target upstream config values at the pinned source SHA. Evaluate the four changed English/small checkpoints for atomic promotion with matching presets; only promote bundles that pass the frozen calibration gate; preserve tokenizer pins per config. Unchanged-weight timestamp bundles, including October multilingual configurations, retain their explicit historical preset pins to preserve validated identity. Their target text/config fields are copied, but refreshing their changed preset states is deferred pending separate language-specific calibration. Include earlier text-replacement maps. New English/small weights use cloning revision `db04f0e653473e5c7333c69686ac92b7460b0c1d` and public revision `a7056f505a4a8ca72d8b5fb1440071d6f1a35739`. Resolve other bundles from their target configs, never by assigning that weight revision indiscriminately.
 
 Calibrate each changed timestamp-enabled checkpoint independently. Keep original heads only if held-out validation demonstrates their suitability. Use at least two voices and disjoint calibration/evaluation texts covering ordinary prose, numbers, punctuation, repeated words and multi-chunk input. Record matched-word coverage, mean and 95th-percentile boundary error, missing/repeated words and head candidates. ASR can propose alignment offline, but manually inspect a subset and never install ASR in the runtime path.
 
@@ -168,6 +168,12 @@ After all implementation and final review checks pass, commit intended paths and
 
 2026-11-09: Complete implementation in this dependency order. Subagents are an execution choice governed by the selected skill and user authorization, not part of this audit's work.
 
+2026-11-09: In Task 2, preserve the pinned splitter's scheme-colon behavior at very small token budgets. It protects inner domain/email punctuation but can split `https://` at the colon; the plan's shorthand about intact URLs does not authorize a different URL parser.
+
+2026-11-09: Default-temperature, one-step held-out evaluation permits promotion of 7M only, with target weights/presets and query head (5,3). Retain historical default English, 18M and 2M weights/presets/heads: English worsens start/pool p95, 18M worsens end mean/p95, and 2M has a substantial timing regression. Keep all candidate configurations and evidence for reproducible evaluation. This follows the existing no-regression gate; there is no post-held-out head reselection or threshold relaxation.
+
+2026-11-09: Target preset files changed even for unchanged-weight timestamp models. Keep those models on explicit historical preset revisions, while calibrating the four changed English/small checkpoints with target presets. This preserves existing timestamp support without silently claiming new language-specific calibration. New audio-only configs use the target presets.
+
 ## Surprises & Discoveries
 
 The small English models were replaced in place one day after the last port; the name alone cannot identify the calibration target. Existing preset resolution duplicates a two-revision switch in Rust and TypeScript.
@@ -182,4 +188,18 @@ Keep old fixture/config/asset manifests immutable; generate into new directories
 
 ## Outcomes & Retrospective
 
-Planning completed on 9 November 2026; implementation authorized later the same day, including release-version synchronization. Source history and implementation paths were inspected; no new runtime behavior, tests, calibration or audio-quality results have been produced. Implementation remains pending. Complete this section with per-model acceptance evidence, timing measurements and any retained exclusions when the work is executed.
+Implemented through pinned upstream commit `c91f50f38c6b914d49dbdff51b8d322edf843db2`. This includes splitting fixes, prompt pause normalization, fresh-segment fade, model catalog/bundle identity updates and opt-in previous-chunk continuation across Rust, CLI, HTTP, Python, WASM and the browser UI. Existing APIs/defaults and timestamp event formats are preserved.
+
+Only 7M passed the frozen replacement-weight timestamp gate; default English, 2M and 18M retain their existing bundles. Six added configurations are audio-only. Continuation timestamp accuracy remains experimental; no additional continuation calibration campaign was performed after the elapsed-time scope correction.
+
+Final production-source verification: 93 core unit tests and the options regression passed; all four target Python continuation-state/PCM comparisons passed; four shipped-model continuation event/PCM checks and cancellation passed; 64 native CLI tests passed and Python bindings compiled; 22 browser/catalog and seven fixture authentication tests passed. Optimized WASM initialization and all eight model-backed runs (four shipped models, independent/continuation) passed with exact timestamp/plain PCM, sample clocks, source events and cancellation/restart. The native executable reports 4.0.1 and produced 105600 nonzero-audio samples at 24 kHz. Browser production build passed with the existing Tailwind/Node deprecation warning. Focused final review found no blocking issue.
+
+Cargo manifests, local dependency requirements, lockfile, native executable and WASM metadata agree on 4.0.1. The original checkout receives the verified commits and the final completion commit receives annotated local tag `v4.0.1`; no push or publication is included. New test builds are delivered separately under `dist/v4.0.1`, with commands in `TESTING.md`, preserving the user's modified tracked WASM binary. Original audit/plan drafts are backed up before their tracked replacements are applied.
+
+Manual Chrome/listening/throughput acceptance, Windows/PowerShell runtime and gated production voice-cloning runtime remain unperformed. The optional ASR duplicate-word diagnostic identified during calibration remains a documented minor follow-up and did not affect the frozen promotion metrics.
+
+The old 2M baseline has a measured first-frame voiced-gate change after fading: `The` shifts from [0.00, 0.16] to [0.24, 0.32] seconds and `quick` starts at 0.32 rather than 0.24. Its 69,120 emitted samples and all later events remain unchanged. Tests assert this narrow exception without replacing the archived fixtures. The replacement 2M candidate was subsequently evaluated and rejected by the frozen timing gate.
+
+## Execution scope correction after latency feedback
+
+The user objected to the excessive elapsed time. Finish core continuation and external integration concurrently, then use focused upstream state/PCM/event/cancellation regressions and native/WASM builds. Do not run another broad calibration campaign or serial review cycle for each remaining stage. Continuation timestamp accuracy is experimental until separately calibrated; existing independent-mode behavior and model pins stay protected. The user will perform the promised manual browser/CLI listening tests. Record every unperformed validation accurately. A final focused integration review and matching local version tag remain required.

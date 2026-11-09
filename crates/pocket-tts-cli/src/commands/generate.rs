@@ -5,8 +5,8 @@
 use clap::Parser;
 use indicatif::{ProgressBar, ProgressStyle};
 use owo_colors::OwoColorize;
-use pocket_tts::TTSModel;
 use pocket_tts::anyhow::Result;
+use pocket_tts::{GenerationOptions, TTSModel};
 use std::path::PathBuf;
 use std::time::{Duration, Instant};
 
@@ -67,6 +67,14 @@ pub struct GenerateArgs {
     #[arg(long)]
     pub frames_after_eos: Option<usize>,
 
+    /// Continue each chunk using the previous chunk's audio and text.
+    #[arg(long)]
+    pub teacher_force_previous_chunk: bool,
+
+    /// Soft token limit per chunk (default: 50, or 25 with continuation).
+    #[arg(long)]
+    pub max_tokens: Option<usize>,
+
     /// Stream raw PCM audio to stdout (for piping to audio players)
     #[arg(long)]
     pub stream: bool,
@@ -94,6 +102,15 @@ pub struct GenerateArgs {
     /// Print internal timing measurements to stderr
     #[arg(long)]
     pub timings: bool,
+}
+
+impl GenerateArgs {
+    pub(super) fn generation_options(&self) -> GenerationOptions {
+        GenerationOptions {
+            max_tokens: self.max_tokens,
+            teacher_force_previous_chunk: self.teacher_force_previous_chunk,
+        }
+    }
 }
 
 /// Print styled message (respects quiet mode)
@@ -210,7 +227,7 @@ pub fn run(args: GenerateArgs) -> Result<()> {
 
     // Generate
     let generation = if args.stream {
-        run_streaming(&model, &text, &voice_state)
+        run_streaming(&model, &text, &voice_state, args.generation_options())
     } else if args.play {
         #[cfg(feature = "playback")]
         {
@@ -245,6 +262,7 @@ fn run_streaming(
     model: &TTSModel,
     text: &str,
     voice_state: &pocket_tts::ModelState,
+    options: GenerationOptions,
 ) -> Result<GenerationTimings> {
     use std::io::Write;
     let mut stdout = std::io::stdout();
@@ -252,7 +270,7 @@ fn run_streaming(
     let mut total_samples = 0usize;
 
     let inference_start = Instant::now();
-    for chunk_res in model.generate_stream_long(text, voice_state) {
+    for chunk_res in model.generate_stream_long_with_options(text, voice_state, options) {
         let chunk = chunk_res?;
         let dims = chunk.dims();
         total_samples += if dims.len() == 2 { dims[1] } else { dims[0] };
@@ -317,9 +335,10 @@ fn run_to_file(
 
     let mut audio_chunks = Vec::new();
     let mut total_samples = 0;
+    let options = args.generation_options();
 
     let inference_start = Instant::now();
-    for chunk_res in model.generate_stream_long(text, voice_state) {
+    for chunk_res in model.generate_stream_long_with_options(text, voice_state, options) {
         let chunk = chunk_res?;
         let dims = chunk.dims();
         let samples = if dims.len() == 2 { dims[1] } else { dims[0] };
@@ -458,6 +477,28 @@ mod tests {
     use super::*;
     use clap::{CommandFactory, Parser};
     use std::time::Duration;
+
+    #[test]
+    fn generation_options_are_opt_in_and_allow_soft_zero_limit() {
+        let defaults = GenerateArgs::try_parse_from(["pocket-tts"])
+            .unwrap()
+            .generation_options();
+        assert_eq!(defaults.max_tokens, None);
+        assert!(!defaults.teacher_force_previous_chunk);
+        let explicit = GenerateArgs::try_parse_from([
+            "pocket-tts",
+            "--max-tokens",
+            "0",
+            "--teacher-force-previous-chunk",
+        ])
+        .unwrap()
+        .generation_options();
+        assert_eq!(explicit.max_tokens, Some(0));
+        assert!(explicit.teacher_force_previous_chunk);
+        for value in ["-1", "1.5", "hello"] {
+            assert!(GenerateArgs::try_parse_from(["pocket-tts", "--max-tokens", value]).is_err());
+        }
+    }
 
     #[test]
     fn playback_accepts_optional_save_and_audio_only_mode() {

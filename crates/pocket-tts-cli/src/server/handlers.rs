@@ -156,6 +156,18 @@ pub struct GenerateRequest {
     lsd_steps: Option<usize>,
     eos_threshold: Option<f32>,
     noise_clamp: Option<f32>,
+    max_tokens: Option<usize>,
+    #[serde(default)]
+    teacher_force_previous_chunk: bool,
+}
+
+impl GenerateRequest {
+    fn generation_options(&self) -> pocket_tts::GenerationOptions {
+        pocket_tts::GenerationOptions {
+            max_tokens: self.max_tokens,
+            teacher_force_previous_chunk: self.teacher_force_previous_chunk,
+        }
+    }
 }
 
 #[derive(Serialize)]
@@ -229,7 +241,11 @@ pub async fn generate(
         // Generate audio
         tracing::info!("Starting generation for text length: {} chars", text.len());
         let mut audio_chunks = Vec::new();
-        for chunk in model_cloned.generate_stream_long(&text, &voice_state) {
+        for chunk in model_cloned.generate_stream_long_with_options(
+            &text,
+            &voice_state,
+            payload.generation_options(),
+        ) {
             audio_chunks.push(chunk?);
         }
         if audio_chunks.is_empty() {
@@ -324,7 +340,11 @@ pub async fn generate_stream(
                 text.len()
             );
             for (i, chunk_res) in model_cloned
-                .generate_stream_long(&text, &voice_state)
+                .generate_stream_long_with_options(
+                    &text,
+                    &voice_state,
+                    payload.generation_options(),
+                )
                 .enumerate()
             {
                 if i > 0 && i % 20 == 0 {
@@ -384,6 +404,8 @@ pub async fn tts_form(State(state): State<AppState>, mut multipart: Multipart) -
     let mut text: Option<String> = None;
     let mut voice_url: Option<String> = None;
     let mut voice_wav_bytes: Option<Vec<u8>> = None;
+    let mut max_tokens = None;
+    let mut teacher_force_previous_chunk = false;
 
     // Parse multipart form
     while let Ok(Some(field)) = multipart.next_field().await {
@@ -397,6 +419,41 @@ pub async fn tts_form(State(state): State<AppState>, mut multipart: Multipart) -
             }
             "voice_wav" => {
                 voice_wav_bytes = field.bytes().await.ok().map(|b| b.to_vec());
+            }
+            "max_tokens" => {
+                max_tokens = match field
+                    .text()
+                    .await
+                    .ok()
+                    .and_then(|s| s.parse::<usize>().ok())
+                {
+                    Some(value) => Some(value),
+                    None => {
+                        return (
+                            StatusCode::BAD_REQUEST,
+                            Json(ErrorResponse {
+                                error: "max_tokens must be a non-negative integer".into(),
+                            }),
+                        )
+                            .into_response();
+                    }
+                };
+            }
+            "teacher_force_previous_chunk" => {
+                teacher_force_previous_chunk =
+                    match field.text().await.ok().and_then(|s| s.parse::<bool>().ok()) {
+                        Some(value) => value,
+                        None => {
+                            return (
+                                StatusCode::BAD_REQUEST,
+                                Json(ErrorResponse {
+                                    error: "teacher_force_previous_chunk must be true or false"
+                                        .into(),
+                                }),
+                            )
+                                .into_response();
+                        }
+                    };
             }
             _ => {}
         }
@@ -437,6 +494,8 @@ pub async fn tts_form(State(state): State<AppState>, mut multipart: Multipart) -
             lsd_steps: None,
             eos_threshold: None,
             noise_clamp: None,
+            max_tokens,
+            teacher_force_previous_chunk,
         }),
     )
     .await
@@ -453,6 +512,9 @@ pub struct OpenAIRequest {
     input: String,
     voice: Option<String>,
     response_format: Option<String>,
+    max_tokens: Option<usize>,
+    #[serde(default)]
+    teacher_force_previous_chunk: bool,
 }
 
 pub async fn openai_speech(state: State<AppState>, Json(payload): Json<OpenAIRequest>) -> Response {
@@ -464,6 +526,8 @@ pub async fn openai_speech(state: State<AppState>, Json(payload): Json<OpenAIReq
         lsd_steps: None,
         eos_threshold: None,
         noise_clamp: None,
+        max_tokens: payload.max_tokens,
+        teacher_force_previous_chunk: payload.teacher_force_previous_chunk,
     };
     generate(state, Json(req)).await
 }
@@ -518,4 +582,38 @@ pub async fn list_languages() -> Json<Vec<LanguageInfoResponse>> {
             })
             .collect(),
     )
+}
+
+#[cfg(test)]
+mod generation_option_tests {
+    use super::*;
+
+    #[test]
+    fn json_options_are_optional_and_strictly_typed() {
+        let omitted: GenerateRequest =
+            serde_json::from_value(serde_json::json!({"text":"Hello"})).unwrap();
+        assert_eq!(omitted.generation_options().max_tokens, None);
+        assert!(!omitted.generation_options().teacher_force_previous_chunk);
+        let explicit: GenerateRequest = serde_json::from_value(serde_json::json!({"text":"Hello", "max_tokens":0, "teacher_force_previous_chunk":true})).unwrap();
+        assert_eq!(explicit.generation_options().max_tokens, Some(0));
+        assert!(explicit.generation_options().teacher_force_previous_chunk);
+        for value in [
+            serde_json::json!(-1),
+            serde_json::json!(1.5),
+            serde_json::json!("25"),
+        ] {
+            assert!(
+                serde_json::from_value::<GenerateRequest>(
+                    serde_json::json!({"text":"Hello", "max_tokens":value})
+                )
+                .is_err()
+            );
+        }
+        assert!(
+            serde_json::from_value::<GenerateRequest>(
+                serde_json::json!({"text":"Hello", "teacher_force_previous_chunk":"false"})
+            )
+            .is_err()
+        );
+    }
 }

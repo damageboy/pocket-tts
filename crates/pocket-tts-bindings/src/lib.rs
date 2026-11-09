@@ -1,4 +1,4 @@
-use pocket_tts::{ModelState, TTSModel};
+use pocket_tts::{GenerationOptions, ModelState, TTSModel};
 use pyo3::prelude::*;
 use std::path::Path;
 
@@ -35,8 +35,14 @@ impl PyTTSModel {
     ///
     /// Returns:
     ///     One-dimensional list of floats representing the audio samples.
-    #[pyo3(signature = (text, valid_voice_state=None))]
-    fn generate(&self, text: &str, valid_voice_state: Option<&str>) -> PyResult<Vec<f32>> {
+    #[pyo3(signature = (text, valid_voice_state=None, *, max_tokens=None, teacher_force_previous_chunk=false))]
+    fn generate(
+        &self,
+        text: &str,
+        valid_voice_state: Option<&str>,
+        max_tokens: Option<usize>,
+        teacher_force_previous_chunk: bool,
+    ) -> PyResult<Vec<f32>> {
         // Create a default voice state or load one if provided
         // Ideally we should expose a VoiceState object to Python too, but for now
         // let's just make it simple or require a path to a voice prompt file?
@@ -46,7 +52,14 @@ impl PyTTSModel {
 
             let audio_tensor = self
                 .inner
-                .generate(text, &state.inner)
+                .generate_with_options(
+                    text,
+                    &state.inner,
+                    GenerationOptions {
+                        max_tokens,
+                        teacher_force_previous_chunk,
+                    },
+                )
                 .map_err(|e| PyErr::new::<pyo3::exceptions::PyRuntimeError, _>(e.to_string()))?;
 
             println!(
@@ -91,10 +104,24 @@ impl PyTTSModel {
     }
 
     /// Generate using the voice state
-    fn generate_audio(&self, text: &str, voice_state: &PyModelState) -> PyResult<Vec<f32>> {
+    #[pyo3(signature = (text, voice_state, *, max_tokens=None, teacher_force_previous_chunk=false))]
+    fn generate_audio(
+        &self,
+        text: &str,
+        voice_state: &PyModelState,
+        max_tokens: Option<usize>,
+        teacher_force_previous_chunk: bool,
+    ) -> PyResult<Vec<f32>> {
         let audio_tensor = self
             .inner
-            .generate(text, &voice_state.inner)
+            .generate_with_options(
+                text,
+                &voice_state.inner,
+                GenerationOptions {
+                    max_tokens,
+                    teacher_force_previous_chunk,
+                },
+            )
             .map_err(|e| PyErr::new::<pyo3::exceptions::PyRuntimeError, _>(e.to_string()))?;
 
         println!(

@@ -28,6 +28,7 @@ This starts a server on `http://localhost:8000` with the default voice.
 - `--lsd-decode-steps INT`: LSD decode steps (default: `1`)
 - `--eos-threshold FLOAT`: EOS threshold (default: `-4.0`)
 - `--ui UI`: Web UI mode (`standard` or `wasm-experimental`, default: `standard`)
+- `--wasm-pkg-dir PATH`: Serve a separately built WASM package without replacing the existing package.
 
 ## Examples
 
@@ -234,3 +235,5 @@ Recommended TTFA evaluation:
 
 - [Generate Command](generate.md) - CLI generation
 - [Rust API](rust-api.md) - Library integration
+
+Generation requests accept optional `max_tokens` (non-negative integer) and `teacher_force_previous_chunk` (boolean). Omitted fields preserve existing behavior. The `/tts` multipart endpoint accepts the corresponding text fields.

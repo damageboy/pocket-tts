@@ -1,3 +1,19 @@
+export interface GenerationOptions {
+    max_tokens?: number;
+    teacher_force_previous_chunk?: boolean;
+}
+
+export function validateGenerationOptions(options: GenerationOptions): GenerationOptions {
+    const { max_tokens, teacher_force_previous_chunk } = options;
+    if (max_tokens !== undefined && (!Number.isInteger(max_tokens) || max_tokens < 0 || max_tokens > 0xffffffff)) {
+        throw new Error("max_tokens must be an integer between 0 and 4294967295");
+    }
+    if (teacher_force_previous_chunk !== undefined && typeof teacher_force_previous_chunk !== "boolean") {
+        throw new Error("teacher_force_previous_chunk must be a boolean");
+    }
+    return { max_tokens, teacher_force_previous_chunk };
+}
+
 export type WasmAssetSource = "local" | "hf" | "manual" | null;
 
 export type WordTimestampEvent =
@@ -72,6 +88,8 @@ export type WasmWorkerRequest =
 			requestId: number;
 			text: string;
 			timestamps?: boolean;
+			max_tokens?: number;
+			teacher_force_previous_chunk?: boolean;
 	  }
 	| {
 			kind: "stop";

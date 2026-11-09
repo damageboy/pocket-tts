@@ -16,11 +16,13 @@ pub async fn start_server(args: ServeArgs, model_id: &str) -> Result<()> {
     // Initialize tracing
     let _ = tracing_subscriber::fmt::try_init();
 
-    let wasm_pkg_dir = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-        .parent()
-        .unwrap()
-        .join("pocket-tts")
-        .join("pkg");
+    let wasm_pkg_dir = args.wasm_pkg_dir.clone().unwrap_or_else(|| {
+        std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+            .parent()
+            .unwrap()
+            .join("pocket-tts")
+            .join("pkg")
+    });
 
     if matches!(args.ui, UiMode::WasmExperimental) {
         let wasm_js = wasm_pkg_dir.join("pocket_tts.js");

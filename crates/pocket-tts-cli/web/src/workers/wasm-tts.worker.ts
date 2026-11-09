@@ -1,4 +1,5 @@
 /// <reference lib="webworker" />
+import { validateGenerationOptions } from "./wasm-tts-protocol";
 
 import type {
 	TimestampBatch,
@@ -52,6 +53,8 @@ interface WasmModelLike {
 	): void;
 	is_ready(): boolean;
 	start_stream(text: string): WasmStreamLike;
+    start_stream_with_options?(text: string, max_tokens: number | undefined, teacher_force_previous_chunk: boolean): WasmStreamLike;
+    start_stream_with_timestamps_and_options?(text: string, max_tokens: number | undefined, teacher_force_previous_chunk: boolean): WasmTimestampedStreamLike;
 	start_stream_with_timestamps(text: string): WasmTimestampedStreamLike;
 	load_voice_from_buffer(wavBytes: Uint8Array): void;
 	load_voice_from_safetensors(bytes: Uint8Array): void;
@@ -278,9 +281,20 @@ const handleStartStream = async (
 	stopRequested = false;
 	const streamToken = ++activeStreamToken;
 
-	const stream = message.timestamps
-		? readyModel.start_stream_with_timestamps(message.text)
-		: readyModel.start_stream(message.text);
+    const options = validateGenerationOptions(message);
+    const hasOptions = options.max_tokens !== undefined || options.teacher_force_previous_chunk === true;
+    const createStream = () => {
+        if (!hasOptions) return message.timestamps
+            ? readyModel.start_stream_with_timestamps(message.text)
+            : readyModel.start_stream(message.text);
+        if (message.timestamps) {
+            if (!readyModel.start_stream_with_timestamps_and_options) throw new Error("Generation options require an updated WASM package");
+            return readyModel.start_stream_with_timestamps_and_options(message.text, options.max_tokens, options.teacher_force_previous_chunk ?? false);
+        }
+        if (!readyModel.start_stream_with_options) throw new Error("Generation options require an updated WASM package");
+        return readyModel.start_stream_with_options(message.text, options.max_tokens, options.teacher_force_previous_chunk ?? false);
+    };
+    const stream = createStream();
 	let firstChunkSent = false;
 	let chunkCount = 0;
 

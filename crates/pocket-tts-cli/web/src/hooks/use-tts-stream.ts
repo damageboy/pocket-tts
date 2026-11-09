@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { getBootstrapConfig, type UiMode } from "@/lib/bootstrap";
 import { FALLBACK_VOICES } from "@/lib/model-catalog";
 import type {
+	GenerationOptions,
 	WasmWorkerEvent,
 	WasmWorkerRequest,
 	WasmWorkerStatus,
@@ -311,7 +312,7 @@ export interface WasmInitInput {
 	};
 }
 
-interface GenerationInput {
+interface GenerationInput extends GenerationOptions {
 	text: string;
 	voiceSpec?: string;
 	timestamps?: boolean;
@@ -380,6 +381,8 @@ class ServerAdapter implements RuntimeAdapter {
 			body: JSON.stringify({
 				text: input.text,
 				voice: input.voiceSpec,
+				max_tokens: input.max_tokens,
+				teacher_force_previous_chunk: input.teacher_force_previous_chunk,
 			}),
 			signal: this.abortController.signal,
 		});
@@ -576,6 +579,8 @@ class WasmAdapter implements RuntimeAdapter {
 				kind: "start_stream",
 				text: input.text,
 				timestamps: input.timestamps,
+				max_tokens: input.max_tokens,
+				teacher_force_previous_chunk: input.teacher_force_previous_chunk,
 			});
 		} finally {
 			if (this.streamHandlers === handlers) this.streamHandlers = null;
@@ -1029,7 +1034,7 @@ export function useTTSEngine() {
 	);
 
 	const generate = useCallback(
-		async (text: string, voiceSpec?: string, timestamps = false) => {
+		async (text: string, voiceSpec?: string, timestamps = false, options: GenerationOptions = {}) => {
 			const normalizedText = text.trim();
 			if (!normalizedText) {
 				throw new Error("Enter text before generating audio.");
@@ -1073,7 +1078,7 @@ export function useTTSEngine() {
 
 				setState("buffering");
 				await adapter.generateStream(
-					{ text: normalizedText, voiceSpec, timestamps },
+					{ ...options, text: normalizedText, voiceSpec, timestamps },
 					{
 						onWords: (events) => setWordEvents((previous) => [...previous, ...events]),
 						onFirstChunk: () => {

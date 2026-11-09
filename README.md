@@ -237,6 +237,31 @@ remains pending. Runtime timestamps use attention and PCM alone; Whisper is
 not a runtime dependency. This calibration covers independent segments;
 continuation validation is separate.
 
+### Optional continuation between chunks
+
+Continuation is off by default. Enable it with `--teacher-force-previous-chunk`
+for CLI generation, or the experimental continuation checkbox in the web UI.
+`--max-tokens N` sets the soft chunk limit; defaults are 50 independently and 25
+with continuation. Ordinary pause-aware output resets continuation at explicit
+pause markers. Timestamped output keeps its existing pause-stripping behavior.
+
+Rust callers pass `GenerationOptions` to the additive `*_with_options` methods.
+Python generation methods accept keyword arguments `max_tokens` and
+`teacher_force_previous_chunk`; HTTP requests and browser worker start messages
+accept those same optional fields. WASM adds `start_stream_with_options` and
+`start_stream_with_timestamps_and_options` with arguments
+`(text, max_tokens, teacher_force_previous_chunk)`. Existing methods retain their
+signatures and defaults. Continuation word timing is experimental: its event and
+sample-clock contracts are tested, but its boundary accuracy has not undergone
+the independent-mode calibration campaign.
+
+To test a fresh WASM build while preserving an existing package:
+
+```bash
+scripts/build-wasm.sh dist/pkg-v4.0.1
+cargo run --release -p pocket-tts-cli -- serve --ui wasm-experimental --wasm-pkg-dir dist/pkg-v4.0.1
+```
+
 ### Model catalog consumer contract (schema version 1)
 
 `models.json` is also served beside the bindings at `/wasm/pkg/models.json` in

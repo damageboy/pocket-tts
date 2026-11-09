@@ -30,6 +30,8 @@ This generates `./output.wav` with the default text and voice.
 - `--eos-threshold FLOAT`: End-of-speech threshold (default: `-4.0`)
 - `--noise-clamp FLOAT`: Optional noise clamp value
 - `--frames-after-eos INT`: Frames to generate after EOS (auto-calculated if not set)
+- `--teacher-force-previous-chunk`: Opt-in continuation using the previous chunk; timestamp accuracy in this mode is experimental.
+- `--max-tokens INT`: Soft chunk limit (default: 50, or 25 with continuation). Explicit pauses reset continuation in ordinary output.
 
 ### Output Options
 

@@ -183,6 +183,17 @@ impl WasmTTSModel {
     /// Float32Array containing audio samples at 24kHz mono
     #[wasm_bindgen]
     pub fn generate(&self, text: &str) -> Result<Float32Array, JsValue> {
+        self.generate_with_options(text, None, false)
+    }
+
+    #[wasm_bindgen]
+    pub fn generate_with_options(
+        &self,
+        text: &str,
+        max_tokens: Option<f64>,
+        teacher_force_previous_chunk: bool,
+    ) -> Result<Float32Array, JsValue> {
+        let options = generation_options(max_tokens, teacher_force_previous_chunk)?;
         let model = self
             .model
             .as_ref()
@@ -194,7 +205,7 @@ impl WasmTTSModel {
             .unwrap_or_else(crate::voice_state::init_states);
 
         let audio_tensor = model
-            .generate(text, &voice_state)
+            .generate_with_options(text, &voice_state, options)
             .map_err(|e| JsValue::from_str(&format!("Generation failed: {:?}", e)))?;
 
         // Flatten tensor to Vec<f32>
@@ -214,6 +225,17 @@ impl WasmTTSModel {
     /// Returns a stream object that yields Float32Array chunks.
     #[wasm_bindgen]
     pub fn start_stream(&self, text: &str) -> Result<WasmTTSStream, JsValue> {
+        self.start_stream_with_options(text, None, false)
+    }
+
+    #[wasm_bindgen]
+    pub fn start_stream_with_options(
+        &self,
+        text: &str,
+        max_tokens: Option<f64>,
+        teacher_force_previous_chunk: bool,
+    ) -> Result<WasmTTSStream, JsValue> {
+        let options = generation_options(max_tokens, teacher_force_previous_chunk)?;
         let model = self
             .model
             .as_ref()
@@ -224,7 +246,7 @@ impl WasmTTSModel {
             .clone()
             .unwrap_or_else(crate::voice_state::init_states);
 
-        let iter = model.generate_stream_owned(text, &voice_state);
+        let iter = model.generate_stream_owned_with_options(text, &voice_state, options);
 
         Ok(WasmTTSStream {
             iter: Some(iter),
@@ -241,6 +263,17 @@ impl WasmTTSModel {
         &self,
         text: &str,
     ) -> Result<WasmTimestampedStream, JsValue> {
+        self.start_stream_with_timestamps_and_options(text, None, false)
+    }
+
+    #[wasm_bindgen]
+    pub fn start_stream_with_timestamps_and_options(
+        &self,
+        text: &str,
+        max_tokens: Option<f64>,
+        teacher_force_previous_chunk: bool,
+    ) -> Result<WasmTimestampedStream, JsValue> {
+        let options = generation_options(max_tokens, teacher_force_previous_chunk)?;
         let model = self
             .model
             .as_ref()
@@ -250,7 +283,7 @@ impl WasmTTSModel {
             .clone()
             .unwrap_or_else(crate::voice_state::init_states);
         let iter = model
-            .generate_audio_with_timestamps_stream(text, &voice)
+            .generate_audio_with_timestamps_stream_with_options(text, &voice, options)
             .map_err(|e| JsValue::from_str(&format!("Timestamp generation failed: {e:#}")))?;
         Ok(WasmTimestampedStream { iter: Some(iter) })
     }
@@ -488,4 +521,26 @@ impl Default for WasmTTSModel {
     fn default() -> Self {
         Self::new()
     }
+}
+
+fn generation_options(
+    max_tokens: Option<f64>,
+    teacher_force_previous_chunk: bool,
+) -> Result<crate::GenerationOptions, JsValue> {
+    let max_tokens = max_tokens
+        .map(|value| {
+            if !value.is_finite() || value < 0.0 || value.fract() != 0.0 || value > u32::MAX as f64
+            {
+                Err(JsValue::from_str(
+                    "max_tokens must be an integer between 0 and 4294967295",
+                ))
+            } else {
+                Ok(value as usize)
+            }
+        })
+        .transpose()?;
+    Ok(crate::GenerationOptions {
+        max_tokens,
+        teacher_force_previous_chunk,
+    })
 }

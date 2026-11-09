@@ -33,6 +33,7 @@ pub async fn run(args: WasmDemoArgs) -> Result<()> {
     }
 
     let serve_args = ServeArgs {
+        wasm_pkg_dir: None,
         host: args.host,
         port: args.port,
         voice: None,

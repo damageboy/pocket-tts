@@ -1,6 +1,7 @@
 // Model-backed WASM acceptance, using local files described by an upstream
 // fixture manifest. Missing assets are fatal. No credentials/network required.
 // node scripts/test-wasm-timestamps.mjs <pkg-dir> <manifest.json>
+// Add --continuation for a multi-chunk continuation event/PCM regression.
 // Provenance only: node scripts/test-wasm-timestamps.mjs --validate-fixture <manifest.json>
 // Schema 2 YAML parsing needs PyYAML; POCKET_TTS_REFERENCE_PYTHON selects its interpreter.
 import assert from "node:assert/strict";
@@ -12,6 +13,7 @@ import { execFileSync } from "node:child_process";
 
 const validationOnly = process.argv[2] === "--validate-fixture";
 const [pkg, manifestPath] = process.argv.slice(2);
+const continuation = process.argv.includes("--continuation");
 assert(manifestPath && (validationOnly || pkg), "Pass pkg-dir and model manifest.json, or --validate-fixture manifest.json");
 const manifest = JSON.parse(await readFile(manifestPath, "utf8"));
 const fixturePath = (value) => path.resolve(path.dirname(manifestPath), value);
@@ -68,13 +70,20 @@ const { default: init, WasmTTSModel } = await import(`data:text/javascript;base6
 await init({ module_or_path: await readFile(path.join(pkg, "pocket_tts_bg.wasm")) });
 yaml = yaml.replace(/^default_temperature:.*$/m, "default_temperature: 0.0");
 const model = new WasmTTSModel();
-const text = "The quick brown fox jumps over the lazy dog.";
-const expected = ["The", "quick", "brown", "fox", "jumps", "over", "the", "lazy", "dog"];
+const text = continuation
+  ? "The quick brown fox jumps over the lazy dog. Every morning Anna opens the window and watches the birds. Go go slowly along the road, then stop and stop again. Tonight everyone will gather around the table before walking home."
+  : "The quick brown fox jumps over the lazy dog.";
+const expected = text.match(/[\p{L}\p{N}]+/gu);
+const plainStream = () => continuation ? model.start_stream_with_options(text, 12, true) : model.start_stream(text);
+const timedStream = () => continuation ? model.start_stream_with_timestamps_and_options(text, 12, true) : model.start_stream_with_timestamps(text);
 try {
   model.load_from_buffer(new TextEncoder().encode(yaml),
     await readAsset("weights"), await readAsset("tokenizer"), false);
   model.load_voice_from_safetensors(await readAsset("voice_state"));
-  const ordinary = model.start_stream(text);
+  for (const invalid of [-1, 0.5, Infinity, NaN, 4294967296]) {
+    assert.throws(() => model.start_stream_with_options(text, invalid, false), /max_tokens/);
+  }
+  const ordinary = plainStream();
   const audio = [];
   try {
     for (;;) {
@@ -83,11 +92,12 @@ try {
       audio.push(...chunk);
     }
   } finally { ordinary.free(); }
-  const stream = model.start_stream_with_timestamps(text);
+  const stream = timedStream();
   let offset = 0;
   let open = null;
   let lastEnd = 0;
   const words = [];
+  let previousWordIndex = -1;
   let batchCount = 0;
   try {
     for (;;) {
@@ -112,6 +122,7 @@ try {
         assert.equal(event.word, expected[event.word_index]);
         if (event.kind === "word_start") {
           assert.equal(open, null);
+          assert(event.word_index > previousWordIndex, "source words must not repeat or move backwards");
           assert(event.start_time >= lastEnd);
           open = event;
         } else {
@@ -121,6 +132,7 @@ try {
           assert(event.end_time > event.start_time);
           assert(event.end_time <= offset / model.sample_rate);
           words.push(event.word);
+          previousWordIndex = event.word_index;
           lastEnd = event.end_time;
           open = null;
         }
@@ -130,14 +142,19 @@ try {
   } finally { stream.free(); }
   assert.equal(offset, audio.length);
   assert.equal(open, null);
-  assert.deepEqual(words, expected);
-  const cancelled = model.start_stream_with_timestamps(text);
+  if (continuation) {
+    assert.equal(words[0], expected[0]);
+    assert.equal(previousWordIndex, expected.length - 1, "continued stream must reach its final source word");
+  } else {
+    assert.deepEqual(words, expected);
+  }
+  const cancelled = timedStream();
   cancelled.next_batch(1);
   cancelled.free();
-  const restarted = model.start_stream_with_timestamps(text);
+  const restarted = timedStream();
   try {
     assert.equal(restarted.next_batch(1).audio[0], audio[0]);
   } finally { restarted.free(); }
-  console.log(JSON.stringify({ samples: offset, batchCount, words, audioParity: "exact" }));
+  console.log(JSON.stringify({ continuation, samples: offset, batchCount, words, audioParity: "exact" }));
 } finally { model.free(); }
 }

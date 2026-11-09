@@ -92,6 +92,10 @@ pub struct ServeArgs {
     #[arg(long)]
     pub mkl_threads: Option<usize>,
 
+    /// Directory containing the generated WASM package to serve.
+    #[arg(long)]
+    pub wasm_pkg_dir: Option<std::path::PathBuf>,
+
     /// Web UI mode to serve.
     #[arg(long, value_enum, default_value_t = UiMode::Standard)]
     pub ui: UiMode,
@@ -200,6 +204,23 @@ pub fn print_endpoints(host: &str, port: u16, ui_mode: UiMode) {
 mod tests {
     use super::*;
     use clap::Parser;
+
+    #[test]
+    fn accepts_separate_wasm_package_without_changing_default() {
+        assert!(
+            ServeArgs::try_parse_from(["pocket-tts"])
+                .unwrap()
+                .wasm_pkg_dir
+                .is_none()
+        );
+        let args =
+            ServeArgs::try_parse_from(["pocket-tts", "--wasm-pkg-dir", "/tmp/pocket-tts-4.0.1"])
+                .unwrap();
+        assert_eq!(
+            args.wasm_pkg_dir.unwrap(),
+            std::path::PathBuf::from("/tmp/pocket-tts-4.0.1")
+        );
+    }
 
     #[test]
     fn sampler_decode_steps_accepts_both_spellings() {
