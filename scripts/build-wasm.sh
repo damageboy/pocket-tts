@@ -21,8 +21,12 @@ require_command cargo
 require_command wasm-bindgen "cargo install wasm-bindgen-cli"
 require_command bun "https://bun.sh"
 
+# An explicit directory lets developers keep an existing packaged build intact.
+OUT_DIR="${1:-crates/pocket-tts/pkg}"
+mkdir -p "$OUT_DIR"
+
 # Validate the catalog before starting the expensive Rust build.
-bun scripts/generate-model-catalog.ts crates/pocket-tts/pkg/models.json
+bun scripts/generate-model-catalog.ts "$OUT_DIR/models.json"
 
 echo "Building pocket-tts for wasm32-unknown-unknown (release)..."
 cargo build -p pocket-tts --release --target wasm32-unknown-unknown --features wasm
@@ -50,12 +54,10 @@ if [[ -z "$WASM_PATH" ]]; then
     exit 1
 fi
 
-OUT_DIR="crates/pocket-tts/pkg"
-mkdir -p "$OUT_DIR"
-
 echo "Running wasm-bindgen..."
 wasm-bindgen --target web --out-dir "$OUT_DIR" "$WASM_PATH"
 cp crates/pocket-tts/THIRD_PARTY_NOTICES.md "$OUT_DIR/"
+bun scripts/generate-wasm-metadata.ts "$OUT_DIR/package.json"
 
 BG_WASM="${OUT_DIR}/pocket_tts_bg.wasm"
 if command -v wasm-opt >/dev/null 2>&1; then
@@ -68,6 +70,7 @@ fi
 echo
 echo "WASM build complete."
 echo "Artifacts:"
-echo "  - crates/pocket-tts/pkg/pocket_tts.js"
-echo "  - crates/pocket-tts/pkg/pocket_tts_bg.wasm"
-echo "  - crates/pocket-tts/pkg/models.json"
+echo "  - $OUT_DIR/pocket_tts.js"
+echo "  - $OUT_DIR/pocket_tts_bg.wasm"
+echo "  - $OUT_DIR/models.json"
+echo "  - $OUT_DIR/package.json"

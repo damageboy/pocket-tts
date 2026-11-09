@@ -1,4 +1,5 @@
 #!/usr/bin/env pwsh
+param([string] $OutputDirectory = "crates/pocket-tts/pkg")
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
@@ -26,12 +27,16 @@ Require-Command -Name "cargo"
 Require-Command -Name "wasm-bindgen" -InstallHint "cargo install wasm-bindgen-cli"
 Require-Command -Name "bun" -InstallHint "https://bun.sh"
 
+$outDir = $OutputDirectory
+New-Item -ItemType Directory -Path $outDir -Force | Out-Null
+
 # Validate the catalog before starting the expensive Rust build.
-& bun scripts/generate-model-catalog.ts crates/pocket-tts/pkg/models.json
+& bun scripts/generate-model-catalog.ts (Join-Path $outDir "models.json")
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
 Write-Host "Building pocket-tts for wasm32-unknown-unknown (release)..."
 & cargo build -p pocket-tts --release --target wasm32-unknown-unknown --features wasm
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
 $targetBase = if ($env:CARGO_TARGET_DIR -and $env:CARGO_TARGET_DIR.Trim().Length -gt 0) {
     $env:CARGO_TARGET_DIR
@@ -62,17 +67,18 @@ if (-not $wasmPath) {
     exit 1
 }
 
-$outDir = Join-Path $repoRoot "crates\pocket-tts\pkg"
-New-Item -ItemType Directory -Path $outDir -Force | Out-Null
-
 Write-Host "Running wasm-bindgen..."
 & wasm-bindgen --target web --out-dir $outDir $wasmPath
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 Copy-Item "crates/pocket-tts/THIRD_PARTY_NOTICES.md" $outDir
+& bun scripts/generate-wasm-metadata.ts (Join-Path $outDir "package.json")
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
 $bgWasm = Join-Path $outDir "pocket_tts_bg.wasm"
 if (Get-Command "wasm-opt" -ErrorAction SilentlyContinue) {
     Write-Host "Running wasm-opt -O3..."
     & wasm-opt -O3 --enable-mutable-globals -o $bgWasm $bgWasm
+    if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 } else {
     Write-Warning "wasm-opt not found. Skipping optimization step."
 }
@@ -80,6 +86,7 @@ if (Get-Command "wasm-opt" -ErrorAction SilentlyContinue) {
 Write-Host ""
 Write-Host "WASM build complete."
 Write-Host "Artifacts:"
-Write-Host "  - crates/pocket-tts/pkg/pocket_tts.js"
-Write-Host "  - crates/pocket-tts/pkg/pocket_tts_bg.wasm"
-Write-Host "  - crates/pocket-tts/pkg/models.json"
+Write-Host "  - $outDir/pocket_tts.js"
+Write-Host "  - $outDir/pocket_tts_bg.wasm"
+Write-Host "  - $outDir/models.json"
+Write-Host "  - $outDir/package.json"

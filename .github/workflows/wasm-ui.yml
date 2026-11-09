@@ -31,6 +31,12 @@ jobs:
       - name: Test release packaging
         run: python3 scripts/test_package_wasm_release.py
 
+      - name: Verify release version
+        if: inputs.release
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: python3 scripts/validate-release-version.py "$RELEASE_TAG"
+
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
         with:

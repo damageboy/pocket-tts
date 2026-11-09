@@ -56,6 +56,15 @@ class PackageVersionTest(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("models.json", result.stderr)
 
+    def test_explicit_wasm_package_directory(self):
+        (self.repo / "crates/pocket-tts/pkg").rename(self.repo / "fresh-wasm")
+        result = subprocess.run(
+            ["bash", "scripts/package-wasm-ui.sh", "site", "fresh-wasm"],
+            cwd=self.repo, capture_output=True, text=True,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual((self.repo / "site/wasm/pkg/models.json").read_bytes(), self.manifest)
+
     def test_exact_lightweight_tag_then_descendant_commit(self):
         self.git("tag", "v3.3.0")
         self.assertEqual(self.packaged_version(), "v3.3.0")

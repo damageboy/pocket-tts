@@ -14,7 +14,7 @@ fi
 OUT_DIR="${1:-dist/wasm-ui}"
 CNAME_VALUE="${POCKET_TTS_WASM_CNAME:-pocket-tts.houmus.org}"
 WEB_DIST="crates/pocket-tts-cli/web/dist"
-PKG_SRC="crates/pocket-tts/pkg"
+PKG_SRC="${2:-crates/pocket-tts/pkg}"
 if ! BUILD_VERSION="$(git describe --tags --exact-match HEAD 2>/dev/null)"; then
     BUILD_VERSION="git-$(git rev-parse --short=12 HEAD)"
 fi
