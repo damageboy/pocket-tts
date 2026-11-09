@@ -59,6 +59,12 @@ class PackageReleaseTest(unittest.TestCase):
             cwd=self.repo, capture_output=True, text=True,
         )
 
+    def set_release_version(self, version, previous="3.3.0"):
+        paths = [self.repo / "Cargo.toml", self.repo / "Cargo.lock", self.pkg / "package.json"]
+        paths.extend(self.repo.glob("crates/*/Cargo.toml"))
+        for path in paths:
+            path.write_text(path.read_text().replace(previous, version))
+
     def test_archive_preserves_matching_files_and_has_verifiable_checksum(self):
         result = self.package()
         self.assertEqual(result.returncode, 0, result.stderr)
@@ -133,6 +139,37 @@ class PackageReleaseTest(unittest.TestCase):
                 result = self.package(tag)
                 self.assertNotEqual(result.returncode, 0)
                 self.assertFalse(list(self.repo.glob("dist/**/*.tar.gz")))
+
+    def test_rejects_consistently_malformed_semver_without_an_archive(self):
+        previous = "3.3.0"
+        for version in [
+            "3.3.0-01", "3.3.0-alpha.01", "3.3.0-a..b", "3.3.0-.alpha",
+            "3.3.0-alpha.", "3.3.0+.", "3.3.0+build..meta", "3.3.0+build.",
+            "3.3.0+.build", "3.3.0-", "3.3.0+", "03.3.0", "3.03.0",
+            "3.3.00", "3.3.0-α", "3.3.0+build_meta",
+        ]:
+            self.set_release_version(version, previous)
+            previous = version
+            with self.subTest(version=version):
+                shutil.rmtree(self.repo / "dist", ignore_errors=True)
+                result = self.package(f"v{version}")
+                self.assertNotEqual(result.returncode, 0, result.stdout)
+                self.assertIn("release", result.stderr.lower())
+                self.assertFalse(list(self.repo.glob("dist/**/*.tar.gz")))
+
+    def test_accepts_valid_prerelease_and_build_identifiers(self):
+        previous = "3.3.0"
+        for version in [
+            "3.3.0-0", "3.3.0-alpha.1", "3.3.0-01alpha.0.-",
+            "3.3.0+001", "3.3.0+build.01.-", "3.3.0-rc.1+build.001",
+        ]:
+            self.set_release_version(version, previous)
+            previous = version
+            with self.subTest(version=version):
+                result = self.package(f"v{version}")
+                self.assertEqual(result.returncode, 0, result.stderr)
+                archive = self.repo / f"dist/wasm-release/pocket-tts-v{version}-wasm-web.tar.gz"
+                self.assertTrue(archive.is_file())
 
 
 if __name__ == "__main__":

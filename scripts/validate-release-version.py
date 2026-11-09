@@ -8,8 +8,18 @@ import sys
 import tomllib
 
 
+NUMERIC_IDENTIFIER = r"(?:0|[1-9][0-9]*)"
+PRERELEASE_IDENTIFIER = rf"(?:{NUMERIC_IDENTIFIER}|[0-9A-Za-z-]*[A-Za-z-][0-9A-Za-z-]*)"
+BUILD_IDENTIFIER = r"[0-9A-Za-z-]+"
+RELEASE_TAG = re.compile(
+    rf"v{NUMERIC_IDENTIFIER}\.{NUMERIC_IDENTIFIER}\.{NUMERIC_IDENTIFIER}"
+    rf"(?:-{PRERELEASE_IDENTIFIER}(?:\.{PRERELEASE_IDENTIFIER})*)?"
+    rf"(?:\+{BUILD_IDENTIFIER}(?:\.{BUILD_IDENTIFIER})*)?"
+)
+
+
 def validate(root: Path, tag: str) -> str:
-    if not re.fullmatch(r"v(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?", tag):
+    if not RELEASE_TAG.fullmatch(tag):
         raise ValueError(f"Invalid release version tag: {tag!r}")
     workspace = tomllib.loads((root / "Cargo.toml").read_text(encoding="utf-8"))["workspace"]
     version = workspace["package"]["version"]
