@@ -60,6 +60,7 @@ impl WordAlignment {
         scores: &[f32],
         voiced: bool,
         start: f64,
+        context_dominates: bool,
     ) -> anyhow::Result<Vec<TimestampEvent>> {
         anyhow::ensure!(
             scores.len() == self.units.len(),
@@ -78,6 +79,8 @@ impl WordAlignment {
                     events.push(self.close(start));
                 }
             }
+        } else if context_dominates {
+            // Historical speech cannot open or advance a current-source word.
         } else if self.open.is_none() {
             if self.next < self.word_units.len() {
                 events.push(self.open_next(start));
@@ -141,17 +144,56 @@ mod tests {
     }
 
     #[test]
+    fn historical_attention_suppresses_open_and_advance_but_not_silence_close() {
+        let mut a = WordAlignment::new(units(false));
+        assert!(
+            a.process_frame(&[0.8, 0.0, 0.2, 0.0], true, 0.0, true)
+                .unwrap()
+                .is_empty()
+        );
+        assert!(matches!(
+            a.process_frame(&[0.8, 0.0, 0.2, 0.0], true, 0.08, false)
+                .unwrap()
+                .as_slice(),
+            [TimestampEvent::WordStart(_)]
+        ));
+        assert!(
+            a.process_frame(&[0.1, 0.0, 0.9, 0.0], true, 0.16, true)
+                .unwrap()
+                .is_empty()
+        );
+        assert!(matches!(
+            a.process_frame(&[0.1, 0.0, 0.9, 0.0], false, 0.24, true)
+                .unwrap()
+                .as_slice(),
+            [TimestampEvent::WordEnd(_)]
+        ));
+        assert!(
+            a.process_frame(&[0.1, 0.0, 0.9, 0.0], true, 0.32, true)
+                .unwrap()
+                .is_empty()
+        );
+        assert!(matches!(
+            a.process_frame(&[0.1, 0.0, 0.9, 0.0], true, 0.40, false)
+                .unwrap()
+                .as_slice(),
+            [TimestampEvent::WordStart(_)]
+        ));
+        assert_eq!(a.finish(0.48).len(), 1);
+    }
+
+    #[test]
     fn silence_never_opens_words_and_punctuation_closes_them() {
         let mut alignment = WordAlignment::new(units(false));
         assert!(
             alignment
-                .process_frame(&[0.8, 0.1, 0.1, 0.0], false, 0.0)
+                .process_frame(&[0.8, 0.1, 0.1, 0.0], false, 0.0, false)
                 .unwrap()
                 .is_empty()
         );
         assert!(matches!(
             alignment
-                .process_frame(&[0.8, 0.1, 0.1, 0.0], true, 0.08)
+                .process_frame(&[0.8, 0.1, 0.1, 0.0], true, 0.08, false)
                 .unwrap()
                 .as_slice(),
             [TimestampEvent::WordStart(WordStart {
@@ -162,7 +204,7 @@ mod tests {
         ));
         assert!(matches!(
             alignment
-                .process_frame(&[0.1, 0.7, 0.2, 0.0], false, 0.16)
+                .process_frame(&[0.1, 0.7, 0.2, 0.0], false, 0.16, false)
                 .unwrap()
                 .as_slice(),
             [TimestampEvent::WordEnd(WordEnd {
@@ -174,13 +216,13 @@ mod tests {
         ));
         assert!(
             alignment
-                .process_frame(&[0.0, 0.0, 1.0, 0.0], false, 0.24)
+                .process_frame(&[0.0, 0.0, 1.0, 0.0], false, 0.24, false)
                 .unwrap()
                 .is_empty()
         );
         assert!(matches!(
             alignment
-                .process_frame(&[0.0, 0.0, 1.0, 0.0], true, 0.32)
+                .process_frame(&[0.0, 0.0, 1.0, 0.0], true, 0.32, false)
                 .unwrap()
                 .as_slice(),
             [TimestampEvent::WordStart(WordStart {
@@ -192,7 +234,7 @@ mod tests {
         // Real trailing punctuation keeps the word open until its score wins.
         assert!(
             alignment
-                .process_frame(&[0.0, 0.0, 0.9, 0.1], false, 0.40)
+                .process_frame(&[0.0, 0.0, 0.9, 0.1], false, 0.40, false)
                 .unwrap()
                 .is_empty()
         );
@@ -211,17 +253,17 @@ mod tests {
     fn transitions_are_monotonic_and_finish_does_not_invent_unspoken_words() {
         let mut alignment = WordAlignment::new(units(true));
         alignment
-            .process_frame(&[1.0, 0.0, 0.0, 0.0], true, 1.0)
+            .process_frame(&[1.0, 0.0, 0.0, 0.0], true, 1.0, false)
             .unwrap();
         assert!(
             alignment
-                .process_frame(&[0.5, 0.0, 0.5, 0.0], true, 1.08)
+                .process_frame(&[0.5, 0.0, 0.5, 0.0], true, 1.08, false)
                 .unwrap()
                 .is_empty()
         );
         assert!(matches!(
             alignment
-                .process_frame(&[0.1, 0.0, 0.9, 0.0], true, 1.16)
+                .process_frame(&[0.1, 0.0, 0.9, 0.0], true, 1.16, false)
                 .unwrap()
                 .as_slice(),
             [
@@ -239,7 +281,7 @@ mod tests {
         ));
         assert!(matches!(
             alignment
-                .process_frame(&[0.0, 0.0, 1.0, 0.0], false, 1.24)
+                .process_frame(&[0.0, 0.0, 1.0, 0.0], false, 1.24, false)
                 .unwrap()
                 .as_slice(),
             [TimestampEvent::WordEnd(WordEnd {
@@ -251,16 +293,16 @@ mod tests {
         assert!(alignment.finish(1.32).is_empty());
         let mut alignment = WordAlignment::new(units(true));
         alignment
-            .process_frame(&[1.0, 0.0, 0.0, 0.0], true, 0.0)
+            .process_frame(&[1.0, 0.0, 0.0, 0.0], true, 0.0, false)
             .unwrap();
         assert_eq!(alignment.finish(0.08).len(), 1);
         assert!(
             alignment
-                .process_frame(&[0.0, 0.0, 1.0, 0.0], true, 0.16)
+                .process_frame(&[0.0, 0.0, 1.0, 0.0], true, 0.16, false)
                 .unwrap()
                 .is_empty()
         );
-        assert!(alignment.process_frame(&[], true, 0.24).is_err());
+        assert!(alignment.process_frame(&[], true, 0.24, false).is_err());
     }
 
     #[test]

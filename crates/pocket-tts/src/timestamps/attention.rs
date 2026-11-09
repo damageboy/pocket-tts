@@ -9,6 +9,9 @@ pub(crate) struct AttentionCapture {
     token_to_unit: Vec<Vec<f32>>,
     scores: Vec<f32>,
     recorded: usize,
+    historical_weights: Vec<f32>,
+    historical_mass: f32,
+    pub context_dominates: bool,
     #[cfg(test)]
     pub head_scores: Vec<Vec<f32>>,
 }
@@ -31,10 +34,21 @@ impl AttentionCapture {
             head_scores: vec![vec![0.0; units]; heads.len()],
             heads,
             text_start,
+            historical_weights: vec![0.0; token_to_unit.len()],
+            historical_mass: 0.0,
+            context_dominates: false,
             token_to_unit,
             scores: vec![0.0; units],
             recorded: 0,
         })
+    }
+
+    pub fn with_history(mut self, weights: Vec<f32>) -> Result<Self> {
+        if weights.len() != self.token_to_unit.len() {
+            candle_core::bail!("Incorrect historical token weights");
+        }
+        self.historical_weights = weights;
+        Ok(self)
     }
 
     pub fn record(&mut self, layer: usize, logits: &Tensor) -> Result<()> {
@@ -56,6 +70,11 @@ impl AttentionCapture {
                 .flatten_all()?
                 .to_dtype(DType::F32)?;
             let probabilities = candle_nn::ops::softmax(&text, D::Minus1)?.to_vec1::<f32>()?;
+            self.historical_mass += probabilities
+                .iter()
+                .zip(&self.historical_weights)
+                .map(|(p, h)| p * h)
+                .sum::<f32>();
             #[cfg(test)]
             self.head_scores[_index].fill(0.0);
             for (p, row) in probabilities.iter().zip(&self.token_to_unit) {
@@ -81,6 +100,9 @@ impl AttentionCapture {
             .iter()
             .map(|s| s / self.recorded as f32)
             .collect();
+        self.context_dominates =
+            self.historical_mass >= self.recorded as f32 - self.historical_mass;
+        self.historical_mass = 0.0;
         self.scores.fill(0.0);
         self.recorded = 0;
         Ok(result)
@@ -91,6 +113,31 @@ impl AttentionCapture {
 mod tests {
     use super::*;
     use candle_core::{Device, Tensor};
+
+    #[test]
+    fn context_dominance_uses_all_combined_text_keys_and_includes_ties() -> candle_core::Result<()>
+    {
+        let mut capture = AttentionCapture::new(vec![(0, 0)], 1, vec![vec![0.0], vec![1.0]])?
+            .with_history(vec![1.0, 0.0])?;
+        for (history, current, dominates) in [
+            (3f32.ln(), 0.0, true),
+            (0.0, 3f32.ln(), false),
+            (0.0, 0.0, true),
+        ] {
+            capture.record(
+                0,
+                &Tensor::from_vec(
+                    vec![1000.0, history, current, 1000.0],
+                    (1, 1, 1, 4),
+                    &Device::Cpu,
+                )?,
+            )?;
+            let scores = capture.finish_frame()?;
+            assert_eq!(capture.context_dominates, dominates);
+            assert!(scores[0] > 0.0 && scores[0] < 1.0);
+        }
+        Ok(())
+    }
 
     #[test]
     fn normalizes_only_text_keys_and_weights_heads_not_layers() -> candle_core::Result<()> {

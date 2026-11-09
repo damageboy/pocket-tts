@@ -24,6 +24,8 @@ pub(crate) struct TextUnit {
 #[derive(Debug)]
 pub(crate) struct TimestampTextChunk {
     pub text: String,
+    pub raw_text: String,
+    unit_spans: Vec<Span>,
     pub tail_guess: usize,
     pub units: Vec<TextUnit>,
     pub token_to_unit: Vec<Vec<f32>>,
@@ -33,18 +35,122 @@ pub(crate) fn prepare_timestamp_chunks(
     text: &str,
     options: &crate::text::TextOptions,
     tokenizer: &Tokenizer,
+    max_tokens: usize,
 ) -> Result<Vec<TimestampTextChunk>> {
-    let chunks = options.split(tokenizer, text, 50)?;
+    let raw_chunks = options.split(tokenizer, text, max_tokens)?;
+    let chunks = &raw_chunks;
     let prepared = chunks
         .iter()
         .map(|s| options.prepare(s))
         .collect::<Result<Vec<_>>>()?;
     let (texts, tails): (Vec<_>, Vec<_>) = prepared.into_iter().unzip();
     let mut chunks = build_chunks(text, texts, tokenizer)?;
-    for (chunk, tail) in chunks.iter_mut().zip(tails) {
+    for ((chunk, tail), raw) in chunks.iter_mut().zip(tails).zip(raw_chunks) {
         chunk.tail_guess = tail;
+        chunk.raw_text = raw;
     }
     Ok(chunks)
+}
+
+impl TimestampTextChunk {
+    pub(crate) fn audio(raw_text: String, text: String, tail_guess: usize) -> Self {
+        Self {
+            raw_text,
+            text,
+            tail_guess,
+            units: Vec::new(),
+            token_to_unit: Vec::new(),
+            unit_spans: Vec::new(),
+        }
+    }
+
+    /// Remap existing source units against the actual combined tokenization.
+    /// Global source identities and synthetic/ambiguous-unit decisions stay intact.
+    pub(crate) fn continue_from(
+        &mut self,
+        previous: &str,
+        options: &crate::text::TextOptions,
+        tokenizer: &Tokenizer,
+        capture: bool,
+    ) -> Result<Vec<f32>> {
+        let (combined, _) = options.prepare(&format!("{previous} {}", self.raw_text))?;
+        if !capture {
+            self.text = combined;
+            return Ok(Vec::new());
+        }
+        let mut prefix_options = options.clone();
+        prefix_options.pad_with_spaces_for_short_inputs = false;
+        prefix_options.append_terminal_punctuation = false;
+        let prefix = prefix_options.prepare(previous)?.0;
+        // Combined short prompts can have padding even though the prefix probe
+        // intentionally does not. Match the actual prepared prefix, not tokens.
+        let padding = combined.len() - combined.trim_start().len();
+        let boundary = padding + prefix.len() + 1;
+        anyhow::ensure!(
+            combined[padding..].starts_with(&(prefix + " ")),
+            "Cannot locate continuation text boundary"
+        );
+        let suffix = &combined[boundary..];
+        let (old_chars, old_origins) = projection_impl(&self.text, true);
+        let (new_chars, new_origins) = projection_impl(suffix, true);
+        anyhow::ensure!(
+            old_chars == new_chars,
+            "Continuation preparation changed current timestamp units"
+        );
+        let spans = self
+            .unit_spans
+            .iter()
+            .map(|span| {
+                let positions = old_origins
+                    .iter()
+                    .enumerate()
+                    .filter(|(_, origin)| origin.begin < span.end && origin.end > span.begin)
+                    .map(|(i, _)| i)
+                    .collect::<Vec<_>>();
+                let first = *positions
+                    .first()
+                    .ok_or_else(|| anyhow!("Missing continuation unit span"))?;
+                let last = *positions.last().unwrap();
+                Ok(Span {
+                    begin: boundary + new_origins[first].begin,
+                    end: boundary + new_origins[last].end,
+                })
+            })
+            .collect::<Result<Vec<_>>>()?;
+        let encoding = tokenizer
+            .encode(combined.as_str(), true)
+            .map_err(|e| anyhow!("Continuation tokenization failed: {e}"))?;
+        let token_spans = expanded_offsets(encoding.get_offsets(), encoding.get_tokens());
+        let cp = |span: Span| Span {
+            begin: combined[..span.begin].chars().count(),
+            end: combined[..span.end].chars().count(),
+        };
+        let token_cp = token_spans.iter().copied().map(cp).collect::<Vec<_>>();
+        self.token_to_unit = overlaps(
+            &token_cp,
+            &spans.iter().copied().map(cp).collect::<Vec<_>>(),
+        );
+        // A boundary-spanning token contributes only its current portion to new
+        // words. Preserve its historical mass separately for dominance gating.
+        let history = token_spans
+            .iter()
+            .map(|span| {
+                let total = combined[span.begin..span.end].chars().count();
+                if total == 0 {
+                    return if span.begin < boundary { 1.0 } else { 0.0 };
+                }
+                let end = span.end.min(boundary).max(span.begin);
+                combined[span.begin..end].chars().count() as f32 / total as f32
+            })
+            .collect::<Vec<_>>();
+        for (row, historical) in self.token_to_unit.iter_mut().zip(&history) {
+            for weight in row {
+                *weight *= 1.0 - historical;
+            }
+        }
+        self.text = combined;
+        Ok(history)
+    }
 }
 
 // All spans are UTF-8 byte offsets, as returned by Rust tokenizers::encode.
@@ -150,6 +256,10 @@ fn lexical_spans(text: &str) -> Vec<Span> {
 }
 
 fn projection(text: &str) -> (Vec<char>, Vec<Span>) {
+    projection_impl(text, false)
+}
+
+fn projection_impl(text: &str, include_punctuation: bool) -> (Vec<char>, Vec<Span>) {
     // Prefix normalization faithfully tracks compositions, reordered combining
     // marks and compatibility expansions, including several scalars per origin.
     // Only the robust path needs this more expensive projection.
@@ -184,7 +294,13 @@ fn projection(text: &str) -> (Vec<char>, Vec<Span>) {
     let mut canonical = Vec::new();
     let mut canonical_origins = Vec::new();
     for (c, origin) in normalized.into_iter().zip(origins) {
-        for c in fold(c).filter(|c| canonical_char(*c)) {
+        for c in fold(c).filter(|c| {
+            if include_punctuation {
+                !c.is_whitespace()
+            } else {
+                canonical_char(*c)
+            }
+        }) {
             canonical.push(c);
             canonical_origins.push(origin);
         }
@@ -567,6 +683,8 @@ fn build_chunks(
             .map(|(span, _)| codepoint_span(*span))
             .collect::<Vec<_>>();
         result.push(TimestampTextChunk {
+            raw_text: text.clone(),
+            unit_spans: units.iter().map(|(span, _)| *span).collect(),
             text,
             tail_guess: 0, // Set from TextOptions::prepare by prepare_timestamp_chunks.
             token_to_unit: overlaps(&token_spans, &unit_spans),
@@ -596,6 +714,79 @@ mod tests {
             .filter_map(|u| u.word.as_ref())
             .map(|w| (w.word_index, w.text.as_str()))
             .collect()
+    }
+
+    #[test]
+    fn repeated_boundary_words_emit_once() {
+        let t = tokenizer();
+        let options = TextOptions::default();
+        let mut chunks =
+            prepare_timestamp_chunks("Ready ready. Ready ready. Go now. Go now.", &options, &t, 1)
+                .unwrap();
+        assert_eq!(chunks.len(), 4);
+        let previous = chunks[0].raw_text.clone();
+        let ids = chunks[1]
+            .units
+            .iter()
+            .filter_map(|u| u.word.as_ref().map(|w| w.word_index))
+            .collect::<Vec<_>>();
+        let history = chunks[1]
+            .continue_from(&previous, &options, &t, true)
+            .unwrap();
+        assert_eq!(ids, vec![2, 3]);
+        assert_eq!(
+            chunks[1]
+                .units
+                .iter()
+                .filter_map(|u| u.word.as_ref().map(|w| w.word_index))
+                .collect::<Vec<_>>(),
+            ids
+        );
+        assert_eq!(
+            history.len(),
+            t.encode(chunks[1].text.as_str(), true).unwrap().len()
+        );
+        assert!(history.iter().any(|h| *h == 1.0));
+        assert!(history.iter().any(|h| *h == 0.0));
+        for (h, row) in history.iter().zip(&chunks[1].token_to_unit) {
+            if *h == 1.0 {
+                assert!(row.iter().all(|v| *v == 0.0));
+            }
+        }
+    }
+
+    #[test]
+    fn continuation_mapping_keeps_padding_case_and_synthetic_punctuation() {
+        let t = tokenizer();
+        let options = TextOptions {
+            pad_with_spaces_for_short_inputs: true,
+            ..TextOptions::default()
+        };
+        let mut chunks = prepare_timestamp_chunks("first. lower word", &options, &t, 1).unwrap();
+        let previous = chunks[0].raw_text.clone();
+        let synthetic = chunks[1]
+            .units
+            .iter()
+            .map(|u| u.synthetic)
+            .collect::<Vec<_>>();
+        chunks[1]
+            .continue_from(&previous, &options, &t, true)
+            .unwrap();
+        assert_eq!(
+            chunks[1].text,
+            options
+                .prepare(&format!("{} {}", previous, chunks[1].raw_text))
+                .unwrap()
+                .0
+        );
+        assert_eq!(
+            chunks[1]
+                .units
+                .iter()
+                .map(|u| u.synthetic)
+                .collect::<Vec<_>>(),
+            synthetic
+        );
     }
 
     #[test]
@@ -643,7 +834,7 @@ mod tests {
             .iter()
             .map(|c| options.prepare(c).unwrap().0)
             .collect::<Vec<_>>();
-        let timestamps = prepare_timestamp_chunks(source, &options, &t).unwrap();
+        let timestamps = prepare_timestamp_chunks(source, &options, &t, 50).unwrap();
         assert_eq!(
             timestamps.iter().map(|c| &c.text).collect::<Vec<_>>(),
             ordinary.iter().collect::<Vec<_>>()
@@ -662,7 +853,7 @@ mod tests {
         let source = crate::pause::strip_pause_markers(
             "repeat repeat x [pause:500ms] unique. “Stop.” Again",
         );
-        let chunks = prepare_timestamp_chunks(&source, &options, &t).unwrap();
+        let chunks = prepare_timestamp_chunks(&source, &options, &t, 50).unwrap();
         // Replacement prevents a full projection; repeated words become
         // ambiguous and are omitted. Unique words retain their source indices.
         assert_eq!(
@@ -680,7 +871,7 @@ mod tests {
             replace_characters: [('“', "".into()), ('”', "".into())].into(),
             ..TextOptions::default()
         };
-        let chunks = prepare_timestamp_chunks("repeat repeat “ﬁne” ﬁne", &options, &t).unwrap();
+        let chunks = prepare_timestamp_chunks("repeat repeat “ﬁne” ﬁne", &options, &t, 50).unwrap();
         assert_eq!(
             words(&chunks),
             vec![(0, "repeat"), (1, "repeat"), (2, "ﬁne"), (3, "ﬁne")]
@@ -723,7 +914,7 @@ mod tests {
             ("😀 €", vec![]),
         ] {
             let options = TextOptions::default();
-            let chunks = prepare_timestamp_chunks(text, &options, &tokenizer).unwrap();
+            let chunks = prepare_timestamp_chunks(text, &options, &tokenizer, 50).unwrap();
             assert_eq!(
                 words(&chunks),
                 expected
@@ -762,7 +953,7 @@ mod tests {
     fn terminal_punctuation_and_ambiguous_omissions() {
         let t = tokenizer();
         for (source, synthetic) in [("hello world", true), ("hello world!", false)] {
-            let chunks = prepare_timestamp_chunks(source, &TextOptions::default(), &t).unwrap();
+            let chunks = prepare_timestamp_chunks(source, &TextOptions::default(), &t, 50).unwrap();
             assert_eq!(
                 chunks[0]
                     .units
@@ -796,7 +987,9 @@ mod tests {
     #[test]
     fn empty_inputs_reject_like_ordinary_text() {
         for text in ["", " ", "\n\r"] {
-            assert!(prepare_timestamp_chunks(text, &TextOptions::default(), &tokenizer()).is_err());
+            assert!(
+                prepare_timestamp_chunks(text, &TextOptions::default(), &tokenizer(), 50).is_err()
+            );
         }
     }
 
@@ -828,7 +1021,7 @@ mod tests {
     fn every_byte_fallback_piece_in_unicode_words_is_mapped() {
         let t = tokenizer();
         for text in ["A中B", "A𐐀B", "a\u{301}\u{300}"] {
-            let chunks = prepare_timestamp_chunks(text, &TextOptions::default(), &t).unwrap();
+            let chunks = prepare_timestamp_chunks(text, &TextOptions::default(), &t, 50).unwrap();
             assert_eq!(words(&chunks), vec![(0, text)]);
             let chunk = &chunks[0];
             let encoding = t.encode(chunk.text.as_str(), true).unwrap();
@@ -877,13 +1070,13 @@ mod tests {
             let mapped = build_chunks(source, chunks, &t).unwrap();
             assert_eq!(words(&mapped), expected);
         }
-        let chunks = prepare_timestamp_chunks("X ﾞ Y.", &options, &t).unwrap();
+        let chunks = prepare_timestamp_chunks("X ﾞ Y.", &options, &t, 50).unwrap();
         assert_eq!(words(&chunks), vec![(0, "X"), (1, "Y")]);
         let options = TextOptions {
             replace_characters: [('x', "changed".into())].into(),
             ..TextOptions::default()
         };
-        let chunks = prepare_timestamp_chunks("one x three", &options, &t).unwrap();
+        let chunks = prepare_timestamp_chunks("one x three", &options, &t, 50).unwrap();
         assert_eq!(words(&chunks), vec![(0, "one"), (2, "three")]);
     }
 }

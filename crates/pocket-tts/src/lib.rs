@@ -19,5 +19,5 @@ pub use candle_core;
 pub use candle_nn;
 pub use pause::{ParsedText, PauseMarker, parse_text_with_pauses};
 pub use quantize::{QuantizeConfig, QuantizedTensor};
-pub use tts_model::TTSModel;
+pub use tts_model::{GenerationOptions, TTSModel};
 pub use voice_state::ModelState;

@@ -73,9 +73,36 @@ pub struct TTSModel {
     timestamp_dimensions: (usize, usize),
 }
 
+/// Per-request chunking and optional previous-chunk conditioning.
+#[derive(Clone, Copy, Debug, Default)]
+pub struct GenerationOptions {
+    pub max_tokens: Option<usize>,
+    pub teacher_force_previous_chunk: bool,
+}
+
+impl GenerationOptions {
+    /// The limit is soft: indivisible sentences and decimal clauses stay intact.
+    pub fn resolved_max_tokens(self) -> usize {
+        self.max_tokens
+            .unwrap_or(if self.teacher_force_previous_chunk {
+                25
+            } else {
+                50
+            })
+    }
+}
+
+pub(crate) struct SegmentContext {
+    pub previous_text: String,
+    /// Normalized FlowLM outputs, shape [1, frames, latent_dim].
+    pub normalized_latents: Tensor,
+}
+
 pub(crate) struct GeneratedFrame {
     pub audio: Tensor,
     pub unit_scores: Option<Vec<f32>>,
+    pub context_dominates: bool,
+    pub normalized_latent: Option<Tensor>,
     #[cfg(test)]
     pub head_scores: Option<Vec<Vec<f32>>>,
 }
@@ -797,7 +824,7 @@ impl TTSModel {
         Ok(())
     }
 
-    fn text_options(&self) -> TextOptions {
+    pub(crate) fn text_options(&self) -> TextOptions {
         TextOptions {
             pad_with_spaces_for_short_inputs: self.pad_with_spaces_for_short_inputs,
             remove_semicolons: self.remove_semicolons,
@@ -824,9 +851,17 @@ impl TTSModel {
 
     /// Generate audio from text with voice state
     pub fn generate(&self, text: &str, voice_state: &ModelState) -> Result<Tensor> {
-        let mut audio_chunks = Vec::new();
+        self.generate_with_options(text, voice_state, GenerationOptions::default())
+    }
 
-        for chunk in self.generate_stream(text, voice_state) {
+    pub fn generate_with_options(
+        &self,
+        text: &str,
+        voice_state: &ModelState,
+        options: GenerationOptions,
+    ) -> Result<Tensor> {
+        let mut audio_chunks = Vec::new();
+        for chunk in self.generate_stream_owned_with_options(text, voice_state, options) {
             audio_chunks.push(chunk?);
         }
 
@@ -1039,45 +1074,59 @@ impl TTSModel {
         text: &'b str,
         voice_state: &'c ModelState,
     ) -> Box<dyn Iterator<Item = Result<Tensor>> + 'a> {
-        // Split text into chunks to avoid quadratic complexity scaling
-        let chunks = match self.try_split_into_best_sentences(text) {
-            Ok(chunks) => chunks,
-            Err(error) => return Box::new(std::iter::once(Err(error))),
-        };
-
-        // Clone voice state so the iterator owns a copy, untied from lifetime 'c
-        let voice_state_owned = voice_state.clone();
-
-        // Create an iterator that processes each chunk sequentially
-        let iterator = chunks.into_iter().flat_map(move |chunk_text| {
-            // We need to return an iterator for each chunk.
-            // We pass a reference to the owned voice state captured by the closure.
-            self.generate_stream_segment(chunk_text, &voice_state_owned)
-        });
-
-        Box::new(stop_after_error(iterator))
+        self.generate_stream_owned_with_options(text, voice_state, GenerationOptions::default())
     }
 
-    /// Generate audio stream from text with voice state, returning an owned iterator.
-    ///
-    /// This is useful for WASM bindings where the iterator must be 'static.
+    /// Owned stream suitable for WASM and cancellation by dropping the iterator.
     pub fn generate_stream_owned(
         &self,
         text: &str,
         voice_state: &ModelState,
-    ) -> Box<dyn Iterator<Item = Result<Tensor>> + 'static> {
-        let model = self.clone();
-        let voice_state_owned = voice_state.clone();
-        let chunks = match model.try_split_into_best_sentences(text) {
-            Ok(chunks) => chunks,
-            Err(error) => return Box::new(std::iter::once(Err(error))),
-        };
+    ) -> Box<dyn Iterator<Item = Result<Tensor>>> {
+        self.generate_stream_owned_with_options(text, voice_state, GenerationOptions::default())
+    }
 
-        let iterator = chunks.into_iter().flat_map(move |chunk_text| {
-            model.generate_stream_segment(chunk_text, &voice_state_owned)
-        });
-
-        Box::new(stop_after_error(iterator))
+    pub fn generate_stream_owned_with_options(
+        &self,
+        text: &str,
+        voice_state: &ModelState,
+        options: GenerationOptions,
+    ) -> Box<dyn Iterator<Item = Result<Tensor>>> {
+        let chunks = (|| -> Result<_> {
+            self.text_options()
+                .split(
+                    self.conditioner.tokenizer(),
+                    &crate::pause::strip_pause_markers(text),
+                    options.resolved_max_tokens(),
+                )?
+                .into_iter()
+                .map(|raw| {
+                    let (prepared, tail) = self.text_options().prepare(&raw)?;
+                    Ok(crate::timestamps::text::TimestampTextChunk::audio(
+                        raw, prepared, tail,
+                    ))
+                })
+                .collect::<Result<Vec<_>>>()
+        })();
+        match chunks {
+            Err(error) => Box::new(std::iter::once(Err(error))),
+            Ok(chunks) => Box::new(
+                TimestampStream::new(
+                    self.clone(),
+                    voice_state.clone(),
+                    chunks,
+                    options.teacher_force_previous_chunk,
+                    false,
+                )
+                .filter_map(|event| match event {
+                    Ok(crate::timestamps::TimestampEvent::AudioChunk(chunk)) => {
+                        Some(Ok(chunk.audio))
+                    }
+                    Ok(_) => None,
+                    Err(error) => Some(Err(error)),
+                }),
+            ),
+        }
     }
 
     /// Generate audio and approximate word-boundary events in one pass.
@@ -1092,6 +1141,21 @@ impl TTSModel {
         text: &str,
         voice_state: &ModelState,
     ) -> Result<TimestampStream> {
+        self.generate_audio_with_timestamps_stream_with_options(
+            text,
+            voice_state,
+            GenerationOptions::default(),
+        )
+    }
+
+    /// Continuation timing uses an approximate historical-attention suppression
+    /// rule. Independent-mode calibration does not certify continuation timing.
+    pub fn generate_audio_with_timestamps_stream_with_options(
+        &self,
+        text: &str,
+        voice_state: &ModelState,
+        options: GenerationOptions,
+    ) -> Result<TimestampStream> {
         crate::config::validate_timestamp_heads(
             &self.timestamp_heads,
             self.timestamp_dimensions.0,
@@ -1101,28 +1165,15 @@ impl TTSModel {
             &crate::pause::strip_pause_markers(text),
             &self.text_options(),
             self.conditioner.tokenizer(),
+            options.resolved_max_tokens(),
         )?;
         Ok(TimestampStream::new(
             self.clone(),
             voice_state.clone(),
             chunks,
+            options.teacher_force_previous_chunk,
+            true,
         ))
-    }
-
-    /// Internal helper to generate a single segment (short text) matching Python's _generate
-    fn generate_stream_segment(
-        &self,
-        text: String,
-        voice_state: &ModelState,
-    ) -> Box<dyn Iterator<Item = Result<Tensor>>> {
-        let (prepared, tail) = match self.text_options().prepare(&text) {
-            Ok(prepared) => prepared,
-            Err(error) => return Box::new(std::iter::once(Err(error))),
-        };
-        Box::new(
-            self.generate_segment_frames(prepared, tail, voice_state, None)
-                .map(|frame| frame.map(|f| f.audio)),
-        )
     }
 
     /// The same decoder and EOS behavior for ordinary and timestamped streams.
@@ -1132,6 +1183,8 @@ impl TTSModel {
         tail_guess: usize,
         voice_state: &ModelState,
         mut capture: Option<AttentionCapture>,
+        context: Option<&SegmentContext>,
+        retain_latents: bool,
     ) -> Box<dyn Iterator<Item = Result<GeneratedFrame>>> {
         let mut state = voice_state.clone();
         // Tensor::clone shares storage and slice_set mutates it. Each segment
@@ -1163,17 +1216,6 @@ impl TTSModel {
             Err(e) => return Box::new(std::iter::once(Err(e))),
         };
 
-        // Initial text prompt
-        if let Err(e) = self
-            .flow_lm
-            .transformer
-            .forward(&text_embeddings, &mut state, 0)
-        {
-            return Box::new(std::iter::once(Err(anyhow::Error::from(e))));
-        }
-
-        // Removed redundant increment_steps("offset") - handled internally by RoPE/Attention with current_end_len
-
         let max_gen_len =
             ((tokens.dims()[1] as f64 / 3.0 + 2.0) * self.mimi.frame_rate).ceil() as usize;
         let frames_after_eos = self
@@ -1181,9 +1223,39 @@ impl TTSModel {
             .or(self.model_recommended_frames_after_eos)
             .unwrap_or(tail_guess + 2);
 
-        let mut backbone_input = match self.flow_lm.bos_emb.clone().reshape((1, 1, self.ldim)) {
-            Ok(t) => t,
-            Err(e) => return Box::new(std::iter::once(Err(anyhow::Error::from(e)))),
+        let (mut backbone_input, warmup_frames) = match (|| -> Result<_> {
+            let bos = self.flow_lm.bos_emb.reshape((1, 1, self.ldim))?;
+            if let Some(context) = context {
+                let count = context.normalized_latents.dim(1)?;
+                anyhow::ensure!(count > 0, "Continuation requires emitted latents");
+                let prefix = Tensor::cat(
+                    &[&bos, &context.normalized_latents.narrow(1, 0, count - 1)?],
+                    1,
+                )?;
+                self.flow_lm
+                    .prefill(&prefix, &text_embeddings, &mut state)?;
+                let warmup = count.min(12);
+                let latents = context
+                    .normalized_latents
+                    .narrow(1, count - warmup, warmup)?;
+                let denorm = latents
+                    .broadcast_mul(&self.flow_lm.emb_std)?
+                    .broadcast_add(&self.flow_lm.emb_mean)?
+                    .transpose(1, 2)?;
+                let quantized = self.mimi.quantize(&denorm)?;
+                // Advance decoder buffers and positions; discard its PCM.
+                self.mimi
+                    .decode_from_latent(&quantized, &mut mimi_state, 0)?;
+                Ok((context.normalized_latents.narrow(1, count - 1, 1)?, warmup))
+            } else {
+                self.flow_lm
+                    .transformer
+                    .forward(&text_embeddings, &mut state, 0)?;
+                Ok((bos, 0))
+            }
+        })() {
+            Ok(value) => value,
+            Err(error) => return Box::new(std::iter::once(Err(error))),
         };
 
         let mut eos_step: Option<usize> = None;
@@ -1275,15 +1347,17 @@ impl TTSModel {
                 let quantized = model.mimi.quantize(&mimi_input)?;
                 let audio = tracing::info_span!("mimi.decode_from_latent", step = step)
                     .in_scope(|| {
-                        model
-                            .mimi
-                            .decode_from_latent(&quantized, &mut mimi_state, step)
+                        model.mimi.decode_from_latent(
+                            &quantized,
+                            &mut mimi_state,
+                            warmup_frames + step,
+                        )
                     })
                     .map_err(|e| anyhow::anyhow!(e))?;
 
                 // Keep raw Mimi decoding unchanged. Both output APIs consume
                 // this frame after the one-time fresh-segment onset fade.
-                let audio = if step == 0 {
+                let audio = if step == 0 && warmup_frames == 0 {
                     crate::audio::fade_in_first_frame(&audio, model.sample_rate)?
                 } else {
                     audio
@@ -1317,6 +1391,8 @@ impl TTSModel {
                 #[cfg(test)]
                 head_scores: capture.as_ref().map(|c| c.head_scores.clone()),
                 audio: audio_frame,
+                context_dominates: capture.as_ref().is_some_and(|c| c.context_dominates),
+                normalized_latent: retain_latents.then_some(next_latent),
                 unit_scores,
             }))
         }))
@@ -1328,6 +1404,16 @@ impl TTSModel {
         text: &str,
         voice_state: &'a ModelState,
     ) -> impl Iterator<Item = Result<Tensor>> + 'a {
+        self.generate_stream_long_with_options(text, voice_state, GenerationOptions::default())
+    }
+
+    /// Pause-preserving stream. Each explicit pause starts a fresh continuation chain.
+    pub fn generate_stream_long_with_options(
+        &self,
+        text: &str,
+        voice_state: &ModelState,
+        options: GenerationOptions,
+    ) -> Box<dyn Iterator<Item = Result<Tensor>>> {
         use crate::pause::{parse_text_with_pauses, silence_samples};
 
         let parsed = parse_text_with_pauses(text);
@@ -1359,23 +1445,26 @@ impl TTSModel {
             }
         }
 
-        let model = self;
-        stop_after_error(segments.into_iter().flat_map(move |seg| match seg {
-            Segment::Text(s) => {
-                let iter = model.generate_stream(&s, voice_state);
-                Box::new(iter) as Box<dyn Iterator<Item = Result<Tensor>>>
-            }
-            Segment::Pause(ms) => {
-                let n_samples = silence_samples(ms, model.sample_rate as u32);
-                let silence_res = Tensor::zeros(
-                    (1, model.mimi.channels, n_samples),
-                    DType::F32,
-                    &model.device,
-                );
-                Box::new(std::iter::once(silence_res.map_err(anyhow::Error::from)))
-                    as Box<dyn Iterator<Item = Result<Tensor>>>
-            }
-        }))
+        let model = self.clone();
+        let voice_state = voice_state.clone();
+        Box::new(stop_after_error(segments.into_iter().flat_map(
+            move |seg| match seg {
+                Segment::Text(s) => {
+                    let iter = model.generate_stream_owned_with_options(&s, &voice_state, options);
+                    Box::new(iter) as Box<dyn Iterator<Item = Result<Tensor>>>
+                }
+                Segment::Pause(ms) => {
+                    let n_samples = silence_samples(ms, model.sample_rate as u32);
+                    let silence_res = Tensor::zeros(
+                        (1, model.mimi.channels, n_samples),
+                        DType::F32,
+                        &model.device,
+                    );
+                    Box::new(std::iter::once(silence_res.map_err(anyhow::Error::from)))
+                        as Box<dyn Iterator<Item = Result<Tensor>>>
+                }
+            },
+        )))
     }
     pub fn estimate_generation_steps(&self, text: &str) -> usize {
         self.text_options()
@@ -1702,6 +1791,38 @@ mod tests {
         let mut stream = model.generate_audio_with_timestamps_stream(&text, &state)?;
         assert!(stream.next().unwrap().is_err());
         assert!(stream.next().is_none());
+        Ok(())
+    }
+
+    #[test]
+    fn forced_context_does_not_trigger_eos_or_emit_audio() -> Result<()> {
+        let mut model = tiny_model()?;
+        model.timestamp_heads = vec![(0, 0)];
+        model.frames_after_eos = Some(0);
+        let voice = init_states();
+        let options = GenerationOptions {
+            max_tokens: Some(1),
+            teacher_force_previous_chunk: true,
+        };
+        let text = "First word. Second word. Third word. Fourth word.";
+        let frames = model
+            .generate_stream_owned_with_options(text, &voice, options)
+            .collect::<Result<Vec<_>>>()?;
+        // All forced and generated EOS logits are positive relative to the
+        // threshold. Only new step 6 ends each chunk; none of that cutoff frame
+        // or the replay/warmup contributes PCM.
+        assert_eq!(frames.len(), 4 * 6);
+        let mut stream =
+            model.generate_audio_with_timestamps_stream_with_options(text, &voice, options)?;
+        let mut total = 0;
+        while let Some(batch) = stream.next_batch(1)? {
+            total += batch.audio.len();
+        }
+        assert_eq!(
+            total,
+            frames.iter().map(|f| f.dim(2).unwrap()).sum::<usize>()
+        );
+        assert!(stream.next_batch(1)?.is_none());
         Ok(())
     }
 

@@ -185,6 +185,20 @@ impl FlowLMModel {
         })
     }
 
+    /// Replay text and normalized audio inputs through the backbone only.
+    /// No sampler, RNG, EOS decision or attention capture runs during prefill.
+    pub fn prefill(
+        &self,
+        sequence: &Tensor,
+        text_embeddings: &Tensor,
+        state: &mut ModelState,
+    ) -> Result<()> {
+        let audio = self.input_linear.forward(sequence)?;
+        let input = Tensor::cat(&[text_embeddings, &audio], 1)?;
+        self.transformer.forward(&input, state, 0)?;
+        Ok(())
+    }
+
     #[allow(clippy::too_many_arguments)]
     pub fn forward(
         &self,

@@ -46,6 +46,7 @@ fn export_timestamp_calibration() -> Result<()> {
                 text,
                 &model.text_options(),
                 model.conditioner.tokenizer(),
+                50,
             )?;
             let mut segments = Vec::new();
             let mut pcm = Vec::new();
@@ -63,6 +64,8 @@ fn export_timestamp_calibration() -> Result<()> {
                     chunk.tail_guess,
                     &voice,
                     Some(capture),
+                    None,
+                    false,
                 ) {
                     let frame = frame?;
                     let samples = frame.audio.flatten_all()?.to_vec1::<f32>()?;
