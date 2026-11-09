@@ -1,13 +1,22 @@
 [
   {
     "chunks": {
+      "1": [
+        "Hello world."
+      ],
       "12": [
         "Hello world."
       ],
       "25": [
         "Hello world."
       ],
+      "4": [
+        "Hello world."
+      ],
       "50": [
+        "Hello world."
+      ],
+      "8": [
         "Hello world."
       ]
     },
@@ -34,13 +43,22 @@
   },
   {
     "chunks": {
+      "1": [
+        "Hello world again."
+      ],
       "12": [
         "Hello world again."
       ],
       "25": [
         "Hello world again."
       ],
+      "4": [
+        "Hello world again."
+      ],
       "50": [
+        "Hello world again."
+      ],
+      "8": [
         "Hello world again."
       ]
     },
@@ -68,6 +86,10 @@
   },
   {
     "chunks": {
+      "1": [
+        "Dr. Miller met Prof. Smith.",
+        "Next!"
+      ],
       "12": [
         "Dr. Miller met Prof. Smith.",
         "Next!"
@@ -75,8 +97,16 @@
       "25": [
         "Dr. Miller met Prof. Smith. Next!"
       ],
+      "4": [
+        "Dr. Miller met Prof. Smith.",
+        "Next!"
+      ],
       "50": [
         "Dr. Miller met Prof. Smith. Next!"
+      ],
+      "8": [
+        "Dr. Miller met Prof. Smith.",
+        "Next!"
       ]
     },
     "frames_after_eos_guess": 1,
@@ -112,6 +142,10 @@
   },
   {
     "chunks": {
+      "1": [
+        "The fee is $822.95, please pay tomorrow.",
+        "Then leave."
+      ],
       "12": [
         "The fee is $822.95, please pay tomorrow.",
         "Then leave."
@@ -119,8 +153,16 @@
       "25": [
         "The fee is $822.95, please pay tomorrow. Then leave."
       ],
+      "4": [
+        "The fee is $822.95, please pay tomorrow.",
+        "Then leave."
+      ],
       "50": [
         "The fee is $822.95, please pay tomorrow. Then leave."
+      ],
+      "8": [
+        "The fee is $822.95, please pay tomorrow.",
+        "Then leave."
       ]
     },
     "frames_after_eos_guess": 1,
@@ -164,6 +206,10 @@
   },
   {
     "chunks": {
+      "1": [
+        "I counted to 3.",
+        "14 people were there."
+      ],
       "12": [
         "I counted to 3.",
         "14 people were there."
@@ -171,8 +217,16 @@
       "25": [
         "I counted to 3. 14 people were there."
       ],
+      "4": [
+        "I counted to 3.",
+        "14 people were there."
+      ],
       "50": [
         "I counted to 3. 14 people were there."
+      ],
+      "8": [
+        "I counted to 3.",
+        "14 people were there."
       ]
     },
     "frames_after_eos_guess": 1,
@@ -210,6 +264,10 @@
   },
   {
     "chunks": {
+      "1": [
+        "Visit www.kyutai.org.",
+        "Email jo@icloud.com."
+      ],
       "12": [
         "Visit www.kyutai.org.",
         "Email jo@icloud.com."
@@ -217,8 +275,16 @@
       "25": [
         "Visit www.kyutai.org. Email jo@icloud.com."
       ],
+      "4": [
+        "Visit www.kyutai.org.",
+        "Email jo@icloud.com."
+      ],
       "50": [
         "Visit www.kyutai.org. Email jo@icloud.com."
+      ],
+      "8": [
+        "Visit www.kyutai.org.",
+        "Email jo@icloud.com."
       ]
     },
     "frames_after_eos_guess": 3,
@@ -266,6 +332,12 @@
   },
   {
     "chunks": {
+      "1": [
+        "“Stop.”",
+        "She left.",
+        "(Quietly.)",
+        "Then returned."
+      ],
       "12": [
         "“Stop.”",
         "She left. (Quietly.)",
@@ -275,8 +347,20 @@
         "“Stop.” She left. (Quietly.)",
         "Then returned."
       ],
+      "4": [
+        "“Stop.”",
+        "She left.",
+        "(Quietly.)",
+        "Then returned."
+      ],
       "50": [
         "“Stop.” She left. (Quietly.) Then returned."
+      ],
+      "8": [
+        "“Stop.”",
+        "She left.",
+        "(Quietly.)",
+        "Then returned."
       ]
     },
     "frames_after_eos_guess": 1,
@@ -325,13 +409,22 @@
   },
   {
     "chunks": {
+      "1": [
+        "Mr. Mrs. Ms. Rev. vs. e.g. i.e. Smith."
+      ],
       "12": [
         "Mr. Mrs. Ms. Rev. vs. e.g. i.e. Smith."
       ],
       "25": [
         "Mr. Mrs. Ms. Rev. vs. e.g. i.e. Smith."
       ],
+      "4": [
+        "Mr. Mrs. Ms. Rev. vs. e.g. i.e. Smith."
+      ],
       "50": [
+        "Mr. Mrs. Ms. Rev. vs. e.g. i.e. Smith."
+      ],
+      "8": [
         "Mr. Mrs. Ms. Rev. vs. e.g. i.e. Smith."
       ]
     },
@@ -379,14 +472,26 @@
   },
   {
     "chunks": {
+      "1": [
+        "The time is 4 p.m.",
+        "Next one."
+      ],
       "12": [
         "The time is 4 p.m. Next one."
       ],
       "25": [
         "The time is 4 p.m. Next one."
       ],
+      "4": [
+        "The time is 4 p.m.",
+        "Next one."
+      ],
       "50": [
         "The time is 4 p.m. Next one."
+      ],
+      "8": [
+        "The time is 4 p.m.",
+        "Next one."
       ]
     },
     "frames_after_eos_guess": 1,
@@ -421,13 +526,22 @@
   },
   {
     "chunks": {
+      "1": [
+        "One two three four."
+      ],
       "12": [
         "One two three four."
       ],
       "25": [
         "One two three four."
       ],
+      "4": [
+        "One two three four."
+      ],
       "50": [
+        "One two three four."
+      ],
+      "8": [
         "One two three four."
       ]
     },
@@ -456,13 +570,22 @@
   },
   {
     "chunks": {
+      "1": [
+        "One two three four five."
+      ],
       "12": [
         "One two three four five."
       ],
       "25": [
         "One two three four five."
       ],
+      "4": [
+        "One two three four five."
+      ],
       "50": [
+        "One two three four five."
+      ],
+      "8": [
         "One two three four five."
       ]
     },
@@ -492,13 +615,22 @@
   },
   {
     "chunks": {
+      "1": [
+        "Ends with a quote\"."
+      ],
       "12": [
         "Ends with a quote\"."
       ],
       "25": [
         "Ends with a quote\"."
       ],
+      "4": [
+        "Ends with a quote\"."
+      ],
       "50": [
+        "Ends with a quote\"."
+      ],
+      "8": [
         "Ends with a quote\"."
       ]
     },
@@ -530,13 +662,22 @@
   },
   {
     "chunks": {
+      "1": [
+        "Ends with a dash."
+      ],
       "12": [
         "Ends with a dash."
       ],
       "25": [
         "Ends with a dash."
       ],
+      "4": [
+        "Ends with a dash."
+      ],
       "50": [
+        "Ends with a dash."
+      ],
+      "8": [
         "Ends with a dash."
       ]
     },
@@ -568,13 +709,24 @@
   },
   {
     "chunks": {
+      "1": [
+        "\"Hi?\",",
+        "she said."
+      ],
       "12": [
         "\"Hi?\", she said."
       ],
       "25": [
         "\"Hi?\", she said."
       ],
+      "4": [
+        "\"Hi?\",",
+        "she said."
+      ],
       "50": [
+        "\"Hi?\", she said."
+      ],
+      "8": [
         "\"Hi?\", she said."
       ]
     },
@@ -606,6 +758,13 @@
   },
   {
     "chunks": {
+      "1": [
+        "One clause,",
+        "another clause;",
+        "a third clause:",
+        "final clause.",
+        "Next sentence!"
+      ],
       "12": [
         "One clause, another clause;",
         "a third clause: final clause.",
@@ -615,8 +774,22 @@
         "One clause, another clause; a third clause: final clause.",
         "Next sentence!"
       ],
+      "4": [
+        "One clause,",
+        "another clause;",
+        "a third clause:",
+        "final clause.",
+        "Next sentence!"
+      ],
       "50": [
         "One clause, another clause; a third clause: final clause. Next sentence!"
+      ],
+      "8": [
+        "One clause,",
+        "another clause;",
+        "a third clause:",
+        "final clause.",
+        "Next sentence!"
       ]
     },
     "frames_after_eos_guess": 1,
@@ -694,5 +867,735 @@
         "’": "'"
       }
     }
+  },
+  {
+    "chunks": {
+      "1": [
+        "Pi is 3.14. Next comes a sentence."
+      ],
+      "12": [
+        "Pi is 3.14. Next comes a sentence."
+      ],
+      "25": [
+        "Pi is 3.14. Next comes a sentence."
+      ],
+      "4": [
+        "Pi is 3.14. Next comes a sentence."
+      ],
+      "50": [
+        "Pi is 3.14. Next comes a sentence."
+      ],
+      "8": [
+        "Pi is 3.14. Next comes a sentence."
+      ]
+    },
+    "frames_after_eos_guess": 1,
+    "input": "Pi is 3.14. Next comes a sentence.",
+    "options": {
+      "append_terminal_punctuation": true,
+      "capitalize_first_letter": true,
+      "pad_with_spaces_for_short_inputs": false,
+      "remove_semicolons": false,
+      "replace_characters": {
+        "–": ",",
+        "—": ",",
+        "‘": "'",
+        "’": "'"
+      }
+    },
+    "prepared": "Pi is 3.14. Next comes a sentence.",
+    "token_ids": [
+      2553,
+      277,
+      260,
+      450,
+      263,
+      341,
+      487,
+      263,
+      3219,
+      819,
+      267,
+      1472,
+      599,
+      263
+    ]
+  },
+  {
+    "chunks": {
+      "1": [
+        "The fee is $822.95, which must be paid,",
+        "before leaving.",
+        "Then leave."
+      ],
+      "12": [
+        "The fee is $822.95, which must be paid,",
+        "before leaving. Then leave."
+      ],
+      "25": [
+        "The fee is $822.95, which must be paid, before leaving. Then leave."
+      ],
+      "4": [
+        "The fee is $822.95, which must be paid,",
+        "before leaving.",
+        "Then leave."
+      ],
+      "50": [
+        "The fee is $822.95, which must be paid, before leaving. Then leave."
+      ],
+      "8": [
+        "The fee is $822.95, which must be paid,",
+        "before leaving. Then leave."
+      ]
+    },
+    "frames_after_eos_guess": 1,
+    "input": "The fee is $822.95, which must be paid, before leaving. Then leave.",
+    "options": {
+      "append_terminal_punctuation": true,
+      "capitalize_first_letter": true,
+      "pad_with_spaces_for_short_inputs": false,
+      "remove_semicolons": false,
+      "replace_characters": {
+        "–": ",",
+        "—": ",",
+        "‘": "'",
+        "’": "'"
+      }
+    },
+    "prepared": "The fee is $822.95, which must be paid, before leaving. Then leave.",
+    "token_ids": [
+      364,
+      521,
+      1239,
+      277,
+      1124,
+      547,
+      365,
+      365,
+      263,
+      501,
+      437,
+      262,
+      388,
+      1127,
+      279,
+      2286,
+      262,
+      260,
+      531,
+      2778,
+      273,
+      263,
+      1160,
+      1037,
+      263
+    ]
+  },
+  {
+    "chunks": {
+      "1": [
+        "La somme est de 822,95 €, ensuite partez.",
+        "Puis revenez."
+      ],
+      "12": [
+        "La somme est de 822,95 €, ensuite partez.",
+        "Puis revenez."
+      ],
+      "25": [
+        "La somme est de 822,95 €, ensuite partez.",
+        "Puis revenez."
+      ],
+      "4": [
+        "La somme est de 822,95 €, ensuite partez.",
+        "Puis revenez."
+      ],
+      "50": [
+        "La somme est de 822,95 €, ensuite partez. Puis revenez."
+      ],
+      "8": [
+        "La somme est de 822,95 €, ensuite partez.",
+        "Puis revenez."
+      ]
+    },
+    "frames_after_eos_guess": 1,
+    "input": "La somme est de 822,95 €, ensuite partez. Puis revenez.",
+    "options": {
+      "append_terminal_punctuation": true,
+      "capitalize_first_letter": true,
+      "pad_with_spaces_for_short_inputs": false,
+      "remove_semicolons": false,
+      "replace_characters": {
+        "–": ",",
+        "—": ",",
+        "‘": "'",
+        "’": "'"
+      }
+    },
+    "prepared": "La somme est de 822,95 €, ensuite partez. Puis revenez.",
+    "token_ids": [
+      895,
+      294,
+      283,
+      680,
+      260,
+      552,
+      404,
+      260,
+      547,
+      365,
+      365,
+      262,
+      501,
+      437,
+      260,
+      230,
+      134,
+      176,
+      262,
+      780,
+      261,
+      483,
+      695,
+      458,
+      2095,
+      263,
+      497,
+      483,
+      595,
+      338,
+      314,
+      306,
+      2095,
+      263
+    ]
+  },
+  {
+    "chunks": {
+      "1": [
+        "The fee is 1,994.42, which must be paid.",
+        "Then leave."
+      ],
+      "12": [
+        "The fee is 1,994.42, which must be paid.",
+        "Then leave."
+      ],
+      "25": [
+        "The fee is 1,994.42, which must be paid. Then leave."
+      ],
+      "4": [
+        "The fee is 1,994.42, which must be paid.",
+        "Then leave."
+      ],
+      "50": [
+        "The fee is 1,994.42, which must be paid. Then leave."
+      ],
+      "8": [
+        "The fee is 1,994.42, which must be paid.",
+        "Then leave."
+      ]
+    },
+    "frames_after_eos_guess": 1,
+    "input": "The fee is 1,994.42, which must be paid. Then leave.",
+    "options": {
+      "append_terminal_punctuation": true,
+      "capitalize_first_letter": true,
+      "pad_with_spaces_for_short_inputs": false,
+      "remove_semicolons": false,
+      "replace_characters": {
+        "–": ",",
+        "—": ",",
+        "‘": "'",
+        "’": "'"
+      }
+    },
+    "prepared": "The fee is 1,994.42, which must be paid. Then leave.",
+    "token_ids": [
+      364,
+      521,
+      1239,
+      277,
+      260,
+      341,
+      262,
+      501,
+      501,
+      487,
+      263,
+      487,
+      365,
+      262,
+      388,
+      1127,
+      279,
+      2286,
+      263,
+      1160,
+      1037,
+      263
+    ]
+  },
+  {
+    "chunks": {
+      "1": [
+        "Visit https:",
+        "//www.kyutai.org.",
+        "Email jo@icloud.com.",
+        "Then leave."
+      ],
+      "12": [
+        "Visit https:",
+        "//www.kyutai.org.",
+        "Email jo@icloud.com.",
+        "Then leave."
+      ],
+      "25": [
+        "Visit https://www.kyutai.org.",
+        "Email jo@icloud.com. Then leave."
+      ],
+      "4": [
+        "Visit https:",
+        "//www.kyutai.org.",
+        "Email jo@icloud.com.",
+        "Then leave."
+      ],
+      "50": [
+        "Visit https://www.kyutai.org. Email jo@icloud.com. Then leave."
+      ],
+      "8": [
+        "Visit https:",
+        "//www.kyutai.org.",
+        "Email jo@icloud.com.",
+        "Then leave."
+      ]
+    },
+    "frames_after_eos_guess": 1,
+    "input": "Visit https://www.kyutai.org. Email jo@icloud.com. Then leave.",
+    "options": {
+      "append_terminal_punctuation": true,
+      "capitalize_first_letter": true,
+      "pad_with_spaces_for_short_inputs": false,
+      "remove_semicolons": false,
+      "replace_characters": {
+        "–": ",",
+        "—": ",",
+        "‘": "'",
+        "’": "'"
+      }
+    },
+    "prepared": "Visit https://www.kyutai.org. Email jo@icloud.com. Then leave.",
+    "token_ids": [
+      1633,
+      261,
+      562,
+      829,
+      274,
+      274,
+      401,
+      261,
+      3244,
+      51,
+      51,
+      479,
+      479,
+      479,
+      263,
+      1982,
+      805,
+      1537,
+      263,
+      448,
+      453,
+      263,
+      520,
+      3270,
+      260,
+      1347,
+      68,
+      485,
+      589,
+      1471,
+      263,
+      924,
+      263,
+      1160,
+      1037,
+      263
+    ]
+  },
+  {
+    "chunks": {
+      "1": [
+        "Meet at 4 p.m.",
+        "Next comes a sentence."
+      ],
+      "12": [
+        "Meet at 4 p.m.",
+        "Next comes a sentence."
+      ],
+      "25": [
+        "Meet at 4 p.m. Next comes a sentence."
+      ],
+      "4": [
+        "Meet at 4 p.m.",
+        "Next comes a sentence."
+      ],
+      "50": [
+        "Meet at 4 p.m. Next comes a sentence."
+      ],
+      "8": [
+        "Meet at 4 p.m.",
+        "Next comes a sentence."
+      ]
+    },
+    "frames_after_eos_guess": 1,
+    "input": "Meet at 4 p.m. Next comes a sentence.",
+    "options": {
+      "append_terminal_punctuation": true,
+      "capitalize_first_letter": true,
+      "pad_with_spaces_for_short_inputs": false,
+      "remove_semicolons": false,
+      "replace_characters": {
+        "–": ",",
+        "—": ",",
+        "‘": "'",
+        "’": "'"
+      }
+    },
+    "prepared": "Meet at 4 p.m. Next comes a sentence.",
+    "token_ids": [
+      1164,
+      597,
+      309,
+      260,
+      487,
+      324,
+      263,
+      283,
+      263,
+      3219,
+      819,
+      267,
+      1472,
+      599,
+      263
+    ]
+  },
+  {
+    "chunks": {
+      "1": [
+        "We live in the U.S."
+      ],
+      "12": [
+        "We live in the U.S."
+      ],
+      "25": [
+        "We live in the U.S."
+      ],
+      "4": [
+        "We live in the U.S."
+      ],
+      "50": [
+        "We live in the U.S."
+      ],
+      "8": [
+        "We live in the U.S."
+      ]
+    },
+    "frames_after_eos_guess": 1,
+    "input": "We live in the U.S.",
+    "options": {
+      "append_terminal_punctuation": true,
+      "capitalize_first_letter": true,
+      "pad_with_spaces_for_short_inputs": false,
+      "remove_semicolons": false,
+      "replace_characters": {
+        "–": ",",
+        "—": ",",
+        "‘": "'",
+        "’": "'"
+      }
+    },
+    "prepared": "We live in the U.S.",
+    "token_ids": [
+      374,
+      760,
+      276,
+      265,
+      928,
+      263,
+      640,
+      263
+    ]
+  },
+  {
+    "chunks": {
+      "1": [
+        "He said “Stop.”",
+        "Then left."
+      ],
+      "12": [
+        "He said “Stop.”",
+        "Then left."
+      ],
+      "25": [
+        "He said “Stop.” Then left."
+      ],
+      "4": [
+        "He said “Stop.”",
+        "Then left."
+      ],
+      "50": [
+        "He said “Stop.” Then left."
+      ],
+      "8": [
+        "He said “Stop.”",
+        "Then left."
+      ]
+    },
+    "frames_after_eos_guess": 1,
+    "input": "He said “Stop.” Then left.",
+    "options": {
+      "append_terminal_punctuation": true,
+      "capitalize_first_letter": true,
+      "pad_with_spaces_for_short_inputs": false,
+      "remove_semicolons": false,
+      "replace_characters": {
+        "–": ",",
+        "—": ",",
+        "‘": "'",
+        "’": "'"
+      }
+    },
+    "prepared": "He said “Stop.” Then left.",
+    "token_ids": [
+      414,
+      425,
+      260,
+      230,
+      132,
+      160,
+      640,
+      274,
+      561,
+      263,
+      230,
+      132,
+      161,
+      1160,
+      866,
+      263
+    ]
+  },
+  {
+    "chunks": {
+      "1": [
+        "He left.",
+        "“Hi.”"
+      ],
+      "12": [
+        "He left.",
+        "“Hi.”"
+      ],
+      "25": [
+        "He left. “Hi.”"
+      ],
+      "4": [
+        "He left.",
+        "“Hi.”"
+      ],
+      "50": [
+        "He left. “Hi.”"
+      ],
+      "8": [
+        "He left.",
+        "“Hi.”"
+      ]
+    },
+    "frames_after_eos_guess": 3,
+    "input": "He left. “Hi.”",
+    "options": {
+      "append_terminal_punctuation": true,
+      "capitalize_first_letter": true,
+      "pad_with_spaces_for_short_inputs": false,
+      "remove_semicolons": false,
+      "replace_characters": {
+        "–": ",",
+        "—": ",",
+        "‘": "'",
+        "’": "'"
+      }
+    },
+    "prepared": "He left. “Hi.”",
+    "token_ids": [
+      414,
+      866,
+      263,
+      260,
+      230,
+      132,
+      160,
+      1356,
+      405,
+      263,
+      230,
+      132,
+      161
+    ]
+  },
+  {
+    "chunks": {
+      "1": [
+        "He said \"Stop.\")] Then left."
+      ],
+      "12": [
+        "He said \"Stop.\")] Then left."
+      ],
+      "25": [
+        "He said \"Stop.\")] Then left."
+      ],
+      "4": [
+        "He said \"Stop.\")] Then left."
+      ],
+      "50": [
+        "He said \"Stop.\")] Then left."
+      ],
+      "8": [
+        "He said \"Stop.\")] Then left."
+      ]
+    },
+    "frames_after_eos_guess": 1,
+    "input": "He said \"Stop.\")] Then left.",
+    "options": {
+      "append_terminal_punctuation": true,
+      "capitalize_first_letter": true,
+      "pad_with_spaces_for_short_inputs": false,
+      "remove_semicolons": false,
+      "replace_characters": {
+        "–": ",",
+        "—": ",",
+        "‘": "'",
+        "’": "'"
+      }
+    },
+    "prepared": "He said \"Stop.\")] Then left.",
+    "token_ids": [
+      414,
+      425,
+      694,
+      640,
+      274,
+      561,
+      1447,
+      45,
+      97,
+      1160,
+      866,
+      263
+    ]
+  },
+  {
+    "chunks": {
+      "1": [
+        "St.",
+        "John left.",
+        "Next came Jane."
+      ],
+      "12": [
+        "St. John left. Next came Jane."
+      ],
+      "25": [
+        "St. John left. Next came Jane."
+      ],
+      "4": [
+        "St.",
+        "John left.",
+        "Next came Jane."
+      ],
+      "50": [
+        "St. John left. Next came Jane."
+      ],
+      "8": [
+        "St. John left.",
+        "Next came Jane."
+      ]
+    },
+    "frames_after_eos_guess": 1,
+    "input": "St. John left. Next came Jane.",
+    "options": {
+      "append_terminal_punctuation": true,
+      "capitalize_first_letter": true,
+      "pad_with_spaces_for_short_inputs": false,
+      "remove_semicolons": false,
+      "replace_characters": {
+        "–": ",",
+        "—": ",",
+        "‘": "'",
+        "’": "'"
+      }
+    },
+    "prepared": "St. John left. Next came Jane.",
+    "token_ids": [
+      1010,
+      263,
+      1311,
+      866,
+      263,
+      3219,
+      662,
+      1102,
+      532,
+      263
+    ]
+  },
+  {
+    "chunks": {
+      "1": [
+        "The fee is $822.95."
+      ],
+      "12": [
+        "The fee is $822.95."
+      ],
+      "25": [
+        "The fee is $822.95."
+      ],
+      "4": [
+        "The fee is $822.95."
+      ],
+      "50": [
+        "The fee is $822.95."
+      ],
+      "8": [
+        "The fee is $822.95."
+      ]
+    },
+    "frames_after_eos_guess": 3,
+    "input": "The fee is $822.95.",
+    "options": {
+      "append_terminal_punctuation": true,
+      "capitalize_first_letter": true,
+      "pad_with_spaces_for_short_inputs": false,
+      "remove_semicolons": false,
+      "replace_characters": {
+        "–": ",",
+        "—": ",",
+        "‘": "'",
+        "’": "'"
+      }
+    },
+    "prepared": "The fee is $822.95.",
+    "token_ids": [
+      364,
+      521,
+      1239,
+      277,
+      1124,
+      547,
+      365,
+      365,
+      263,
+      501,
+      437,
+      263
+    ]
   }
 ]

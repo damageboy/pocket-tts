@@ -134,43 +134,39 @@ fn fallback_only_refines_oversized_sentences_and_limits_stay_soft() {
     let tokenizer = tokenizer(false);
     let options = TextOptions::default();
     assert_eq!(options.split(&tokenizer, "A,B.", 5).unwrap(), ["A,B."]);
-    assert_eq!(options.split(&tokenizer, "A,B.", 3).unwrap(), ["A,", "B."]);
+    assert_eq!(options.split(&tokenizer, "A,B.", 3).unwrap(), ["A,B."]);
     assert_eq!(
-        options.split(&tokenizer, "A;B:C.", 3).unwrap(),
+        options.split(&tokenizer, "A; B: C.", 3).unwrap(),
         ["A;", "B:", "C."]
     );
     assert_eq!(
         options.split(&tokenizer, "Abcdefghijk", 2).unwrap(),
         ["Abcdefghijk."]
     );
-    assert_eq!(options.split(&tokenizer, "A,B.", 0).unwrap(), ["A,", "B."]);
+    assert_eq!(options.split(&tokenizer, "A, B.", 0).unwrap(), ["A,", "B."]);
     // A leading metaspace is added again during fallback re-encoding, so A,
     // costs three tokens rather than two even though it was an interior segment.
     assert_eq!(
-        options.split(&tokenizer, "Z. A,B.", 4).unwrap(),
+        options.split(&tokenizer, "Z. A, B.", 4).unwrap(),
         ["Z.", "A,", "B."]
     );
 }
 
 #[test]
-fn decimal_detection_decodes_prefix_and_suffix_and_uses_python_digits() {
+fn neighboring_punctuation_preserves_python_alphanumeric_characters() {
     let tokenizer = tokenizer(false);
     let options = TextOptions::default();
     assert_eq!(
         options.split(&tokenizer, "Pi 3.14. E 2.718.", 1).unwrap(),
-        ["Pi 3.14.", "E 2.718."]
+        ["Pi 3.14. E 2.718."]
     );
     assert_eq!(options.split(&tokenizer, "A ٣.٤.", 1).unwrap(), ["A ٣.٤."]);
     assert_eq!(options.split(&tokenizer, "A ².4.", 1).unwrap(), ["A ².4."]);
-    assert_eq!(
-        options.split(&tokenizer, "A ½.4.", 1).unwrap(),
-        ["A ½.", "4."]
-    );
-    // Slice decoding removes the suffix's leading metaspace, as Python does:
-    // even this space-separated pair is considered decimal at the boundary.
+    assert_eq!(options.split(&tokenizer, "A ½.4.", 1).unwrap(), ["A ½.4."]);
+    // Decode across the boundary to preserve the intervening space.
     assert_eq!(
         options.split(&tokenizer, "A 3. 4.", 1).unwrap(),
-        ["A 3. 4."]
+        ["A 3.", "4."]
     );
 }
 
@@ -188,4 +184,142 @@ fn boundaries_are_token_ids_not_raw_punctuation_and_padding_is_stripped() {
         ..Default::default()
     };
     assert_eq!(disabled.split(&tokenizer, "abc", 1).unwrap(), ["abc"]);
+}
+
+fn target_tokenizer() -> Tokenizer {
+    Tokenizer::from_file(concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/../../assets/upstream-v3.3/english.tokenizer.json"
+    ))
+    .unwrap()
+}
+
+// These expectations come from the pinned Python source using the identical
+// checked-in JSON tokenizer, not from another Rust splitting path.
+fn assert_target_cases(inputs: &[&str]) {
+    let cases: Vec<serde_json::Value> = serde_json::from_str(include_str!(
+        "../../../assets/upstream-2026-11-09/target/english/text.json"
+    ))
+    .unwrap();
+    let tokenizer = target_tokenizer();
+    for input in inputs {
+        let case = cases.iter().find(|c| c["input"] == *input).unwrap();
+        let options: TextOptions = serde_json::from_value(case["options"].clone()).unwrap();
+        for (limit, expected) in case["chunks"].as_object().unwrap() {
+            let expected: Vec<String> = serde_json::from_value(expected.clone()).unwrap();
+            let chunks = options
+                .split(&tokenizer, input, limit.parse().unwrap())
+                .unwrap();
+            assert_eq!(chunks, expected, "{input}, limit={limit}");
+            // Splitting may insert spaces at boundaries, but must retain every
+            // non-whitespace scalar, including multibyte closing quotes.
+            let joined: String = chunks
+                .join("")
+                .chars()
+                .filter(|c| !c.is_whitespace())
+                .collect();
+            let prepared: String = case["prepared"]
+                .as_str()
+                .unwrap()
+                .chars()
+                .filter(|c| !c.is_whitespace())
+                .collect();
+            assert_eq!(joined, prepared, "corrupted source: {input}");
+        }
+    }
+}
+
+#[test]
+fn decimal_boundaries_preserve_numbers_and_spaces() {
+    assert_target_cases(&[
+        "Pi is 3.14. Next comes a sentence.",
+        "I counted to 3. 14 people were there.",
+        "La somme est de 822,95 €, ensuite partez. Puis revenez.",
+        "The fee is 1,994.42, which must be paid. Then leave.",
+    ]);
+}
+
+#[test]
+fn titles_urls_and_emails_stay_intact() {
+    assert_target_cases(&[
+        "Dr. Miller met Prof. Smith. Next!",
+        "Mr. Mrs. Ms. Rev. vs. e.g. i.e. Smith.",
+        "Visit https://www.kyutai.org. Email jo@icloud.com. Then leave.",
+        "Meet at 4 p.m. Next comes a sentence.",
+        "We live in the U.S.",
+        "St. John left. Next came Jane.",
+    ]);
+}
+
+#[test]
+fn closers_stay_with_their_sentence() {
+    assert_target_cases(&[
+        "He said “Stop.” Then left.",
+        "He left. “Hi.”",
+        "He said \"Stop.\")] Then left.",
+        "“Stop.” She left. (Quietly.) Then returned.",
+    ]);
+}
+
+#[test]
+fn decimal_segments_keep_the_following_clause() {
+    assert_target_cases(&[
+        "The fee is $822.95, which must be paid, before leaving. Then leave.",
+        "The fee is $822.95.",
+    ]);
+}
+
+#[path = "common/fixture.rs"]
+mod fixture;
+
+#[test]
+#[ignore = "requires external pinned tokenizer/model fixture assets; no model inference"]
+fn actual_json_tokenizer_matches_all_target_text_fixtures() -> anyhow::Result<()> {
+    let directory = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+        .join("../../assets/upstream-2026-11-09/target/english");
+    let manifest: serde_json::Value =
+        serde_json::from_slice(&std::fs::read(directory.join("manifest.json"))?)?;
+    fixture::config(&directory, &manifest)?;
+    assert_eq!(
+        manifest["upstream_commit"],
+        "c91f50f38c6b914d49dbdff51b8d322edf843db2"
+    );
+    let tokenizer = Tokenizer::from_file(fixture::path(
+        &directory,
+        manifest["tokenizer"]["path"].as_str().unwrap(),
+    ))
+    .map_err(anyhow::Error::msg)?;
+    let cases: Vec<serde_json::Value> =
+        serde_json::from_slice(&std::fs::read(directory.join("text.json"))?)?;
+    for case in cases {
+        let options: TextOptions = serde_json::from_value(case["options"].clone())?;
+        let input = case["input"].as_str().unwrap();
+        if let Some(error) = case["error"].as_str() {
+            assert_eq!(options.prepare(input).unwrap_err().to_string(), error);
+            continue;
+        }
+        let (prepared, tail) = options.prepare(input)?;
+        assert_eq!(prepared, case["prepared"]);
+        assert_eq!(
+            tail as u64,
+            case["frames_after_eos_guess"].as_u64().unwrap()
+        );
+        assert_eq!(
+            serde_json::to_value(
+                tokenizer
+                    .encode(prepared.as_str(), true)
+                    .map_err(anyhow::Error::msg)?
+                    .get_ids()
+            )?,
+            case["token_ids"]
+        );
+        for (limit, expected) in case["chunks"].as_object().unwrap() {
+            assert_eq!(
+                serde_json::to_value(options.split(&tokenizer, input, limit.parse()?)?)?,
+                *expected,
+                "{input} limit={limit}"
+            );
+        }
+    }
+    Ok(())
 }

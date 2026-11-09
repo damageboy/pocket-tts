@@ -89,7 +89,7 @@
     "config.yaml": "8d0995b68708db77558b1a385df1fca7fd2f3d240da7619f864a9d37a7154af6",
     "model.safetensors": "a950aca079a500d2e396880188129a8559093a7c1de8fe08c6a927f1ee5fc683",
     "prompt.safetensors": "6632d0326dc3e01f675e3babeda2319fe23fdda97665bc43c0db1a70c6dd35b8",
-    "text.json": "5b040fada5f421a56935c0a996d7e7c0295b61445a7bbcb0c898fc83a0c270c4"
+    "text.json": "ea342e8c623eccace36c385c7599857daabce274413cde8990c6a8cec5a18fb2"
   },
   "fixed_noise": "sin(arange(ldim)*0.13 + step)*sqrt(0.3)",
   "fixture_sha256": "a950aca079a500d2e396880188129a8559093a7c1de8fe08c6a927f1ee5fc683",

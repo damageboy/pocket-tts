@@ -126,7 +126,7 @@
     "config.yaml": "b47f072c108ac81ea1d10bb681181aefce7900c02c1dd53d722744d01afe8ca7",
     "model.safetensors": "15679623cd8466bca2c43a6c98bdb4915d04cb2647fb3731b285cd40d138a840",
     "prompt.safetensors": "6632d0326dc3e01f675e3babeda2319fe23fdda97665bc43c0db1a70c6dd35b8",
-    "text.json": "68ebc777129031ab323445173adf9544cf8be7a760375847af93d539c230a6b9"
+    "text.json": "377172a4f1726c86932adf25afef3a27222fe2a59051bd64fee3f936a8ebbf2b"
   },
   "fixed_noise": "sin(arange(ldim)*0.13 + step)*sqrt(0.3)",
   "fixture_sha256": "15679623cd8466bca2c43a6c98bdb4915d04cb2647fb3731b285cd40d138a840",

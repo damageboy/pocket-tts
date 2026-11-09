@@ -78,9 +78,21 @@ impl LUTConditioner {
         // Build tokenizer with SentencePiece-style settings
         let mut tokenizer = Tokenizer::new(unigram);
         tokenizer.with_pre_tokenizer(Some(Metaspace::new('▁', PrependScheme::Always, false)));
-        tokenizer.with_decoder(Some(Metaspace::new('▁', PrependScheme::Always, false)));
+        tokenizer.with_decoder(Some(Self::sentencepiece_decoder()));
 
         Ok(tokenizer)
+    }
+
+    fn sentencepiece_decoder() -> tokenizers::decoders::sequence::Sequence {
+        use tokenizers::decoders::{byte_fallback::ByteFallback, fuse::Fuse, sequence::Sequence};
+        use tokenizers::pre_tokenizers::metaspace::{Metaspace, PrependScheme};
+        // Match the JSON tokenizer's decoding pipeline so .model loaders
+        // produce characters rather than literal byte-fallback piece names.
+        Sequence::new(vec![
+            Metaspace::new('▁', PrependScheme::Always, false).into(),
+            ByteFallback::new().into(),
+            Fuse::new().into(),
+        ])
     }
 
     /// Parse SentencePiece model protobuf to extract vocabulary
@@ -277,7 +289,7 @@ impl LUTConditioner {
 
             let mut tok = Tokenizer::new(unigram);
             tok.with_pre_tokenizer(Some(Metaspace::new('▁', PrependScheme::Always, false)));
-            tok.with_decoder(Some(Metaspace::new('▁', PrependScheme::Always, false)));
+            tok.with_decoder(Some(Self::sentencepiece_decoder()));
             tok
         };
 
@@ -415,6 +427,67 @@ mod tests {
         outer.extend(encode_varint(msg.len() as u64));
         outer.extend(msg);
         outer
+    }
+
+    fn byte_fallback_model() -> Vec<u8> {
+        let mut model = encode_piece("<unk>", -100.0, Some(2));
+        model.extend(encode_piece("▁", -1.0, Some(1)));
+        model.extend(encode_piece("X", -1.0, Some(1)));
+        model.extend(encode_piece(".", -1.0, Some(1)));
+        for byte in 0..=255 {
+            model.extend(encode_piece(&format!("<0x{byte:02X}>"), -10.0, Some(6)));
+        }
+        model
+    }
+
+    #[test]
+    fn sentencepiece_bytes_decode_complete_and_partial_unicode() {
+        use candle_core::{DType, Device};
+        use candle_nn::VarBuilder;
+        let model = byte_fallback_model();
+        let conditioner = LUTConditioner::new_from_bytes(
+            260,
+            &model,
+            1,
+            1,
+            VarBuilder::zeros(DType::F32, &Device::Cpu),
+        )
+        .unwrap();
+        assert_unicode_decoding(conditioner.tokenizer());
+    }
+
+    #[test]
+    fn sentencepiece_file_decodes_complete_and_partial_unicode() {
+        use candle_core::{DType, Device};
+        use candle_nn::VarBuilder;
+        let path =
+            std::env::temp_dir().join(format!("pocket-tts-unicode-{}.model", std::process::id()));
+        std::fs::write(&path, byte_fallback_model()).unwrap();
+        let conditioner = LUTConditioner::new(
+            260,
+            &path,
+            1,
+            1,
+            VarBuilder::zeros(DType::F32, &Device::Cpu),
+        );
+        std::fs::remove_file(path).unwrap();
+        assert_unicode_decoding(conditioner.unwrap().tokenizer());
+    }
+
+    fn assert_unicode_decoding(tokenizer: &tokenizers::Tokenizer) {
+        let source = "X “Stop.” € 😀.";
+        let ids = tokenizer.encode(source, true).unwrap();
+        assert_eq!(tokenizer.decode(ids.get_ids(), true).unwrap(), source);
+        let first = tokenizer.token_to_id("<0xE2>").unwrap();
+        assert_eq!(tokenizer.decode(&[first], true).unwrap(), "\u{fffd}");
+        let continuation = tokenizer.token_to_id("<0x80>").unwrap();
+        let last = tokenizer.token_to_id("<0x9D>").unwrap();
+        assert_eq!(
+            tokenizer
+                .decode(&[first, continuation, last], true)
+                .unwrap(),
+            "”"
+        );
     }
 
     #[test]

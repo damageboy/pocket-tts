@@ -91,7 +91,7 @@ def save_json(path, value):
     Path(path).write_text(json.dumps(value, ensure_ascii=False, sort_keys=True, indent=2) + '\n')
 
 
-def text_fixtures(tokenizer, options):
+def text_fixtures(tokenizer, options, extended=False):
     from pocket_tts.models.text_chunking import prepare_text_prompt, split_into_best_sentences
     inputs = ['hello world', '  hello   world\nagain  ', 'Dr. Miller met Prof. Smith. Next!',
               'The fee is $822.95, please pay tomorrow. Then leave.',
@@ -100,15 +100,32 @@ def text_fixtures(tokenizer, options):
               'The time is 4 p.m. Next one.', 'one two three four', 'one two three four five',
               'ends with a quote"', 'ends with a dash—', '"Hi?", she said',
               'one clause, another clause; a third clause: final clause. Next sentence!', '', ' \t\n ']
+    if extended:
+        inputs += [
+            'Pi is 3.14. Next comes a sentence.',
+            'I counted to 3. 14 people were there.',
+            'The fee is $822.95, which must be paid, before leaving. Then leave.',
+            'La somme est de 822,95 €, ensuite partez. Puis revenez.',
+            'The fee is 1,994.42, which must be paid. Then leave.',
+            'Dr. Miller met Prof. Smith. Next!',
+            'Visit https://www.kyutai.org. Email jo@icloud.com. Then leave.',
+            'Meet at 4 p.m. Next comes a sentence.',
+            'We live in the U.S.',
+            'He said “Stop.” Then left.',
+            'He left. “Hi.”',
+            'He said "Stop.")] Then left.',
+            'St. John left. Next came Jane.',
+            'The fee is $822.95.',
+        ]
     results = []
-    for text in inputs:
+    for text in dict.fromkeys(inputs):
         case = dict(input=text, options=options)
         try:
             prepared, tail = prepare_text_prompt(text, **options)
             case.update(prepared=prepared, frames_after_eos_guess=tail,
                         token_ids=tokenizer(prepared)[0].tolist(),
                         chunks={str(limit): split_into_best_sentences(tokenizer, text, limit, **options)
-                                for limit in (12, 25, 50)})
+                                for limit in ((1, 4, 8, 12, 25, 50) if extended else (12, 25, 50))})
         except ValueError as error:
             case['error'] = str(error)
         results.append(case)
@@ -244,7 +261,8 @@ def generate(args):
     save_file({name: (value.to(torch.uint8) if value.dtype == torch.bool else value).detach().contiguous().clone()
                for name, value in tensors.items()},
               output / 'model.safetensors')
-    save_json(output / 'text.json', text_fixtures(model.flow_lm.conditioner.tokenizer, options))
+    save_json(output / 'text.json', text_fixtures(model.flow_lm.conditioner.tokenizer, options,
+                                                   extended=args.expected_commit == TARGET_COMMIT))
     if args.expected_commit == TARGET_COMMIT:
         from pocket_tts.data.audio_utils import end_on_pause
         prompt = {}

@@ -6,6 +6,7 @@ use pocket_tts::models::flow_lm::lsd_decode;
 use pocket_tts::modules::mlp::{LayerNorm, RMSNorm, SimpleMLPAdaLN};
 use pocket_tts::text::TextOptions;
 use serde::Deserialize;
+use sha2::{Digest, Sha256};
 use std::{collections::HashMap, path::PathBuf};
 
 fn fixtures() -> PathBuf {
@@ -28,6 +29,15 @@ struct TextCase {
 fn text_and_native_byte_tokenizers_match_python_in_all_languages() -> anyhow::Result<()> {
     let cases: Vec<TextCase> =
         serde_json::from_slice(&std::fs::read(fixtures().join("text.json"))?)?;
+    // Keep v3.3 goldens immutable. The pinned target oracle supplies exact
+    // overrides only where the approved splitter intentionally changes chunks.
+    let target: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../assets/upstream-2026-11-09/target-legacy-text-chunks.json"
+    ))?;
+    assert_eq!(
+        target["upstream_commit"],
+        "c91f50f38c6b914d49dbdff51b8d322edf843db2"
+    );
     for case in cases {
         let prepared = case.options.prepare(&case.input);
         if let Some(error) = case.error {
@@ -51,6 +61,18 @@ fn text_and_native_byte_tokenizers_match_python_in_all_languages() -> anyhow::Re
         let path = fixtures().join(format!("{}.tokenizer.json", case.language));
         let bytes = std::fs::read(&path)?;
         let tokenizer = tokenizers::Tokenizer::from_bytes(&bytes).map_err(anyhow::Error::msg)?;
+        let override_case = target["cases"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|entry| entry["language"] == case.language && entry["input"] == case.input);
+        if let Some(entry) = override_case {
+            let digest: String = Sha256::digest(&bytes)
+                .iter()
+                .map(|b| format!("{b:02x}"))
+                .collect();
+            assert_eq!(digest, entry["tokenizer_sha256"]);
+        }
         let bins = tokenizer.get_vocab_size(true);
         for conditioner in [
             LUTConditioner::new(
@@ -80,7 +102,10 @@ fn text_and_native_byte_tokenizers_match_python_in_all_languages() -> anyhow::Re
                 case.input
             );
         }
-        for (limit, expected) in case.chunks.unwrap() {
+        for (limit, mut expected) in case.chunks.unwrap() {
+            if let Some(chunks) = override_case.and_then(|entry| entry["chunks"].get(&limit)) {
+                expected = serde_json::from_value(chunks.clone())?;
+            }
             let actual = case
                 .options
                 .split(&tokenizer, &case.input, limit.parse()?)?;

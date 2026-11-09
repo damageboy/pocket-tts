@@ -1,0 +1,75 @@
+{
+  "cases": [
+    {
+      "chunks": {
+        "12": [
+          "3.14 is less than 12.75. Next sentence!"
+        ]
+      },
+      "input": "3.14 is less than 12.75. Next sentence!",
+      "language": "english",
+      "tokenizer_sha256": "f498428e1eafee50492f7be13dc9bfafcfc12e508cd0eb1b01c92ecd5d8c6687"
+    },
+    {
+      "chunks": {
+        "12": [
+          "3.14 is less than 12.75. Next sentence!"
+        ]
+      },
+      "input": "3.14 is less than 12.75. Next sentence!",
+      "language": "french",
+      "tokenizer_sha256": "6211acffe9cb95172f71f0051f18e26ea305b2b32ea00b331ee976551c70887f"
+    },
+    {
+      "chunks": {
+        "12": [
+          "3.14 is less than 12.75. Next sentence!"
+        ]
+      },
+      "input": "3.14 is less than 12.75. Next sentence!",
+      "language": "german",
+      "tokenizer_sha256": "2d77849811e3d1b6ae80e5b11b203f57e1847901104d8a0573b34f46f8dddb53"
+    },
+    {
+      "chunks": {
+        "12": [
+          "3.14 is less than 12.75. Next sentence!"
+        ]
+      },
+      "input": "3.14 is less than 12.75. Next sentence!",
+      "language": "italian",
+      "tokenizer_sha256": "4bc1c0d4d54f9480183e94c94cfabf74fd89b0912537d4ef607d1982c4a381ec"
+    },
+    {
+      "chunks": {
+        "12": [
+          "3.14 is less than 12.75. Next sentence!"
+        ]
+      },
+      "input": "3.14 is less than 12.75. Next sentence!",
+      "language": "spanish",
+      "tokenizer_sha256": "9ade09bbdc64ab2b59952b90773fa0890b780ece4fd5aef0d36a00c6ad5f0531"
+    },
+    {
+      "chunks": {
+        "12": [
+          "3.14 is less than 12.75. Next sentence!"
+        ]
+      },
+      "input": "3.14 is less than 12.75. Next sentence!",
+      "language": "portuguese",
+      "tokenizer_sha256": "b33e269f7f042a763080d71ba087d74d2f6759674b238a723c028e436b1a25ab"
+    },
+    {
+      "chunks": {
+        "12": [
+          "3.14 is less than 12.75. Next sentence!"
+        ]
+      },
+      "input": "3.14 is less than 12.75. Next sentence!",
+      "language": "dutch",
+      "tokenizer_sha256": "e6f610b98c427641b4ab0e1024dca7843e3d6b620871a14b204932e42c5a1736"
+    }
+  ],
+  "upstream_commit": "c91f50f38c6b914d49dbdff51b8d322edf843db2"
+}

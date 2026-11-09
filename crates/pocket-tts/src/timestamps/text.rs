@@ -599,6 +599,96 @@ mod tests {
     }
 
     #[test]
+    fn timestamp_indices_survive_upstream_chunking() {
+        let t = tokenizer();
+        let source = "Dr. Miller said “Stop.” Then repeat repeat. The fee is $822.95, which must be paid. A ﬁne Ｆｕｌｌ result.";
+        let expected = vec![
+            (0, "Dr"),
+            (1, "Miller"),
+            (2, "said"),
+            (3, "Stop"),
+            (4, "Then"),
+            (5, "repeat"),
+            (6, "repeat"),
+            (7, "The"),
+            (8, "fee"),
+            (9, "is"),
+            (10, "822"),
+            (11, "95"),
+            (12, "which"),
+            (13, "must"),
+            (14, "be"),
+            (15, "paid"),
+            (16, "A"),
+            (17, "ﬁne"),
+            (18, "Ｆｕｌｌ"),
+            (19, "result"),
+        ];
+        let options = TextOptions::default();
+        for limit in [1, 8, 12, 50] {
+            let split = options.split(&t, source, limit).unwrap();
+            assert!(split.iter().any(|c| c.contains("Dr. Miller")));
+            assert!(split.iter().any(|c| c.contains("“Stop.”")));
+            assert!(split.iter().any(|c| c.contains("$822.95, which")));
+            let prepared = split
+                .iter()
+                .map(|c| options.prepare(c).unwrap().0)
+                .collect();
+            let chunks = build_chunks(source, prepared, &t).unwrap();
+            assert_eq!(words(&chunks), expected, "limit={limit}");
+        }
+        let ordinary = options
+            .split(&t, source, 50)
+            .unwrap()
+            .iter()
+            .map(|c| options.prepare(c).unwrap().0)
+            .collect::<Vec<_>>();
+        let timestamps = prepare_timestamp_chunks(source, &options, &t).unwrap();
+        assert_eq!(
+            timestamps.iter().map(|c| &c.text).collect::<Vec<_>>(),
+            ordinary.iter().collect::<Vec<_>>()
+        );
+        assert_eq!(words(&timestamps), expected);
+    }
+
+    #[test]
+    fn upstream_chunking_retains_gaps_synthetic_punctuation_and_pause_stripping() {
+        let t = tokenizer();
+        let options = TextOptions {
+            replace_characters: [('x', "changed".into()), ('“', "".into()), ('”', "".into())]
+                .into(),
+            ..TextOptions::default()
+        };
+        let source = crate::pause::strip_pause_markers(
+            "repeat repeat x [pause:500ms] unique. “Stop.” Again",
+        );
+        let chunks = prepare_timestamp_chunks(&source, &options, &t).unwrap();
+        // Replacement prevents a full projection; repeated words become
+        // ambiguous and are omitted. Unique words retain their source indices.
+        assert_eq!(
+            words(&chunks),
+            vec![(3, "unique"), (4, "Stop"), (5, "Again")]
+        );
+        assert!(chunks.iter().flat_map(|c| &c.units).any(|u| u.synthetic));
+        assert!(chunks.iter().all(|c| !c.text.contains("pause:")));
+        assert_eq!(
+            chunks.last().unwrap().text,
+            "Repeat repeat changed unique. Stop. Again."
+        );
+
+        let options = TextOptions {
+            replace_characters: [('“', "".into()), ('”', "".into())].into(),
+            ..TextOptions::default()
+        };
+        let chunks = prepare_timestamp_chunks("repeat repeat “ﬁne” ﬁne", &options, &t).unwrap();
+        assert_eq!(
+            words(&chunks),
+            vec![(0, "repeat"), (1, "repeat"), (2, "ﬁne"), (3, "ﬁne")]
+        );
+        assert!(chunks[0].units.last().unwrap().synthetic);
+    }
+
+    #[test]
     fn curated_source_words_and_exact_generation_prompts() {
         let tokenizer = tokenizer();
         for (text, expected) in [
