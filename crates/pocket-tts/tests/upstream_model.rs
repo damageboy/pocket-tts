@@ -38,6 +38,22 @@ fn teacher_forced_noise_matches_python_prefill_latents_and_decoder() -> Result<(
         &std::fs::read(path("weights"))?,
         &std::fs::read(path("tokenizer"))?,
     )?;
+    // Prompt tensors are independent of model weights. Validate the selected
+    // bundle's Python normalization oracle while retaining raw Mimi PCM below.
+    if directory.join("prompt.safetensors").is_file() {
+        let prompts =
+            candle_core::safetensors::load(directory.join("prompt.safetensors"), &Device::Cpu)?;
+        for (name, input) in &prompts {
+            if let Some(case) = name.strip_suffix(".input") {
+                close(
+                    &pocket_tts::audio::end_on_pause(input, model.sample_rate)?,
+                    &prompts[&format!("{case}.output")],
+                    2e-7,
+                    case,
+                )?;
+            }
+        }
+    }
     let eos_threshold = manifest["eos_threshold"].as_f64().unwrap_or(-4.0) as f32;
     assert_eq!(model.eos_threshold, eos_threshold);
     let mut state = model.get_voice_state_from_prompt_file(path("voice_state"))?;

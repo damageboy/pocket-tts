@@ -184,6 +184,92 @@ pub fn write_wav_to_writer<W: std::io::Write + std::io::Seek>(
     Ok(())
 }
 
+/// Trim complete 20 ms frames below the relative energy floor, fade the
+/// retained prompt's last 20 ms, and append exactly 80 ms of silence.
+/// Matches upstream `end_on_pause`, including its all-zero threshold behavior.
+pub fn end_on_pause(audio: &Tensor, sample_rate: usize) -> anyhow::Result<Tensor> {
+    let last = audio.rank() - 1;
+    let samples = audio.dim(last)?;
+    let frame = (sample_rate / 50).max(1);
+    let frames = samples / frame;
+    if frames == 0 {
+        return Ok(audio.clone());
+    }
+    // Aggregate energy over every leading dimension, never average opposite
+    // signs before squaring. Ignore the incomplete final analysis frame.
+    let rms = audio
+        .narrow(last, 0, frames * frame)?
+        .reshape(((), frames, frame))?
+        .sqr()?
+        .mean((0, 2))?
+        .sqrt()?;
+    // Candle has no base-10 logarithm. Scaling its natural logarithm can
+    // round an exact -35 dB boundary above the strict upstream threshold.
+    let db = rms
+        .to_dtype(candle_core::DType::F32)?
+        .to_vec1::<f32>()?
+        .into_iter()
+        .map(|rms| 20.0 * (rms + 1e-12).log10())
+        .collect::<Vec<_>>();
+    let max_db = db.iter().copied().fold(f32::NEG_INFINITY, f32::max);
+    let active = db
+        .iter()
+        .rposition(|&value| value > max_db - 35.0)
+        .ok_or_else(|| anyhow::anyhow!("voice prompt has no active analysis frame"))?;
+    let end = (active + 1) * frame;
+    let fade = (sample_rate / 50).min(end);
+    let retained = audio.narrow(last, 0, end)?;
+    let retained = if fade > 0 {
+        let ramp = (0..fade)
+            .map(|i| {
+                if fade == 1 {
+                    1.0
+                } else {
+                    (fade - 1 - i) as f32 / (fade - 1) as f32
+                }
+            })
+            .collect::<Vec<_>>();
+        let ramp = Tensor::from_vec(ramp, fade, audio.device())?.to_dtype(audio.dtype())?;
+        let faded = retained
+            .narrow(last, end - fade, fade)?
+            .broadcast_mul(&ramp)?;
+        Tensor::cat(&[retained.narrow(last, 0, end - fade)?, faded], last)?
+    } else {
+        retained
+    };
+    let mut pause_shape = audio.dims().to_vec();
+    pause_shape[last] = (0.08 * sample_rate as f64) as usize;
+    let pause = Tensor::zeros(pause_shape.as_slice(), audio.dtype(), audio.device())?;
+    Ok(Tensor::cat(&[retained, pause], last)?)
+}
+
+/// Fade one newly emitted frame from a fresh segment decoder. Short frames use
+/// a prefix of the full 5 ms ramp; no samples or decoder state are removed.
+pub(crate) fn fade_in_first_frame(audio: &Tensor, sample_rate: usize) -> anyhow::Result<Tensor> {
+    let last = audio.rank() - 1;
+    let samples = audio.dim(last)?;
+    let ramp_len = sample_rate / 200;
+    let fade = samples.min(ramp_len);
+    if fade == 0 {
+        return Ok(audio.clone());
+    }
+    let ramp = (0..fade)
+        .map(|i| {
+            if ramp_len == 1 {
+                0.0
+            } else {
+                i as f32 / (ramp_len - 1) as f32
+            }
+        })
+        .collect::<Vec<_>>();
+    let ramp = Tensor::from_vec(ramp, fade, audio.device())?.to_dtype(audio.dtype())?;
+    let faded = audio.narrow(last, 0, fade)?.broadcast_mul(&ramp)?;
+    Ok(Tensor::cat(
+        &[faded, audio.narrow(last, fade, samples - fade)?],
+        last,
+    )?)
+}
+
 pub fn normalize_peak(audio: &Tensor) -> anyhow::Result<Tensor> {
     let max_abs = audio.abs()?.max_all()?.to_scalar::<f32>()?;
     if max_abs > 0.0 {
@@ -274,6 +360,55 @@ pub fn resample_linear(audio: &Tensor, from_rate: u32, to_rate: u32) -> anyhow::
 mod tests {
     use super::*;
     use candle_core::{Device, Tensor};
+
+    #[test]
+    fn fresh_frame_fade_uses_full_inclusive_ramp_and_preserves_storage() -> anyhow::Result<()> {
+        let input = Tensor::ones((2, 1, 1920), candle_core::DType::F32, &Device::Cpu)?;
+        let faded = fade_in_first_frame(&input, 24000)?.to_vec3::<f32>()?;
+        for batch in &faded {
+            assert_eq!(batch[0].len(), 1920);
+            assert_eq!(batch[0][0], 0.0);
+            assert_eq!(batch[0][1], 1.0 / 119.0);
+            assert_eq!(batch[0][119], 1.0);
+            assert!(batch[0][120..].iter().all(|&v| v == 1.0));
+        }
+        assert_eq!(input.min_all()?.to_scalar::<f32>()?, 1.0);
+        let short = fade_in_first_frame(&input.narrow(2, 0, 3)?, 24000)?
+            .flatten_all()?
+            .to_vec1::<f32>()?;
+        assert_eq!(
+            short,
+            vec![0., 1. / 119., 2. / 119., 0., 1. / 119., 2. / 119.]
+        );
+        Ok(())
+    }
+
+    #[test]
+    fn fresh_frame_fade_matches_python_decoder_fixture_and_voiced_gate() -> anyhow::Result<()> {
+        let fixture = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("../../assets/upstream-2026-11-09/target/english_2m_2026-10/model.safetensors");
+        let reference = candle_core::safetensors::load(fixture, &Device::Cpu)?;
+        let faded = fade_in_first_frame(&reference["step_0.pcm"], 24000)?;
+        assert!(
+            (&faded - &reference["output_fade.first_frame"])?
+                .abs()?
+                .max_all()?
+                .to_scalar::<f32>()?
+                < 2e-7
+        );
+        // The onset alone can fall below the voiced threshold after fading;
+        // alignment must classify the emitted PCM, with the same sample count.
+        let mut samples = vec![0f32; 1920];
+        samples[0] = 0.1;
+        let raw = Tensor::from_vec(samples.clone(), (1, 1, 1920), &Device::Cpu)?;
+        assert!(crate::timestamps::alignment::is_voiced(&samples));
+        let emitted = fade_in_first_frame(&raw, 24000)?
+            .flatten_all()?
+            .to_vec1::<f32>()?;
+        assert_eq!(emitted.len(), samples.len());
+        assert!(!crate::timestamps::alignment::is_voiced(&emitted));
+        Ok(())
+    }
 
     #[test]
     fn test_normalize_peak() -> anyhow::Result<()> {

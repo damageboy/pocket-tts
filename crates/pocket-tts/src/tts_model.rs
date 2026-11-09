@@ -696,6 +696,8 @@ impl TTSModel {
             audio.to_device(&self.device)?
         };
 
+        let audio = crate::audio::end_on_pause(&audio, self.sample_rate)?;
+
         // Pad audio to a multiple of frame size for streaming conv stride alignment
         let frame_size = self.mimi.frame_size();
         let (b, c, t) = audio.dims3()?;
@@ -1274,7 +1276,13 @@ impl TTSModel {
                     })
                     .map_err(|e| anyhow::anyhow!(e))?;
 
-                // Removed redundant increment_steps("offset") for mimi
+                // Keep raw Mimi decoding unchanged. Both output APIs consume
+                // this frame after the one-time fresh-segment onset fade.
+                let audio = if step == 0 {
+                    crate::audio::fade_in_first_frame(&audio, model.sample_rate)?
+                } else {
+                    audio
+                };
 
                 Ok(audio)
             })() {
@@ -1736,6 +1744,30 @@ mod tests {
             38
         );
         assert!(model.generate(" \n ", &init_states()).is_err());
+        Ok(())
+    }
+
+    #[test]
+    fn cloned_prompt_normalizes_before_codec_padding_once() -> Result<()> {
+        let model = tiny_model()?; // 100 Hz, eight samples per codec frame.
+        for length in [4, 5, 1400] {
+            let mut values = vec![0f32; length];
+            values[..4].fill(1.0);
+            if length == 5 {
+                values[4] = 99.0;
+            }
+            let input = Tensor::from_vec(values.clone(), (1, 1, length), &Device::Cpu)?;
+            let state = model.get_voice_state_from_tensor(&input)?;
+            // Four retained samples + eight pause samples, padded to 16:
+            // two codec latents plus the BOS-before-voice conditioning token.
+            let cache = &state["flow_lm.transformer.layers.0.self_attn"];
+            assert_eq!(
+                cache[crate::voice_state::ATTN_LEN_KEY].to_scalar::<i64>()?,
+                3,
+                "input length {length}"
+            );
+            assert_eq!(input.flatten_all()?.to_vec1::<f32>()?, values);
+        }
         Ok(())
     }
 

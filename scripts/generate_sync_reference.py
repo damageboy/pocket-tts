@@ -132,6 +132,37 @@ def text_fixtures(tokenizer, options, extended=False):
     return results
 
 
+def prompt_fixtures():
+    """Deterministic edge cases evaluated by the pinned upstream implementation."""
+    import torch
+    from pocket_tts.data.audio_utils import end_on_pause
+    signal = torch.sin(torch.arange(960, dtype=torch.float32) * .1)
+    # Opposite signs and unequal channels catch averaging samples before squaring.
+    batch = torch.zeros(2, 2, 1920)
+    batch[0, 0, :480] = 1
+    batch[0, 1, :480] = 1
+    batch[1, 0, 960:1440] = .1
+    batch[1, 1, 960:1440] = -.1
+    floor = torch.cat([torch.ones(480), torch.full((480,), 10 ** (-35 / 20)), torch.full((480,), .001)])
+    inputs = {
+        'short': torch.arange(100, dtype=torch.float32)[None, None] / 100,
+        'all_zero': torch.zeros(1, 1, 1440),
+        'speech_and_pause': torch.cat([signal, torch.zeros(1440)])[None, None],
+        'speech_ending': signal[None, None],
+        'partial_frame': torch.cat([signal, torch.zeros(480), torch.ones(239)])[None, None],
+        'long_prompt': torch.cat([signal.repeat(325), torch.zeros(24000)])[None, None],
+        'batch_channels': batch,
+        'strict_floor': floor[None, None],
+    }
+    result = {}
+    for name, values in inputs.items():
+        before = values.clone()
+        result[f'{name}.input'] = values
+        result[f'{name}.output'] = end_on_pause(values, 24000)
+        assert torch.equal(before, values), name
+    return {name: value.contiguous().clone() for name, value in result.items()}
+
+
 def capture_state(tensors, prefix, state, end, start=0):
     for name, values in state.items():
         for key, value in values.items():
@@ -264,16 +295,7 @@ def generate(args):
     save_json(output / 'text.json', text_fixtures(model.flow_lm.conditioner.tokenizer, options,
                                                    extended=args.expected_commit == TARGET_COMMIT))
     if args.expected_commit == TARGET_COMMIT:
-        from pocket_tts.data.audio_utils import end_on_pause
-        prompt = {}
-        for name, values in {
-            'short': torch.arange(100, dtype=torch.float32)[None, None] / 100,
-            'all_zero': torch.zeros(1, 1, 1440),
-            'speech_and_pause': torch.cat([torch.sin(torch.arange(960) * .1), torch.zeros(1440)])[None, None],
-        }.items():
-            prompt[f'{name}.input'] = values
-            prompt[f'{name}.output'] = end_on_pause(values, 24000)
-        save_file({name: value.contiguous().clone() for name, value in prompt.items()}, output / 'prompt.safetensors')
+        save_file(prompt_fixtures(), output / 'prompt.safetensors')
     manifest = dict(schema_version=2, upstream_commit=args.expected_commit, language=args.language,
                     voice=args.voice, text=args.text, prepared=prepared, token_ids=tokens[0].tolist(),
                     python=platform.python_version(), packages={dist.metadata['Name']: dist.version

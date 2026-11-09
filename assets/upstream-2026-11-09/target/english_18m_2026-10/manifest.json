@@ -125,7 +125,7 @@
   "files": {
     "config.yaml": "3ec91f2f298d3fd283b98093d432f236c30523262f74e7e820a60d9625426700",
     "model.safetensors": "d2731cbd9ba04faab1b36ebd655c92efdf17a138d45218513821414372ac7876",
-    "prompt.safetensors": "6632d0326dc3e01f675e3babeda2319fe23fdda97665bc43c0db1a70c6dd35b8",
+    "prompt.safetensors": "121693266b222ac00964f6b3291e9b0d2e863f3272b1d784f4b531c2cc331cc8",
     "text.json": "377172a4f1726c86932adf25afef3a27222fe2a59051bd64fee3f936a8ebbf2b"
   },
   "fixed_noise": "sin(arange(ldim)*0.13 + step)*sqrt(0.3)",
