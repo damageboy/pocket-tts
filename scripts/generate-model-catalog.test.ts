@@ -89,10 +89,19 @@ test("bundle preset scalar overrides legacy defaults and participates in cache U
   expect(() => generateModelCatalog({ ...configs, english: changed.english + "preset_voice_revision: other\n" }, "revision")).toThrow("ambiguous");
 });
 
-test("all pinned target model names are discoverable without inheriting timestamp heads", () => {
-  for (const name of ["english_2026-10", "english_2026-09_2", "english_drifting_26-09", "english_18m_refl_2026-10", "english_7m_refl_2026-10", "english_2m_refl_2026-10"]) {
+test("pinned target models are discoverable with checkpoint-specific fork calibrations", () => {
+  // pocket-tts-timestamped 813d892; these bundles match the fork exactly.
+  const selections: Record<string, number[][]> = {
+    "english_2026-10": [[3, 8], [2, 0]],
+    "english_2026-09_2": [[3, 8], [2, 0]],
+    "english_drifting_26-09": [[2, 15]],
+    "english_18m_refl_2026-10": [[2, 7], [3, 4]],
+    "english_7m_refl_2026-10": [[2, 7], [2, 5]],
+    "english_2m_refl_2026-10": [[5, 2], [2, 2], [3, 2]],
+  };
+  for (const [name, heads] of Object.entries(selections)) {
     expect(configs[name]).toBeDefined();
-    expect((Bun.YAML.parse(configs[name]) as Record<string, unknown>).timestamp_heads).toBeUndefined();
+    expect((Bun.YAML.parse(configs[name]) as Record<string, unknown>).timestamp_heads).toEqual(heads);
     expect(FALLBACK_LANGUAGES.find(model => model.name === name)).toBeDefined();
   }
 });
@@ -114,11 +123,11 @@ test("released configs match all upstream fields except explicitly retained weig
   }
 });
 
-test("only the heldout-approved 7M bundle adopts new weights, presets and heads", () => {
+test("retained bundles preserve weights and presets while 7M uses refreshed fork heads", () => {
   const outcomes: Record<string, number[][]> = {
     english: [[3, 8], [2, 0]],
     "english_18m_2026-10": [[5, 3]],
-    "english_7m_2026-10": [[5, 3]],
+    "english_7m_2026-10": [[2, 7], [2, 5], [5, 2]],
     "english_2m_2026-10": [[5, 2], [5, 0]],
   };
   for (const [name, heads] of Object.entries(outcomes)) {
