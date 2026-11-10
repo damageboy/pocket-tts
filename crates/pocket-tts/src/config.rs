@@ -422,16 +422,34 @@ mod tests {
 
     #[test]
     fn checkpoint_timestamp_selections_match_verified_upstream_models() {
+        // Fork 813d892; english, english_18m and english_2m retain older bundles.
         let selections: &[(&str, &[(usize, usize)])] = &[
+            ("dutch", &[(4, 5), (3, 9), (3, 14), (2, 0)]),
+            ("dutch_24l", &[(17, 13), (17, 11)]),
             ("english", &[(3, 8), (2, 0)]),
+            ("english_18m_2026-10", &[(5, 3)]),
+            ("english_18m_refl_2026-10", &[(2, 7), (3, 4)]),
             ("english_2026-01", &[(3, 8), (2, 0)]),
             ("english_2026-04", &[(3, 8), (2, 0)]),
-            ("english_2026-09", &[(3, 8), (2, 0)]),
             ("english_2026-04_24l", &[(14, 10), (17, 11), (15, 4)]),
+            ("english_2026-09", &[(3, 8), (2, 0)]),
+            ("english_2026-09_2", &[(3, 8), (2, 0)]),
             ("english_2026-09_24l", &[(14, 10), (17, 11), (15, 4)]),
-            ("dutch_24l", &[(17, 13), (17, 11)]),
+            ("english_2026-10", &[(3, 8), (2, 0)]),
+            ("english_2m_2026-10", &[(5, 2), (5, 0)]),
+            ("english_2m_refl_2026-10", &[(5, 2), (2, 2), (3, 2)]),
+            ("english_7m_2026-10", &[(2, 7), (2, 5), (5, 2)]),
+            ("english_7m_refl_2026-10", &[(2, 7), (2, 5)]),
+            ("english_drifting_26-09", &[(2, 15)]),
+            ("french", &[(3, 9)]),
+            ("french_24l", &[(17, 13), (16, 9), (18, 5), (17, 11)]),
+            ("german", &[(3, 14), (3, 9), (3, 10)]),
             ("german_24l", &[(17, 11), (15, 4)]),
+            ("italian", &[(3, 9), (4, 5), (3, 10)]),
+            ("italian_24l", &[(17, 13), (13, 10), (18, 5), (14, 10)]),
+            ("portuguese", &[(3, 9), (4, 2), (4, 5), (3, 14), (3, 4)]),
             ("portuguese_24l", &[(17, 13), (18, 1), (20, 12)]),
+            ("spanish", &[(3, 9), (4, 2), (4, 5), (3, 10)]),
             ("spanish_24l", &[(17, 13), (17, 11), (18, 1)]),
         ];
         let dir = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("config");
@@ -439,21 +457,6 @@ mod tests {
             let config = load_config(dir.join(format!("{name}.yaml"))).unwrap();
             assert_eq!(config.timestamp_heads, expected, "{name}");
             config.validate_timestamp_heads().unwrap();
-        }
-        // The fork pins different weight revisions for these checkpoints.
-        for name in [
-            "dutch",
-            "french",
-            "french_24l",
-            "german",
-            "italian",
-            "italian_24l",
-            "portuguese",
-            "spanish",
-        ] {
-            let config = load_config(dir.join(format!("{name}.yaml"))).unwrap();
-            assert!(config.timestamp_heads.is_empty(), "{name}");
-            assert!(config.validate_timestamp_heads().is_err());
         }
     }
 }

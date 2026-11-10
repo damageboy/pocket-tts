@@ -46,15 +46,6 @@ jobs:
             assets/*.safetensors
             dist/wasm-release/*.tar.gz
             dist/wasm-release/*.sha256
-          generate_release_notes: true
-          body: |
-            Automated release for `${{ github.ref_name }}`.
-
-            Browser consumers can download `pocket-tts-${{ github.ref_name }}-wasm-web.tar.gz`
-            and its SHA-256 checksum. The archive contains matching JavaScript/WASM
-            bindings and TypeScript declarations; no Rust installation is required.
-
-            Model weights, tokenizers, voice embeddings, and the demo UI are not included.
-            Applications must load model resources separately.
+          body_path: docs/releases/${{ github.ref_name }}.md
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

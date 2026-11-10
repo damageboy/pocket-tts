@@ -4,7 +4,7 @@
 
 The timestamp functionality is derived from
 [dpm63/pocket-tts-timestamped](https://github.com/dpm63/pocket-tts-timestamped),
-pinned to [revision 36e72b2](https://github.com/dpm63/pocket-tts-timestamped/commit/36e72b29d346c427c415acda99ce7118f37a541e).
+originally ported from [revision 36e72b2](https://github.com/dpm63/pocket-tts-timestamped/commit/36e72b29d346c427c415acda99ce7118f37a541e).
 
 The ported scope is the attention-based word-timestamp approach: selected
 FlowLM attention-head capture and reduction to text-unit scores, source-word
@@ -13,7 +13,12 @@ audio gating and word-start/word-end events. The reference sources are
 `pocket_tts_timestamped/timestamps/{alignment,text,records}.py` and the
 timestamp integration in `models/tts_model.py` and `modules/transformer.py`.
 The checkpoint-specific `timestamp_heads` selections in matching YAML configs
-are also derived from that revision's `pocket_tts_timestamped/config/`.
+were refreshed from [revision 813d892](https://github.com/dpm63/pocket-tts-timestamped/commit/813d892a64a69894750d7f42bab129ea5804a654)
+(`pocket_tts_timestamped/config/`, November 9, 2026). All 24 matching bundles
+use that revision's selections. The `english`, `english_18m_2026-10`, and
+`english_2m_2026-10` configs retain their existing selections because their
+pinned weight revisions differ. This refresh imports head selections only;
+it does not update the timestamp algorithm baseline above.
 Those selections are represented as zero-based
 `(layer, head)` pairs; selections are copied only when both pinned weight paths
 and model definitions match. They are not inferred from transformer dimensions.

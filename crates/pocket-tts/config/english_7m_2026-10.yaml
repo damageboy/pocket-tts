@@ -94,6 +94,5 @@ mimi:
     - 128
 default_eos_threshold: -1.0
 
-# Candidate calibration only; production promotion is gated by heldout evidence.
-timestamp_heads: [[5, 3]]
+timestamp_heads: [[2, 7], [2, 5], [5, 2]]
 preset_voice_revision: a7056f505a4a8ca72d8b5fb1440071d6f1a35739
